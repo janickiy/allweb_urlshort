@@ -1,0 +1,198 @@
+@extends('layouts.app')
+
+@section('site_title', formatTitle([__('Developers'), config('settings.title')]))
+
+@section('content')
+    <div class="bg-base-1 flex-fill">
+        <div class="container h-100 py-3 my-3">
+
+            @include('shared.breadcrumbs', ['breadcrumbs' => [
+                ['url' => route('home'), 'title' => __('Home')],
+                ['title' => __('Developers')]
+            ]])
+
+            <h2 class="mb-0 d-inline-block">{{ __('Developers') }}</h2>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('Notes') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    {{ __('The API key should be sent as a Bearer token in the Authorization header of the request.') }} <a href="{{ route('settings.api') }}">{{ __('Get your API key') }}</a>.
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('List') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        {{ __('List all links.') }}
+                    </p>
+
+
+                    <p class="mb-1">
+                        {{ __('API endpoint') }}:
+                    </p>
+
+<div class="bg-dark text-light p-3 rounded d-flex align-items-center mb-3">
+    <span class="badge bg-light text-success px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">GET</span>
+    <pre class="m-0 text-light">{{ route('links.index') }}</pre>
+</div>
+
+                    <p class="mb-1">
+                        {{ __('Request example') }}:
+                    </p>
+<pre class="bg-dark text-light p-3 mb-0 rounded">
+curl --location --request GET '{{ route('links.index') }}' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <span class="text-success">{api_key}</span>'
+</pre>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('Show') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p>{{ __('Get a link\'s details.') }}</p>
+
+                    <p class="mb-1">
+                        {{ __('API endpoint') }}:
+                    </p>
+
+<div class="bg-dark text-light p-3 rounded d-flex align-items-center mb-3">
+<span class="badge bg-light text-success px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">GET</span>
+<pre class="m-0 text-light">{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.show', ['id' => ':id'])) !!}</pre>
+</div>
+
+                    <p class="mb-1">
+                        {{ __('Request example') }}:
+                    </p>
+                    <pre class="bg-dark text-light p-3 mb-0 rounded">
+curl --location --request GET '{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.show', ['id' => ':id'])) !!}' \
+--header 'Accept: application/json' \
+--header 'Authorization: Bearer <span class="text-success">{api_key}</span>'
+</pre>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('Store') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        {{ __('Create a link.') }}
+                    </p>
+
+                    <p class="mb-1">
+                        {{ __('API endpoint') }}:
+                    </p>
+
+<div class="bg-dark text-light p-3 rounded d-flex align-items-center mb-3">
+<span class="badge bg-light text-warning px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">POST</span>
+<pre class="m-0 text-light">{{ route('links.store') }}</pre>
+</div>
+                    <p class="mb-1">
+                        {{ __('Request example') }}:
+                    </p>
+<pre class="bg-dark text-light p-3 rounded">
+curl --location --request POST '{{ route('links.store') }}' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'Authorization: Bearer <span class="text-success">{api_key}</span>' \
+--data-urlencode 'url=<span class="text-success">{url}</span>'
+</pre>
+
+                    {{--<p class="mb-1">
+                        {{ __('Parameters') }}:
+                    </p>--}}
+
+                    @include('developers.link_parameters', ['type' => 1])
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('Update') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        {{ __('Update a link.') }}
+                    </p>
+
+                    <p class="mb-1">
+                        {{ __('API endpoint') }}:
+                    </p>
+
+                    <div class="bg-dark text-light p-3 rounded d-flex align-items-center mb-3">
+                        <span class="badge bg-light text-info px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2') }}">PUT</span> <span class="badge bg-light text-info px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">PATCH</span>
+                        <pre class="m-0 text-light">{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.update', ['id' => ':id'])) !!}</pre>
+                    </div>
+
+                    <p class="mb-1">
+                        {{ __('Request example') }}:
+                    </p>
+                    <pre class="bg-dark text-light p-3 rounded">
+curl --location --request PUT '{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.update', ['id' => ':id'])) !!}' \
+--header 'Content-Type: application/x-www-form-urlencoded' \
+--header 'Authorization: Bearer <span class="text-success">{api_key}</span>' \
+--data-urlencode 'url=<span class="text-success">{url}</span>'
+</pre>
+
+                    @include('developers.link_parameters', ['type' => 0])
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header align-items-center">
+                    <div class="row">
+                        <div class="col"><div class="font-weight-medium py-1">{{ __('Delete') }}</div></div>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        {{ __('Delete a link.') }}
+                    </p>
+
+                    <p class="mb-1">
+                        {{ __('API endpoint') }}:
+                    </p>
+
+                    <div class="bg-dark text-light p-3 rounded d-flex align-items-center mb-3">
+                        <span class="badge bg-light text-danger px-2 py-1 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">DELETE</span>
+                        <pre class="m-0 text-light">{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.destroy', ['id' => ':id'])) !!}</pre>
+                    </div>
+
+                    <p class="mb-1">
+                        {{ __('Request example') }}:
+                    </p>
+                    <pre class="bg-dark text-light p-3 mb-0 rounded">
+curl --location --request DELETE '{!! str_replace(':id', '<span class="text-success">{id}</span>', route('links.destroy', ['id' => ':id'])) !!}' \
+--header 'Authorization: Bearer <span class="text-success">{api_key}</span>'
+</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@include('shared.sidebars.user')
