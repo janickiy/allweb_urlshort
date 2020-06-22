@@ -1,3 +1,0 @@
-<button type="button" class="btn btn-sm text-primary d-flex align-items-center link-copy" data-url="<?php echo e(isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias)); ?>" data-toggle="tooltip-copy" title="<?php echo e(__('Copy')); ?>" data-copy="<?php echo e(__('Copy')); ?>" data-copied="<?php echo e(__('Copied')); ?>">
-    <?php echo $__env->make('icons.copy_link', ['class' => 'fill-current icon-button'], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>&#8203;
-</button><?php /**PATH /var/www/site3.loc/www/resources/views/shared/buttons/copy_link.blade.php ENDPATH**/ ?>

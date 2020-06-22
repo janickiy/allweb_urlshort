@@ -1,1 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="<?php echo e(isset($class) ? $class : ''); ?>" viewBox="0 0 20 16"><path d="M2,0A2,2,0,0,0,.07,1.5L10,7.73l9.94-6.21A2,2,0,0,0,18,0ZM0,3.73V14a2,2,0,0,0,2,2H18a2,2,0,0,0,2-2V3.76L10,10Z"/></svg><?php /**PATH /var/www/site3.loc/www/resources/views/icons/share/email.blade.php ENDPATH**/ ?>
