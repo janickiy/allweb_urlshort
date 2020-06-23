@@ -13,7 +13,7 @@
 
         @include('shared.message')
 
-        <form action="{{ route('admin.settings.registration') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('admin.settings.registration.update') }}" method="post" enctype="multipart/form-data">
 
             @csrf
 

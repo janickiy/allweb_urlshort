@@ -13,7 +13,7 @@
 
         @include('shared.message')
 
-        <form action="{{ route('admin.settings.captcha') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('admin.settings.captcha.update') }}" method="post" enctype="multipart/form-data">
 
             @csrf
 
@@ -45,7 +45,7 @@
                     @endforeach
                 </select>
             </div>
-            
+
             <div class="form-group">
                 <label for="i_captcha_registration">{{ Str::ucfirst(mb_strtolower(__(':name form', ['name' => __('Registration')]))) }}</label>
                 <select name="captcha_registration" id="i_captcha_registration" class="custom-select">
