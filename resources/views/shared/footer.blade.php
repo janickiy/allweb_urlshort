@@ -47,9 +47,9 @@
                 <div class="text-muted py-1">{{ __('© :year :name.', ['year' => now()->year, 'name' => config('settings.title')]) }} {{ __('All rights reserved.') }}</div>
             </div>
             <div class="col-12 col-lg-auto order-1 order-lg-2">
-                @include('shared.dark_mode')
 
                 @include('shared.language')
+
             </div>
         </div>
     </div>

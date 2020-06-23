@@ -44,18 +44,36 @@ Route::get('/developers', 'DevelopersController@index')->name('developers');
 // User Routes
 Route::get('/dashboard', 'DashboardController@index')->middleware('verified')->name('dashboard');
 
-Route::get('/links', 'LinksController@index')->middleware('verified')->name('links');
-Route::get('/links/edit/{id}', 'LinksController@linksEdit')->middleware('verified')->name('links.edit');
+// links
+Route::prefix('links')->group(function () {
+    Route::get('', 'LinksController@index')->middleware('verified')->name('links');
+    Route::get('edit/{id}', 'LinksController@linksEdit')->middleware('verified')->name('links.edit');
+    Route::post('edit/{id}', 'LinksController@updateLink');
+    Route::post('new', 'LinksController@createLink')->name('links.new');
+    Route::post('delete/{id}', 'LinksController@deleteLink')->name('links.delete');
+});
 
-Route::get('/spaces', 'SpacesController@index')->middleware('verified')->name('spaces');
-Route::get('/spaces/new', 'SpacesController@spacesNew')->middleware('verified')->name('spaces.new');
-Route::get('/spaces/edit/{id}', 'SpacesController@spacesEdit')->middleware('verified')->name('spaces.edit');
+// spaces
+Route::prefix('spaces')->group(function () {
+    Route::get('', 'SpacesController@index')->middleware('verified')->name('spaces');
+    Route::get('new', 'SpacesController@spacesNew')->middleware('verified')->name('spaces.new');
+    Route::post('new', 'SpacesController@createSpace');
+    Route::get('edit/{id}', 'SpacesController@spacesEdit')->middleware('verified')->name('spaces.edit');
+    Route::post('edit/{id}', 'SpacesController@updateSpace');
+    Route::post('delete/{id}', 'SpacesController@deleteSpace')->name('spaces.delete');
+});
 
-Route::get('/domains', 'DomainsController@index')->middleware('verified')->name('domains');
-Route::get('/domains/new', 'DomainsController@domainsNew')->middleware('verified')->name('domains.new');
-Route::get('/domains/edit/{id}', 'DomainsController@domainsEdit')->middleware('verified')->name('domains.edit');
+// domains
+Route::prefix('domains')->group(function () {
+    Route::get('', 'DomainsController@index')->middleware('verified')->name('domains');
+    Route::get('new', 'DomainsController@domainsNew')->middleware('verified')->name('domains.new');
+    Route::post('new', 'DomainsController@createDomain');
+    Route::get('edit/{id}', 'DomainsController@domainsEdit')->middleware('verified')->name('domains.edit');
+    Route::post('edit/{id}', 'DomainsController@updateDomain');
+    Route::post('delete/{id}', 'DomainsController@deleteDomain')->name('domains.delete');
+});
 
-
+// stats
 Route::prefix('stats')->group(function () {
     Route::get('{id}', 'StatsController@index')->name('stats');
     Route::get('{id}/geographic', 'StatsController@geographic')->name('stats.geographic');
@@ -65,30 +83,13 @@ Route::prefix('stats')->group(function () {
     Route::get('{id}/languages', 'StatsController@languages')->name('stats.languages');
     Route::get('{id}/sources', 'StatsController@sources')->name('stats.sources');
     Route::get('{id}/social', 'StatsController@social')->name('stats.social');
-
 });
-
-
-
-
 
 
 Route::get('/qr/{id}', 'QRController@index')->name('qr');
 
-Route::post('/links/new', 'LinksController@createLink')->name('links.new');
-Route::post('/links/edit/{id}', 'LinksController@updateLink');
-Route::post('/links/delete/{id}', 'LinksController@deleteLink')->name('links.delete');
 
-
-
-Route::post('/spaces/new', 'SpacesController@createSpace');
-Route::post('/spaces/edit/{id}', 'SpacesController@updateSpace');
-Route::post('/spaces/delete/{id}', 'SpacesController@deleteSpace')->name('spaces.delete');
-
-Route::post('/domains/new', 'DomainsController@createDomain');
-Route::post('/domains/edit/{id}', 'DomainsController@updateDomain');
-Route::post('/domains/delete/{id}', 'DomainsController@deleteDomain')->name('domains.delete');
-
+// settings
 Route::prefix('settings')->middleware('verified')->group(function () {
     Route::get('/', 'SettingsController@index')->name('settings');
 
@@ -97,30 +98,37 @@ Route::prefix('settings')->middleware('verified')->group(function () {
     Route::get('api', 'SettingsController@api')->name('settings.api');
     Route::get('delete', 'SettingsController@delete')->name('settings.delete');
 
-    Route::get('payments/methods', 'SettingsController@paymentMethods')->middleware('payment')->name('settings.payments.methods');
-    Route::get('payments/methods/new', 'SettingsController@paymentMethodsNew')->middleware('payment')->name('settings.payments.methods.new');
-    Route::get('payments/methods/edit/{id}', 'SettingsController@paymentMethodsEdit')->middleware('payment')->name('settings.payments.methods.edit');
+    // payments
+    Route::prefix('payments')->group(function () {
+        Route::get('methods', 'SettingsController@paymentMethods')->middleware('payment')->name('settings.payments.methods');
+        Route::get('methods/new', 'SettingsController@paymentMethodsNew')->middleware('payment')->name('settings.payments.methods.new');
+        Route::get('methods/edit/{id}', 'SettingsController@paymentMethodsEdit')->middleware('payment')->name('settings.payments.methods.edit');
 
-    Route::get('payments/subscriptions', 'SettingsController@subscriptions')->middleware('payment')->name('settings.payments.subscriptions');
-    Route::get('payments/subscriptions/edit/{id}', 'SettingsController@subscriptionsEdit')->middleware('payment')->name('settings.payments.subscriptions.edit');
+        Route::get('subscriptions', 'SettingsController@subscriptions')->middleware('payment')->name('settings.payments.subscriptions');
+        Route::get('subscriptions/edit/{id}', 'SettingsController@subscriptionsEdit')->middleware('payment')->name('settings.payments.subscriptions.edit');
 
-    Route::get('payments/invoices', 'SettingsController@invoices')->middleware('payment')->name('settings.payments.invoices');
-    Route::get('payments/invoice/{invoice}', 'SettingsController@invoice')->middleware('payment')->name('settings.payments.invoice');
+        Route::get('invoices', 'SettingsController@invoices')->middleware('payment')->name('settings.payments.invoices');
+        Route::get('invoice/{invoice}', 'SettingsController@invoice')->middleware('payment')->name('settings.payments.invoice');
 
-    Route::get('payments/billing', 'SettingsController@billing')->middleware('payment')->name('settings.payments.billing');
+        Route::get('billing', 'SettingsController@billing')->middleware('payment')->name('settings.payments.billing');
+
+        Route::post('methods/new', 'SettingsController@createPaymentMethod')->middleware('payment');
+        Route::post('methods/edit/{id}', 'SettingsController@updatePaymentMethod')->middleware('payment');
+        Route::post('methods/delete/{id}', 'SettingsController@deletePaymentMethod')->middleware('payment')->name('settings.payments.methods.delete');
+
+        Route::post('subscriptions/cancel/{subscription}', 'SettingsController@cancelSubscription')->middleware('payment')->name('settings.payments.subscriptions.cancel');
+        Route::post('subscriptions/resume/{subscription}', 'SettingsController@resumeSubscription')->middleware('payment')->name('settings.payments.subscriptions.resume');
+
+        Route::post('billing', 'SettingsController@updateBilling')->middleware('payment');
+
+    });
+
 
     Route::post('account', 'SettingsController@updateAccount')->name('settings.account.update');
     Route::post('security', 'SettingsController@updateSecurity')->name('settings.security.update');
     Route::post('delete', 'SettingsController@deleteAccount')->name('settings.account.delete');
 
-    Route::post('payments/methods/new', 'SettingsController@createPaymentMethod')->middleware('payment');
-    Route::post('payments/methods/edit/{id}', 'SettingsController@updatePaymentMethod')->middleware('payment');
-    Route::post('payments/methods/delete/{id}', 'SettingsController@deletePaymentMethod')->middleware('payment')->name('settings.payments.methods.delete');
 
-    Route::post('payments/subscriptions/cancel/{subscription}', 'SettingsController@cancelSubscription')->middleware('payment')->name('settings.payments.subscriptions.cancel');
-    Route::post('payments/subscriptions/resume/{subscription}', 'SettingsController@resumeSubscription')->middleware('payment')->name('settings.payments.subscriptions.resume');
-
-    Route::post('payments/billing', 'SettingsController@updateBilling')->middleware('payment');
 
     Route::post('api', 'SettingsController@updateApi')->name('settings.api.update');
 });
@@ -130,8 +138,6 @@ Route::prefix('admin')->group(function () {
     Route::redirect('/', 'admin/dashboard');
 
     Route::get('/dashboard', 'AdminController@dashboard')->name('admin.dashboard');
-
-
 
     // settings
     Route::prefix('settings')->group(function () {
@@ -197,6 +203,10 @@ Route::prefix('admin')->group(function () {
         Route::prefix('shortener')->group(function () {
             Route::get('', 'AdminController@settingsShortener')->name('admin.settings.shortener');
             Route::post('update', 'AdminController@updateSettingsShortener')->name('admin.settings.shortener.update');
+        });
+
+        Route::group(['prefix' => 'datatable'], function () {
+            Route::any('templates', 'DataTableController@getTemplates')->name('admin.datatable.templates');
         });
 
     });
@@ -273,7 +283,6 @@ Route::prefix('admin')->group(function () {
         Route::get('edit/{id}', 'AdminController@subscriptionsEdit')->name('admin.subscriptions.edit');
         Route::post('delete/{id}', 'AdminController@deleteSubscription')->name('admin.subscriptions.delete');
     });
-
 
 });
 
