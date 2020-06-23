@@ -19,10 +19,14 @@
         "laravel/cashier": "^11.0",
         "laravel/framework": "6.*",
         "laravel/tinker": "^1.0",
+        "laravelcollective/html": "^6.1",
+        "laravelcollective/remote": "^6.1",
         "rachidlaasri/laravel-installer": "4.0.4",
         "simplesoftwareio/simple-qrcode": "~2",
-        "whichbrowser/parser": "^2.0"
-
+        "whichbrowser/parser": "^2.0",
+        "yajra/laravel-datatables-buttons": "^4.9",
+        "yajra/laravel-datatables-html": "^4.30",
+        "yajra/laravel-datatables-oracle": "^9.10"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
