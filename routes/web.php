@@ -258,7 +258,7 @@ Route::prefix('admin')->group(function () {
     Route::prefix('plans')->group(function () {
         Route::get('/', 'AdminController@plans')->name('admin.plans');
         Route::get('new', 'AdminController@plansNew')->middleware('payment')->name('admin.plans.new');
-        Route::get('edit/{id}', 'AdminController@plansEdit')->name('admin.plans.edit')->name('admin.plans.edit');
+        Route::get('edit/{id}', 'AdminController@plansEdit')->name('admin.plans.edit');
         Route::post('new', 'AdminController@createPlan')->middleware('payment')->name('admin.plans.create');
         Route::post('edit/{id}', 'AdminController@updatePlan')->name('admin.plans.update');
         Route::post('disable/{id}', 'AdminController@disablePlan')->middleware('payment')->name('admin.plans.disable');
