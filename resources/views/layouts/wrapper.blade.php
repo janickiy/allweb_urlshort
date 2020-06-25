@@ -12,13 +12,8 @@
 
     <link href="{{ url('/') }}/uploads/brand/{{ config('settings.favicon') ?? 'favicon.png' }}" rel="icon">
 
-    {!! Html::style('css/bootstrap.min.css') !!}
-
-    {!! Html::style('css/font-awesome.min.css') !!}
-
 
     <!-- Styles -->
-
 
     <link href="{{ asset('css/app.css') }}" rel="stylesheet" id="app-css">
 
@@ -27,21 +22,13 @@
 
     @yield('css')
 
-    <script type="text/javascript">
-        var SITE_URL = "{{ url('/') }}";
-    </script>
-
 </head>
 
 @yield('body')
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
 <!-- Scripts -->
 <script src="{{ asset('js/app.js') }}" defer></script>
-
 
 
 @yield('js')

@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Link;
-use App\Stat;
+use App\{Link,Stat};
 use App\Traits\UserFeaturesTrait;
 use App\User;
 use Carbon\Carbon;

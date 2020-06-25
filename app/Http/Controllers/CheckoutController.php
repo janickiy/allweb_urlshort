@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateBillingRequest;
-use App\Http\Requests\updatePaymentDetails;
 use App\Plan;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +14,6 @@ use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Exceptions\IncompletePayment;
 use Laravel\Cashier\Http\Controllers\PaymentController as CashierPaymentController;
 use Laravel\Cashier\Payment;
-use Stripe;
 use Stripe\PaymentIntent as StripePaymentIntent;
 
 class CheckoutController extends CashierPaymentController

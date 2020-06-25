@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain;
 use App\Http\Requests\CreateLinkRequest;
-use App\Link;
-use App\Plan;
-use App\Stat;
+use App\{Link,Plan,Stat};
 use App\Traits\LinkTrait;
 use App\User;
 use Illuminate\Http\Request;

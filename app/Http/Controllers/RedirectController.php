@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain;
-use App\Link;
+use App\{Domain,Link,Stat};
 use App\Rules\ValidateLinkPasswordRule;
-use App\Stat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use GeoIp2\Database\Reader as GeoIP;

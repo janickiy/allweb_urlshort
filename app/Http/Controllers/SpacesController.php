@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\CreateSpaceRequest;
-use App\Http\Requests\UpdateSpaceRequest;
+use App\Http\Requests\{CreateSpaceRequest,UpdateSpaceRequest};
 use App\Space;
 use App\Traits\SpaceTrait;
 use Illuminate\Http\Request;

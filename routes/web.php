@@ -123,12 +123,9 @@ Route::prefix('settings')->middleware('verified')->group(function () {
 
     });
 
-
     Route::post('account', 'SettingsController@updateAccount')->name('settings.account.update');
     Route::post('security', 'SettingsController@updateSecurity')->name('settings.security.update');
     Route::post('delete', 'SettingsController@deleteAccount')->name('settings.account.delete');
-
-
 
     Route::post('api', 'SettingsController@updateApi')->name('settings.api.update');
 });
@@ -190,25 +187,23 @@ Route::prefix('admin')->group(function () {
             Route::post('update', 'AdminController@updateSettingsContact')->name('admin.settings.contact.update');
         });
 
+        // legal
         Route::prefix('legal')->group(function () {
             Route::get('', 'AdminController@settingsLegal')->name('admin.settings.legal');
             Route::post('update', 'AdminController@updateSettingsLegal')->name('admin.settings.legal.update');
         });
 
+        // captcha
         Route::prefix('captcha')->group(function () {
             Route::get('', 'AdminController@settingsCaptcha')->name('admin.settings.captcha');
             Route::post('update', 'AdminController@updateSettingsCaptcha')->name('admin.settings.captcha.update');
         });
 
+        // shortener
         Route::prefix('shortener')->group(function () {
             Route::get('', 'AdminController@settingsShortener')->name('admin.settings.shortener');
             Route::post('update', 'AdminController@updateSettingsShortener')->name('admin.settings.shortener.update');
         });
-
-        Route::group(['prefix' => 'datatable'], function () {
-            Route::any('templates', 'DataTableController@getTemplates')->name('admin.datatable.templates');
-        });
-
     });
 
     // languages
@@ -265,6 +260,7 @@ Route::prefix('admin')->group(function () {
         Route::post('delete/{id}', 'AdminController@deletePage')->name('admin.pages.delete');
     });
 
+    //plans
     Route::prefix('plans')->group(function () {
         Route::get('/', 'AdminController@plans')->name('admin.plans');
         Route::get('new', 'AdminController@plansNew')->middleware('payment')->name('admin.plans.new');

@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DeleteUserAccountRequest;
-use App\Http\Requests\UpdateBillingRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Http\Requests\UpdateUserSecurityRequest;
-use App\Plan;
-use App\Subscription;
+use App\Http\Requests\{
+    DeleteUserAccountRequest,
+    UpdateBillingRequest,
+    UpdateUserRequest,
+    UpdateUserSecurityRequest
+};
+use App\{Plan,Subscription,};
 use App\Traits\UserTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Cashier\Invoice;
-use Laravel\Cashier\PaymentMethod;
-use Stripe;
 
 class SettingsController extends Controller
 {

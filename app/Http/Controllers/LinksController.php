@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain;
-use App\Http\Requests\CreateLinkRequest;
-use App\Http\Requests\UpdateLinkRequest;
+use App\Http\Requests\{CreateLinkRequest,UpdateLinkRequest};
 use App\Link;
 use App\Space;
 use App\Traits\LinkTrait;

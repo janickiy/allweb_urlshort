@@ -2,34 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain;
-use App\Http\Requests\CreateLanguageRequest;
-use App\Http\Requests\CreatePageRequest;
-use App\Http\Requests\CreatePlanRequest;
-use App\Http\Requests\CreateSubscriptionRequest;
-use App\Http\Requests\UpdateDomainRequest;
-use App\Http\Requests\UpdateSettingsGeneralRequest;
-use App\Http\Requests\UpdateLinkRequest;
-use App\Http\Requests\UpdateSettingsAppearanceRequest;
-use App\Http\Requests\UpdatePageRequest;
-use App\Http\Requests\UpdatePlanRequest;
-use App\Http\Requests\UpdateSettingsPaymentRequest;
-use App\Http\Requests\UpdateSpaceRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Language;
-use App\Link;
-use App\Page;
-use App\Plan;
-use App\Setting;
-use App\Space;
-use App\Subscription;
-use App\Traits\DomainTrait;
-use App\Traits\LinkTrait;
-use App\Traits\SpaceTrait;
-use App\Traits\UserFeaturesTrait;
-use App\Traits\UserTrait;
-use App\User;
-use GuzzleHttp\Client;
+use App\Http\Requests\{
+    CreateLanguageRequest,
+    CreatePageRequest,
+    CreatePlanRequest,
+    CreateSubscriptionRequest,
+    UpdateDomainRequest,
+    UpdateSettingsGeneralRequest,
+    UpdateLinkRequest,
+    UpdateSettingsAppearanceRequest,
+    UpdatePageRequest,
+    UpdatePlanRequest,
+    UpdateSettingsPaymentRequest,
+    UpdateSpaceRequest,
+    UpdateUserRequest
+};
+use App\{Language, Link, Page, Plan, Setting, Space, Subscription, User, Domain};
+use App\Traits\{DomainTrait, LinkTrait, SpaceTrait, UserFeaturesTrait, UserTrait};
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;

@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain;
 use App\Link;
 use App\Plan;
-use App\Space;
 use App\Stat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
