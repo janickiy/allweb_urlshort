@@ -29,7 +29,7 @@ class VerificationController extends Controller
     protected $redirectTo = '/';
 
     /**
-     * Create a new controller instance.
+     * Apply authentication, signature, and throttle middleware to verification actions.
      *
      * @return void
      */

@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Domain;
+use App\Models\Link;
+use App\Models\Space;
+use App\Policies\DomainPolicy;
+use App\Policies\LinkPolicy;
+use App\Policies\SpacePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -13,7 +19,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        // 'App\Model' => 'App\Policies\ModelPolicy',
+        Domain::class => DomainPolicy::class,
+        Link::class => LinkPolicy::class,
+        Space::class => SpacePolicy::class,
     ];
 
     /**
@@ -21,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerPolicies();
 

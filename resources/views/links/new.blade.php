@@ -55,7 +55,7 @@
                                         <label for="i_domain_new">{{ __('Domain') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('domains', ['App\Link', $userFeatures['option_domains']])
+                                        @cannot('domains', ['App\Models\Link', $userFeatures['option_domains']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -66,7 +66,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.domain', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="domain" id="i_domain_new" class="custom-select{{ $errors->has('domain') ? ' is-invalid' : '' }}" @cannot('domains', ['App\Link', $userFeatures['option_domains']]) disabled @endcan>
+                                    <select name="domain" id="i_domain_new" class="custom-select{{ $errors->has('domain') ? ' is-invalid' : '' }}" @cannot('domains', ['App\Models\Link', $userFeatures['option_domains']]) disabled @endcan>
                                         <option value="">{{ __('None') }}</option>
                                         @foreach($domains as $domain)
                                             <option value="{{ $domain->id }}" @if(old('domain') == $domain->id) selected @endif>{{ str_replace(['http://', 'https://'], '', $domain->name) }}</option>
@@ -105,7 +105,7 @@
                                         <label for="i_space_new">{{ __('Space') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('spaces', ['App\Link', $userFeatures['option_spaces']])
+                                        @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -116,7 +116,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.space', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="space" id="i_space_new" class="custom-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Link', $userFeatures['option_spaces']]) disabled @endcan>
+                                    <select name="space" id="i_space_new" class="custom-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']]) disabled @endcan>
                                         <option value="">{{ __('None') }}</option>
                                         @foreach($spaces as $space)
                                             <option value="{{ $space->id }}" @if(old('space') == $space->id) selected @endif>{{ $space->name }}</option>
@@ -138,7 +138,7 @@
                                         <label for="i_password">{{ __('Password') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('password', ['App\Link', $userFeatures['option_password']])
+                                        @cannot('password', ['App\Models\Link', $userFeatures['option_password']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -149,7 +149,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.security', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <input type="password" name="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="i_password" value="{{ old('password') }}" autocomplete="new-password" @cannot('password', ['App\Link', $userFeatures['option_password']]) disabled @endcan>
+                                    <input type="password" name="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" id="i_password" value="{{ old('password') }}" autocomplete="new-password" @cannot('password', ['App\Models\Link', $userFeatures['option_password']]) disabled @endcan>
                                 </div>
                                 @if ($errors->has('password'))
                                     <span class="invalid-feedback d-block" role="alert">
@@ -166,7 +166,7 @@
                                         <label for="i_expiration_date">{{ __('Expiration date') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('expiration', ['App\Link', $userFeatures['option_expiration']])
+                                        @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -177,8 +177,8 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.calendar', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <input type="date" name="expiration_date" class="form-control{{ $errors->has('expiration_date') ? ' is-invalid' : '' }}" id="i_expiration_date" placeholder="YYYY-MM-DD" value="{{ old('expiration_date') }}" @cannot('expiration', ['App\Link', $userFeatures['option_expiration']]) disabled @endcan>
-                                    <input type="time" name="expiration_time" class="form-control{{ $errors->has('expiration_time') ? ' is-invalid' : '' }}" placeholder="HH:MM" value="{{ old('expiration_time') }}" @cannot('expiration', ['App\Link', $userFeatures['option_expiration']]) disabled @endcan>
+                                    <input type="date" name="expiration_date" class="form-control{{ $errors->has('expiration_date') ? ' is-invalid' : '' }}" id="i_expiration_date" placeholder="YYYY-MM-DD" value="{{ old('expiration_date') }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']]) disabled @endcan>
+                                    <input type="time" name="expiration_time" class="form-control{{ $errors->has('expiration_time') ? ' is-invalid' : '' }}" placeholder="HH:MM" value="{{ old('expiration_time') }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']]) disabled @endcan>
                                     <div class="input-group-append">
                                         <div class="input-group-text">@include('icons.expire', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
@@ -209,7 +209,7 @@
                                         <label for="i_expiration_url">{{ __('Expiration link') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('expiration', ['App\Link', $userFeatures['option_expiration']])
+                                        @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -220,7 +220,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <input type="text" name="expiration_url" id="i_expiration_url" class="form-control{{ $errors->has('expiration_url') ? ' is-invalid' : '' }}" autocapitalize="none" spellcheck="false" value="{{ old('expiration_url') }}" @cannot('expiration', ['App\Link', $userFeatures['option_expiration']]) disabled @endcan>
+                                    <input type="text" name="expiration_url" id="i_expiration_url" class="form-control{{ $errors->has('expiration_url') ? ' is-invalid' : '' }}" autocapitalize="none" spellcheck="false" value="{{ old('expiration_url') }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']]) disabled @endcan>
                                 </div>
                                 @if ($errors->has('expiration_url'))
                                     <span class="invalid-feedback d-block" role="alert">
@@ -237,7 +237,7 @@
                                         <label for="i_public">{{ __('Stats') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('stats', ['App\Link', $userFeatures['option_stats']])
+                                        @cannot('stats', ['App\Models\Link', $userFeatures['option_stats']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -248,7 +248,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.stats', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="public" id="i_public" class="custom-select{{ $errors->has('public') ? ' is-invalid' : '' }}" @cannot('expiration', ['App\Link', $userFeatures['option_stats']]) disabled @endcan>
+                                    <select name="public" id="i_public" class="custom-select{{ $errors->has('public') ? ' is-invalid' : '' }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_stats']]) disabled @endcan>
                                         @foreach([0 => __('Private'), 1 => __('Public')] as $key => $value)
                                             <option value="{{ $key }}" @if (old('public') !== null && old('public') == $key) selected @endif>{{ $value }}</option>
                                         @endforeach
@@ -269,7 +269,7 @@
                                         <label for="i_disabled">{{ __('Disabled') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('disabled', ['App\Link', $userFeatures['option_disabled']])
+                                        @cannot('disabled', ['App\Models\Link', $userFeatures['option_disabled']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -280,7 +280,7 @@
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.block', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="disabled" id="i_disabled" class="custom-select{{ $errors->has('disabled') ? ' is-invalid' : '' }}" @cannot('disabled', ['App\Link', $userFeatures['option_disabled']]) disabled @endcan>
+                                    <select name="disabled" id="i_disabled" class="custom-select{{ $errors->has('disabled') ? ' is-invalid' : '' }}" @cannot('disabled', ['App\Models\Link', $userFeatures['option_disabled']]) disabled @endcan>
                                         @foreach([0 => __('No'), 1 => __('Yes')] as $key => $value)
                                             <option value="{{ $key }}" @if (old('disabled') !== null && old('disabled') == $key) selected @endif>{{ $value }}</option>
                                         @endforeach
@@ -385,7 +385,7 @@
                                         @endforeach
                                     @endif
                                 </div>
-                                @can('geo', ['App\Link', $userFeatures['option_geo']])
+                                @can('geo', ['App\Models\Link', $userFeatures['option_geo']])
                                     <button type="button" class="btn btn-outline-primary input-add d-inline-flex align-items-center">@include('icons.add', ['class' => 'icon-button fill-current'])&#8203;</button>
                                 @else
                                     @if(config('settings.stripe'))
@@ -486,7 +486,7 @@
                                         @endforeach
                                     @endif
                                 </div>
-                                @can('platform', ['App\Link', $userFeatures['option_platform']])
+                                @can('platform', ['App\Models\Link', $userFeatures['option_platform']])
                                     <button type="button" class="btn btn-outline-primary input-add d-inline-flex align-items-center">@include('icons.add', ['class' => 'icon-button fill-current'])&#8203;</button>
                                 @else
                                     @if(config('settings.stripe'))

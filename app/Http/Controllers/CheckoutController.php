@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateBillingRequest;
-use App\Plan;
+use App\Http\Requests\SettingsController\UpdateBillingRequest;
+use App\Services\CheckoutService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Laravel\Cashier\Cashier;
-use Laravel\Cashier\Exceptions\IncompletePayment;
 use Laravel\Cashier\Http\Controllers\PaymentController as CashierPaymentController;
 use Laravel\Cashier\Payment;
 use Stripe\PaymentIntent as StripePaymentIntent;
@@ -19,17 +18,24 @@ use Stripe\PaymentIntent as StripePaymentIntent;
 class CheckoutController extends CashierPaymentController
 {
     /**
-     * Display the checkout form.
+     * Inject checkout services used by payment flow actions.
+     */
+    public function __construct(private readonly CheckoutService $checkout)
+    {
+    }
+
+    /**
+     * Display the checkout form for the selected paid plan and billing period.
      *
      * @param $id
      * @param $period
      * @return Factory|RedirectResponse|View
      */
-    public function index($id, $period)
+    public function index(mixed $id, mixed $period): mixed
     {
         Session::forget('redirect');
 
-        $plan = Plan::where([['id', '=', $id], ['amount_month', '>', 0], ['amount_year', '>', 0]])->firstOrFail();
+        $plan = $this->checkout->paidPlan($id);
         $user = Auth::user();
 
         // If the user is already subscribed to the selected plan
@@ -37,42 +43,31 @@ class CheckoutController extends CashierPaymentController
             return redirect()->route('pricing');
         }
 
-        $subscription = $user->subscription($plan->name);
-
-        // If the user has an incomplete payment
-        if ($subscription && $subscription->hasIncompletePayment()) {
+        if ($paymentId = $this->checkout->incompletePaymentId($user, $plan)) {
             // Redirect the user to confirm his payment
-            return redirect()->route('checkout.confirm', $subscription->latestPayment()->id);
+            return redirect()->route('checkout.confirm', $paymentId);
         }
 
         $redirect = ['redirect' => ['id' => $id]];
 
         try {
-            $paymentMethod = $user->defaultPaymentMethod();
-
-            if (!$paymentMethod) {
-                Session::put($redirect);
-                return redirect()->route('checkout.collect', ['period' => $period]);
-            }
-
-            \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            $customer = \Stripe\Customer::retrieve($user->stripe_id);
+            $data = $this->checkout->checkoutData($user);
         } catch (\Exception $e) {
             Session::put($redirect);
             return redirect()->route('checkout.collect', ['period' => $period]);
         }
 
-        return view('checkout.index', ['plan' => $plan, 'user' => $user, 'customer' => $customer, 'paymentMethod' => $paymentMethod]);
+        return view('checkout.index', array_merge(['plan' => $plan, 'user' => $user], $data));
     }
 
     /**
-     * Display the Payment Details form.
+     * Display the payment details form before returning to checkout.
      *
      * @param Request $request
      * @param $period
      * @return Factory|RedirectResponse|View
      */
-    public function collect(Request $request, $period)
+    public function collect(Request $request, mixed $period): mixed
     {
         $user = Auth::user();
 
@@ -82,27 +77,24 @@ class CheckoutController extends CashierPaymentController
             return redirect()->route('pricing');
         }
 
-        $plan = $plan = Plan::where([['id', '=', $redirect['id']], ['amount_month', '>', 0], ['amount_year', '>', 0]])->firstOrFail();
+        $plan = $this->checkout->paidPlan($redirect['id']);
 
         try {
-            \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            $customer = \Stripe\Customer::retrieve($user->stripe_id);
-
-            $intent = $user->createSetupIntent();
+            $data = $this->checkout->collectData($user);
         } catch (\Exception $e) {
             return redirect()->route('pricing')->with('error', $e->getMessage());
         }
 
-        return view('checkout.collect', ['user' => $user, 'intent' => $intent, 'customer' => $customer, 'plan' => $plan]);
+        return view('checkout.collect', array_merge(['user' => $user, 'plan' => $plan], $data));
     }
 
     /**
-     * Display the form to gather additional payment verification for the given payment.
+     * Display the payment confirmation form for an incomplete payment intent.
      *
      * @param string $id
      * @return Factory|View
      */
-    public function show($id)
+    public function show(mixed $id): mixed
     {
         try {
             $payment = new Payment(
@@ -128,34 +120,36 @@ class CheckoutController extends CashierPaymentController
     }
 
     /**
-     * Display the Payment complete page.
+     * Display the checkout completion page after payment succeeds.
      *
      * @return Factory|View
      */
-    public function complete()
+    public function complete(): mixed
     {
         return view('checkout.complete');
     }
 
     /**
-     * Display the Payment cancelled page.
+     * Display the checkout cancellation page after payment is canceled.
      *
      * @return Factory|View
      */
-    public function cancelled()
+    public function cancelled(): mixed
     {
         return view('checkout.cancelled');
     }
 
     /**
+     * Create or continue a subscription checkout for the selected plan.
+     *
      * @param Request $request
      * @param $id
      * @param $period
      * @return RedirectResponse
      */
-    public function subscribe(Request $request, $id, $period)
+    public function subscribe(Request $request, mixed $id, mixed $period): mixed
     {
-        $plan = Plan::where([['id', '=', $id], ['amount_month', '>', 0], ['amount_year', '>', 0]])->firstOrFail();
+        $plan = $this->checkout->paidPlan($id);
         $user = Auth::user();
 
         try {
@@ -164,59 +158,29 @@ class CheckoutController extends CashierPaymentController
                 return redirect()->route('pricing');
             }
 
-            $paymentMethod = $user->defaultPaymentMethod();
-
-            if ($period == 'yearly') {
-                $selectedPlan = $plan->plan_year;
-            } else {
-                $selectedPlan = $plan->plan_month;
-            }
-
-            if ($plan->trial_days) {
-                $user->newSubscription($plan->name, $selectedPlan)->trialDays($plan->trial_days)->create($paymentMethod->id, [
-                    'email' => $user->email
-                ]);
-            } else {
-                $user->newSubscription($plan->name, $selectedPlan)->create($paymentMethod->id, [
-                    'email' => $user->email
-                ]);
+            if ($paymentId = $this->checkout->subscribe($user, $plan, $period)) {
+                return redirect()->route('checkout.confirm', $paymentId);
             }
 
             return redirect()->route('checkout.complete');
-        } catch (IncompletePayment $exception) {
-            return redirect()->route('checkout.confirm', $exception->payment->id);
         } catch (\Exception $e) {
             return redirect()->route('checkout.index', ['id' => $id, 'period' => $period])->with('error', $e->getMessage());
         }
     }
 
     /**
+     * Update customer payment details and return to checkout.
+     *
      * @param UpdateBillingRequest $request
      * @param $period
      * @return RedirectResponse
      */
-    public function updatePaymentDetails(UpdateBillingRequest $request, $period)
+    public function updatePaymentDetails(UpdateBillingRequest $request, mixed $period): mixed
     {
         $user = Auth::user();
 
         try {
-            $user->addPaymentMethod($request->input('payment_method'));
-
-            // If the user marked his payment method as default, or if there's no default payment
-            $user->updateDefaultPaymentMethod($request->input('payment_method'));
-
-            \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            \Stripe\Customer::update($user->stripe_id, [
-                'address' => [
-                    'city' => $request->input('city'),
-                    'country' => $request->input('country'),
-                    'line1' => $request->input('address'),
-                    'postal_code' => $request->input('postal_code'),
-                    'state' => $request->input('state'),
-                ],
-                'name' => $request->input('name'),
-                'phone' => $request->input('phone')
-            ]);
+            $this->checkout->updatePaymentDetails($user, $request->all());
         } catch (\Exception $e) {
             return redirect()->route('pricing')->with('error', $e->getMessage());
         }
@@ -228,9 +192,11 @@ class CheckoutController extends CashierPaymentController
     }
 
     /**
+     * Return the dashboard menu metadata used by checkout views.
+     *
      * @return \string[][]
      */
-    private function menu()
+    private function menu(): mixed
     {
         /**
          * key => [icon, title, route]

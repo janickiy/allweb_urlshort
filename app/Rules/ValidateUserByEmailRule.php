@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 
 class ValidateUserByEmailRule implements Rule
@@ -24,7 +24,7 @@ class ValidateUserByEmailRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         if (User::where('email', '=', $value)->exists()) {
             return true;
@@ -38,7 +38,7 @@ class ValidateUserByEmailRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('No user found with this email address.');
     }

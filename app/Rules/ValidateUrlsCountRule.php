@@ -16,7 +16,7 @@ class ValidateUrlsCountRule implements Rule
      *
      * @param int $count
      */
-    public function __construct($count = 10)
+    public function __construct(int $count = 10)
     {
         // Maximum number of URLs to be shortened
         $this->count = $count;
@@ -29,7 +29,7 @@ class ValidateUrlsCountRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         // Count the number of URLs to be shortened
         if (count(preg_split('/\n|\r/', $value, -1, PREG_SPLIT_NO_EMPTY)) > $this->count) {
@@ -44,7 +44,7 @@ class ValidateUrlsCountRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You can\'t shorten more than :count links at once.', ['count' => $this->count]);
     }

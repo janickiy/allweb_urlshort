@@ -23,7 +23,7 @@ class ValidateBadWordsRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $bannedWords = preg_split('/\n|\r/', config('settings.short_bad_words'), -1, PREG_SPLIT_NO_EMPTY);
 
@@ -42,7 +42,7 @@ class ValidateBadWordsRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('The link contains a keyword that is banned.');
     }

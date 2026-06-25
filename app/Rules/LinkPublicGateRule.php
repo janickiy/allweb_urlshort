@@ -13,7 +13,7 @@ class LinkPublicGateRule implements Rule
      *
      * @param $userFeatures
      */
-    public function __construct($userFeatures)
+    public function __construct(mixed $userFeatures)
     {
         $this->userFeatures = $userFeatures;
     }
@@ -25,12 +25,12 @@ class LinkPublicGateRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         //
         $user = request()->user();
 
-        if ($user->can('stats', ['App\Link', $this->userFeatures['option_stats']])) {
+        if ($user->can('stats', ['App\Models\Link', $this->userFeatures['option_stats']])) {
             return true;
         }
 
@@ -42,7 +42,7 @@ class LinkPublicGateRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You don\'t have access to this feature.');
     }

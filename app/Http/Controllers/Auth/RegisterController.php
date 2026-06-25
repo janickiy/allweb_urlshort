@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserRegistrationService;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -32,22 +30,22 @@ class RegisterController extends Controller
     protected $redirectTo = '/dashboard';
 
     /**
-     * Create a new controller instance.
+     * Apply guest middleware and inject user registration services.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(private readonly UserRegistrationService $registrations)
     {
         $this->middleware('guest');
     }
 
     /**
-     * Get a validator for an incoming registration request.
+     * Build the validator used for public user registration input.
      *
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validator(array $data): mixed
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
@@ -59,38 +57,22 @@ class RegisterController extends Controller
     }
 
     /**
-     * Create a new user instance after a valid registration.
+     * Create a public user account after registration validation passes.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return \App\Models\User
      */
-    protected function create(array $data)
+    protected function create(array $data): mixed
     {
-        // If registration is enabled
-        if (config('settings.registration_registration')) {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'locale' => config('app.locale'),
-                'timezone' => config('settings.timezone'),
-                'api_token' => Str::random(60)
-            ]);
-
-            if (!config('settings.registration_verification')) {
-                $user->markEmailAsVerified();
-            }
-
-            return $user;
-        }
+        return $this->registrations->createPublicUser($data);
     }
 
     /**
-     * Show the application registration form.
+     * Display the registration form when public registration is enabled.
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(): mixed
     {
         // If registration is enabled
         if (config('settings.registration_registration')) {

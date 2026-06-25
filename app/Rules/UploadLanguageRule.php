@@ -23,7 +23,7 @@ class UploadLanguageRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         // Read the file's contents
         $uploadedFile = file_get_contents($value);
@@ -42,7 +42,7 @@ class UploadLanguageRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('Invalid language file.');
     }

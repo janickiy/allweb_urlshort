@@ -2,98 +2,111 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{CreateSpaceRequest,UpdateSpaceRequest};
-use App\Space;
-use App\Traits\SpaceTrait;
+use App\Http\Requests\SpacesController\{CreateSpaceRequest, UpdateSpaceRequest};
+use App\Repositories\SpaceRepository;
+use App\Services\SpaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class SpacesController extends Controller
 {
-    use SpaceTrait;
-
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Inject space repository and service dependencies.
      */
-    public function index(Request $request)
-    {
-        $user = Auth::user();
-
-        $search = $request->input('search');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $spaces = Space::where('user_id', $user->id)
-            ->when($search, function ($query) use ($search) {
-                return $query->searchName($search);
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'sort' => $request->input('sort')]);
-
-        return view('spaces.content', ['view' => 'list', 'spaces' => $spaces]);
+    public function __construct(
+        private readonly SpaceRepository $spaces,
+        private readonly SpaceService $spaceService,
+    ) {
     }
 
     /**
+     * Display the authenticated user space list with filters.
+     *
+     * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function spacesNew()
+    public function index(Request $request): mixed
+    {
+        $user = Auth::user();
+
+        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
+
+        return view('spaces.content', [
+            'view' => 'list',
+            'spaces' => $this->spaces->paginateForUser($user->id, $request->input('search'), $sort),
+        ]);
+    }
+
+    /**
+     * Display the form for creating a new space.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function spacesNew(): mixed
     {
         return view('spaces.content', ['view' => 'new']);
     }
 
     /**
+     * Display the edit form for a space owned by the user.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function spacesEdit($id)
+    public function spacesEdit(mixed $id): mixed
     {
         $user = Auth::user();
 
-        $space = Space::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
+        $space = $this->spaces->findForUserOrFail($id, $user->id);
 
         return view('spaces.content', ['view' => 'edit', 'space' => $space]);
     }
 
     /**
+     * Create a space for the authenticated user.
+     *
      * @param CreateSpaceRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createSpace(CreateSpaceRequest $request)
+    public function createSpace(CreateSpaceRequest $request): mixed
     {
-        $this->spaceCreate($request);
+        $this->spaceService->create($request->validated(), Auth::user());
 
         return redirect()->route('spaces')->with('success', __(':name has been created.', ['name' => $request->input('name')]));
     }
 
     /**
+     * Update a space owned by the authenticated user.
+     *
      * @param UpdateSpaceRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSpace(UpdateSpaceRequest $request, $id)
+    public function updateSpace(UpdateSpaceRequest $request, mixed $id): mixed
     {
         $user = Auth::user();
 
-        $space = Space::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
+        $space = $this->spaces->findForUserOrFail($id, $user->id);
 
-        $this->spaceUpdate($request, $space);
+        $this->spaceService->update($space, $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
+     * Delete a space owned by the authenticated user.
+     *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function deleteSpace($id)
+    public function deleteSpace(mixed $id): mixed
     {
         $user = Auth::user();
 
-        $space = Space::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
+        $space = $this->spaces->findForUserOrFail($id, $user->id);
 
-        $space->delete();
+        $this->spaceService->delete($space);
 
         return redirect()->route('spaces')->with('success', __(':name has been deleted.', ['name' => $space->name]));
     }

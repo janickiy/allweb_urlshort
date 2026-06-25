@@ -2,9 +2,10 @@
 
 namespace App\Http\Middleware;
 
-use App\Language;
+use App\Models\Language;
 use Closure;
-use App\Setting;
+use App\Models\Setting;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 
 class SettingsMiddleware
@@ -16,7 +17,7 @@ class SettingsMiddleware
      * @param \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         try {
             // Set the app's default locale

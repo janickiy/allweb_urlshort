@@ -12,7 +12,7 @@ class ViewServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //
     }
@@ -22,7 +22,7 @@ class ViewServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         View::composer('shared.footer', 'App\Http\View\Composers\FooterPagesComposer');
 

@@ -2,154 +2,137 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain;
-use App\Http\Requests\{CreateLinkRequest,UpdateLinkRequest};
-use App\Link;
-use App\Space;
-use App\Traits\LinkTrait;
+use App\Http\Requests\LinksController\{CreateLinkRequest, UpdateLinkRequest};
+use App\Repositories\DomainRepository;
+use App\Repositories\LinkRepository;
+use App\Repositories\SpaceRepository;
+use App\Services\LinkService;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LinksController extends Controller
 {
-    use LinkTrait, UserFeaturesTrait;
+    use UserFeaturesTrait;
 
     /**
+     * Inject link dependencies used by authenticated link actions.
+     */
+    public function __construct(
+        private readonly DomainRepository $domains,
+        private readonly LinkRepository $links,
+        private readonly LinkService $linkService,
+        private readonly SpaceRepository $spaces,
+    ) {
+    }
+
+    /**
+     * Display the authenticated user link list with filters.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index(Request $request)
+    public function index(Request $request): mixed
     {
         $user = Auth::user();
 
-        // Get the user's spaces
-        $spaces = Space::where('user_id', $user->id)->get();
-
-        // Get the user's domains
-        $domains = Domain::where('user_id', $user->id)->get();
-
-        $search = $request->input('search');
-        $space = $request->input('space');
-        $domain = $request->input('domain');
-        $type = $request->input('type');
-        $by = $request->input('by');
-
-        if ($request->input('sort') == 'min') {
-            $sort = ['clicks', 'asc'];
-        } elseif ($request->input('sort') == 'max') {
-            $sort = ['clicks', 'desc'];
-        } elseif ($request->input('sort') == 'asc') {
-            $sort = ['id', 'asc'];
-        } else {
-            $sort = ['id', 'desc'];
-        }
-
-        // If there's no toast notification
         if (session('toast') == false) {
-            // Set the session to a countable object
             session(['toast' => []]);
         }
 
-        $links = Link::where('user_id', $user->id)
-            ->when($domain, function($query) use ($domain) {
-                return $query->searchDomain($domain);
-            })
-            ->when($space, function($query) use ($space) {
-                return $query->searchSpace($space);
-            })
-            ->when($type, function($query) use ($type) {
-                if($type == 1) {
-                    return $query->searchActive();
-                } else {
-                    return $query->searchExpired();
-                }
-            })
-            ->when($search, function($query) use ($search, $by) {
-                if($by == 'url') {
-                    return $query->searchUrl($search);
+        $links = $this->links->paginateForUser($user->id, $request->only([
+            'search',
+            'space',
+            'domain',
+            'type',
+            'by',
+            'sort',
+        ]));
 
-                } elseif ($by == 'alias') {
-                    return $query->searchAlias($search);
-                }
-                return $query->searchTitle($search);
-            })
-            ->orderBy($sort[0], $sort[1])
-            ->paginate(10)
-            ->appends(['search' => $search, 'domain' => $domain, 'space' => $space, 'by' => $by, 'sort' => $request->input('sort')]);
-
-        return view('links.content', ['view' => 'list', 'links' => $links, 'spaces' => $spaces, 'domains' => $domains]);
+        return view('links.content', [
+            'view' => 'list',
+            'links' => $links,
+            'spaces' => $this->spaces->forUser($user->id),
+            'domains' => $this->domains->forUser($user->id),
+        ]);
     }
 
     /**
+     * Display the edit form for a link owned by the user.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function linksEdit($id)
+    public function linksEdit(mixed $id): mixed
     {
         $user = Auth::user();
 
-        // Get the user's spaces
-        $spaces = Space::where('user_id', $user->id)->get();
+        $link = $this->links->findForUserOrFail($id, $user->id);
 
-        // Get the user's domains
-        $domains = Domain::where('user_id', $user->id)->get();
-
-        $link = Link::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
-
-        return view('links.content', ['view' => 'edit', 'domains' => $domains, 'spaces' => $spaces, 'link' => $link]);
+        return view('links.content', [
+            'view' => 'edit',
+            'domains' => $this->domains->forUser($user->id),
+            'spaces' => $this->spaces->forUser($user->id),
+            'link' => $link,
+        ]);
     }
 
     /**
+     * Create one or more links for the authenticated user.
+     *
      * @param CreateLinkRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createLink(CreateLinkRequest $request)
+    public function createLink(CreateLinkRequest $request): mixed
     {
         $user = Auth::user();
 
         if ($request->multi_link) {
+            $created = $this->linkService->createMany($request->all(), $user);
 
-            $links = $this->linksCreate($request);
-
-            return redirect()->back()->with('toast', Link::where('user_id', '=', $user->id)->orderBy('id', 'desc')->limit(count($links))->get());
-        } else {
-            $this->linkCreate($request);
-
-            return redirect()->back()->with('toast', Link::where('user_id', '=', $user->id)->orderBy('id', 'desc')->limit(1)->get());
+            return redirect()->back()->with('toast', $this->linkService->latestForUser($user->id, count($created)));
         }
+
+        $this->linkService->create($request->all(), $user);
+
+        return redirect()->back()->with('toast', $this->linkService->latestForUser($user->id, 1));
     }
 
     /**
+     * Update a link owned by the authenticated user.
+     *
      * @param UpdateLinkRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateLink(UpdateLinkRequest $request, $id)
+    public function updateLink(UpdateLinkRequest $request, mixed $id): mixed
     {
         $user = Auth::user();
 
-        $link = Link::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
+        $link = $this->links->findForUserOrFail($id, $user->id);
 
-        $this->linkUpdate($request, $link);
+        $this->linkService->update($link, $request->all());
 
         return redirect()->route('links.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
+     * Delete a link owned by the authenticated user.
+     *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function deleteLink(Request $request, $id)
+    public function deleteLink(Request $request, mixed $id): mixed
     {
         $user = Auth::user();
 
-        $link = Link::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
+        $link = $this->links->findForUserOrFail($id, $user->id);
+        $name = $this->linkService->displayName($link);
 
-        $link->delete();
+        $this->linkService->delete($link);
 
-        return redirect()->route('links')->with('success', __(':name has been deleted.', ['name' => str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias)))]));
+        return redirect()->route('links')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 }

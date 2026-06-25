@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 
 class InstalledMiddleware
 {
@@ -13,7 +14,7 @@ class InstalledMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         // Check if the app has been installed
         // This prevents doing any SQL queries to the database, before the app has been setup

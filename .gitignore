@@ -1,11 +1,13 @@
 /node_modules
 /public/hot
+/public/build
 /public/storage
 /storage/*.key
 /vendor
 .idea
 .env
 .phpunit.result.cache
+.phpunit.cache
 Homestead.json
 Homestead.yaml
 npm-debug.log

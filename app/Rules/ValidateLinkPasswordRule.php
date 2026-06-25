@@ -18,7 +18,7 @@ class ValidateLinkPasswordRule implements Rule
      * validatePassword constructor.
      * @param Request $request
      */
-    public function __construct(Request $request, $password)
+    public function __construct(Request $request, string $password)
     {
         $this->request = $request;
         $this->password = $password;
@@ -31,7 +31,7 @@ class ValidateLinkPasswordRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         if (Hash::check($this->request->input($attribute), $this->password)) {
             return true;
@@ -45,7 +45,7 @@ class ValidateLinkPasswordRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('The entered password is not correct.');
     }

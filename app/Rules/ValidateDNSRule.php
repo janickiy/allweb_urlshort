@@ -23,7 +23,7 @@ class ValidateDNSRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $value = parse_url($value);
 
@@ -49,7 +49,7 @@ class ValidateDNSRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('The DNS A record does not point to our server, or the DNS did not propagated yet, this can take up to 24 hours.');
     }

@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                @can('utm', ['App\Link', $userFeatures['option_utm']])
+                @can('utm', ['App\Models\Link', $userFeatures['option_utm']])
                 <div class="form-row">
                     <div class="form-group col-12 col-md-6">
                         <label for="utm_source">{{ __('Source') }}</label>

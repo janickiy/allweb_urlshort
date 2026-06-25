@@ -2,8 +2,9 @@
 
 namespace App\Http\Middleware;
 
-use App\Language;
+use App\Models\Language;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -17,7 +18,7 @@ class Locale
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         try {
             // Get all the available languages

@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Traits\UserFeaturesTrait;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class APIGuardMiddleware
@@ -17,13 +18,13 @@ class APIGuardMiddleware
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         $user = Auth::user();
 
         $userFeatures = $this->getFeatures($user);
 
-        if ($user->cannot('api', ['App\Link', $userFeatures['option_api']])) {
+        if ($user->cannot('api', ['App\Models\Link', $userFeatures['option_api']])) {
             return response()->json([
                 'message' => __('You don\'t have access to this feature.'),
                 'status' => 403

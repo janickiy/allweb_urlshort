@@ -23,7 +23,7 @@ class ValidateUrlsRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         // Get the URLs
         $urls = preg_split('/\n|\r/', $value, -1, PREG_SPLIT_NO_EMPTY);
@@ -45,7 +45,7 @@ class ValidateUrlsRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('validation.url');
     }

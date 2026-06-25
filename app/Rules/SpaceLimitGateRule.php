@@ -26,11 +26,11 @@ class SpaceLimitGateRule implements Rule
      * @param  mixed  $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $user = request()->user();
 
-        if ($user->can('create', ['App\Space', $this->getFeatures($user)['option_spaces']])) {
+        if ($user->can('create', ['App\Models\Space', $this->getFeatures($user)['option_spaces']])) {
             return true;
         }
     }
@@ -40,7 +40,7 @@ class SpaceLimitGateRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You created too many spaces.');
     }

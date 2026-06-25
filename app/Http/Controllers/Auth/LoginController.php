@@ -28,7 +28,7 @@ class LoginController extends Controller
     protected $redirectTo = '/dashboard';
 
     /**
-     * Create a new controller instance.
+     * Apply guest middleware to login actions while allowing logout.
      *
      * @return void
      */

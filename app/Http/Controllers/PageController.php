@@ -2,13 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Page;
+use App\Repositories\PageRepository;
 
 class PageController extends Controller
 {
-    public function index($url)
+    /**
+     * Inject page repository used to load static pages.
+     */
+    public function __construct(private readonly PageRepository $pages)
     {
-        $page = Page::where('slug', $url)->firstOrFail();
-        return view('page.page', ['page' => $page]);
+    }
+
+    /**
+     * Display a public static page by slug.
+     */
+    public function index(mixed $url): mixed
+    {
+        return view('page.page', ['page' => $this->pages->findBySlugOrFail($url)]);
     }
 }

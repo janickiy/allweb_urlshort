@@ -2,17 +2,17 @@
 
 namespace App\Observers;
 
-use App\Link;
+use App\Models\Link;
 
 class LinkObserver
 {
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\Link  $link
+     * @param  \App\Models\Link  $link
      * @return void
      */
-    public function deleting(Link $link)
+    public function deleting(Link $link): void
     {
         $link->stats()->delete();
     }

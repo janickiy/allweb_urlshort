@@ -7,12 +7,12 @@ use Laravel\Cashier\Http\Controllers\WebhookController as CashierWebhookControll
 class WebhookController extends CashierWebhookController
 {
     /**
-     * Handle invoice payment succeeded.
+     * Handle a Stripe invoice payment succeeded webhook event.
      *
      * @param  array  $payload
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handleInvoicePaymentSucceeded($payload)
+    public function handleInvoicePaymentSucceeded(mixed $payload): mixed
     {
         // Handle The Event
     }

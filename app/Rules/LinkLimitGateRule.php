@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Link;
+use App\Models\Link;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -28,11 +28,11 @@ class LinkLimitGateRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $user = request()->user();
 
-        if ($user->can('create', ['App\Link', $this->getFeatures($user)['option_links']])) {
+        if ($user->can('create', ['App\Models\Link', $this->getFeatures($user)['option_links']])) {
             return true;
         }
     }
@@ -42,7 +42,7 @@ class LinkLimitGateRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You shortened too many links.');
     }

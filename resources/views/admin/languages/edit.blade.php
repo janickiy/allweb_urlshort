@@ -43,7 +43,7 @@
                             <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
                         </div>
                         <div class="col-auto">
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal" @if($language->default) disabled @endif>{{ __('Delete') }}</button>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" @if($language->default) disabled @endif>{{ __('Delete') }}</button>
                         </div>
                     </div>
                 </form>
@@ -57,7 +57,7 @@
         <div class="modal-content border-0 shadow">
             <div class="modal-header">
                 <h6 class="modal-title" id="exampleModalLabel">{{ __('Delete') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close d-flex align-items-center justify-content-center" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
                 </button>
             </div>
@@ -65,7 +65,7 @@
                 {{ __('Are you sure you want to delete :name?', ['name' => $language->name]) }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ __('Close') }}</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('Close') }}</button>
                 <form action="{{ route('admin.languages.delete', $language->code) }}" method="post" enctype="multipart/form-data">
 
                     @csrf

@@ -23,7 +23,7 @@ class ValidateGeoKeyRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         if (array_key_exists($value, config('countries'))) {
             return true;
@@ -37,7 +37,7 @@ class ValidateGeoKeyRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return 'Invalid country.';
     }

@@ -22,7 +22,7 @@ class ValidatePaymentRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('An Extended license required to enable the payment system.');
     }

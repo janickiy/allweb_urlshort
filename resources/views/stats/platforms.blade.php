@@ -5,7 +5,7 @@
         <div class="font-weight-medium py-1">{{ __('Platforms') }}</div>
     </div>
     <div class="card-body">
-        @if($user->can('stats', ['App\Link', $remoteUserFeatures['option_stats']]))
+        @if($user->can('stats', ['App\Models\Link', $remoteUserFeatures['option_stats']]))
             @if(count($platforms) == 0)
                 {{ __('No data.') }}
             @else

@@ -12,13 +12,13 @@ use RachidLaasri\LaravelInstaller\Events\EnvironmentSaved;
 class EnvironmentController extends \RachidLaasri\LaravelInstaller\Controllers\EnvironmentController
 {
     /**
-     * Processes the newly saved environment configuration (Form Wizard).
+     * Validate installer environment input and persist the generated environment file.
      *
      * @param Request $request
      * @param Redirector $redirect
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function saveWizard(Request $request, Redirector $redirect)
+    public function saveWizard(Request $request, Redirector $redirect): mixed
     {
         $rules = config('installer.environment.form.rules');
         $messages = [
@@ -46,13 +46,12 @@ class EnvironmentController extends \RachidLaasri\LaravelInstaller\Controllers\E
     }
 
     /**
-     * TODO: We can remove this code if PR will be merged: https://github.com/RachidLaasri/LaravelInstaller/pull/162
-     * Validate database connection with user credentials (Form Wizard).
+     * Verify installer database credentials before continuing installation.
      *
      * @param Request $request
      * @return bool
      */
-    private function checkDatabaseConnection(Request $request)
+    private function checkDatabaseConnection(Request $request): mixed
     {
         $connection = $request->input('database_connection');
 

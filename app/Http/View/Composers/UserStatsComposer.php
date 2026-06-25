@@ -4,10 +4,10 @@
 namespace App\Http\View\Composers;
 
 
-use App\Domain;
-use App\Link;
-use App\Page;
-use App\Space;
+use App\Models\Domain;
+use App\Models\Link;
+use App\Models\Page;
+use App\Models\Space;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +22,7 @@ class UserStatsComposer
      * @param  View  $view
      * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
         if (Auth::check()) {
             $user = Auth::user();

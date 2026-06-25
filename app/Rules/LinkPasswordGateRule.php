@@ -13,7 +13,7 @@ class LinkPasswordGateRule implements Rule
      *
      * @param $userFeatures
      */
-    public function __construct($userFeatures)
+    public function __construct(mixed $userFeatures)
     {
         $this->userFeatures = $userFeatures;
     }
@@ -25,12 +25,12 @@ class LinkPasswordGateRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         //
         $user = request()->user();
 
-        if ($user->can('password', ['App\Link', $this->userFeatures['option_password']])) {
+        if ($user->can('password', ['App\Models\Link', $this->userFeatures['option_password']])) {
             return true;
         }
 
@@ -42,7 +42,7 @@ class LinkPasswordGateRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You don\'t have access to this feature.');
     }

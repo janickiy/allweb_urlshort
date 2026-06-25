@@ -28,7 +28,7 @@ class ValidateStripeCredentialsRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         try {
             \Stripe\Stripe::setApiKey($value);
@@ -52,7 +52,7 @@ class ValidateStripeCredentialsRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return $this->message;
     }

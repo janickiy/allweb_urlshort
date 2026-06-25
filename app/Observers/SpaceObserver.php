@@ -2,17 +2,17 @@
 
 namespace App\Observers;
 
-use App\Space;
+use App\Models\Space;
 
 class SpaceObserver
 {
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\Space  $space
+     * @param  \App\Models\Space  $space
      * @return void
      */
-    public function deleting(Space $space)
+    public function deleting(Space $space): void
     {
         // Delete all the related links, it needs to be called in
         // a loop, otherwise the delete() method won't trigger for the targeted model

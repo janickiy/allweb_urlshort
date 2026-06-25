@@ -4,7 +4,7 @@
 namespace App\Http\View\Composers;
 
 
-use App\Page;
+use App\Models\Page;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +19,7 @@ class UserFeaturesComposer
      * @param  View  $view
      * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
         $user = Auth::user();
         $userFeatures = $this->getFeatures($user);

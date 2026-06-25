@@ -11,7 +11,7 @@ class HelpersProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //
         if ($handle = opendir(app_path() . '/Helpers/')) {
@@ -29,7 +29,7 @@ class HelpersProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         //
     }

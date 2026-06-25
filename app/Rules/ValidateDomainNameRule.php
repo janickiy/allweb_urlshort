@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Domain;
+use App\Models\Domain;
 use Illuminate\Contracts\Validation\Rule;
 
 class ValidateDomainNameRule implements Rule
@@ -24,9 +24,11 @@ class ValidateDomainNameRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
-        if (Domain::where('name', '=', str_replace('https://', '', $value))->exists()) {
+        $host = parse_url($value, PHP_URL_HOST) ?: preg_replace('/^https?:\/\//', '', $value);
+
+        if (Domain::whereIn('name', [$host, 'http://'.$host, 'https://'.$host])->exists()) {
             return false;
         }
 
@@ -38,7 +40,7 @@ class ValidateDomainNameRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('This domain is already being used.');
     }

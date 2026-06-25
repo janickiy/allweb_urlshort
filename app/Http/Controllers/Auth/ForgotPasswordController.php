@@ -21,7 +21,7 @@ class ForgotPasswordController extends Controller
     use SendsPasswordResetEmails;
 
     /**
-     * Create a new controller instance.
+     * Apply guest middleware to password reset email actions.
      *
      * @return void
      */

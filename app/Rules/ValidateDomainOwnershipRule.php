@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Domain;
+use App\Models\Domain;
 use Illuminate\Contracts\Validation\Rule;
 
 class ValidateDomainOwnershipRule implements Rule
@@ -17,7 +17,7 @@ class ValidateDomainOwnershipRule implements Rule
      *
      * @param $userId
      */
-    public function __construct($userId)
+    public function __construct(int|string $userId)
     {
         $this->userId = $userId;
     }
@@ -29,7 +29,7 @@ class ValidateDomainOwnershipRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         if (empty($value)) {
             return true;
@@ -47,7 +47,7 @@ class ValidateDomainOwnershipRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('Invalid domain.');
     }

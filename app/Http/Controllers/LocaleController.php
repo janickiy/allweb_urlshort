@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\LocaleService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
 class LocaleController extends Controller
 {
     /**
+     * Inject locale service used to change the active locale.
+     */
+    public function __construct(private readonly LocaleService $locales)
+    {
+    }
+
+    /**
+     * Store the selected locale and redirect back to the previous page.
+     *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function index(Request $request)
+    public function index(Request $request): mixed
     {
-        // Get all the available languages
-        $languages = config('app.locales');
-
-        // Get the selected language
-        $language = $request->input('locale');
-
-        // If the selected language exists
-        if (array_key_exists($language, $languages)) {
-            Cookie::queue(Cookie::make('locale', $language, (60 * 24 * 365 * 10)));
-
-            // Update the user's locale
-            if(Auth::check()) {
-                $user = Auth::user();
-                $user->locale = $language;
-                $user->save();
-            }
-        }
+        $this->locales->select($request->input('locale'));
 
         return redirect()->back();
     }

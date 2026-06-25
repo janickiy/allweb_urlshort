@@ -11,7 +11,7 @@ class CreateSpacesTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function up()
+	public function up(): void
 	{
 		Schema::create('spaces', function(Blueprint $table)
 		{
@@ -28,7 +28,7 @@ class CreateSpacesTable extends Migration
 	 *
 	 * @return void
 	 */
-	public function down()
+	public function down(): void
 	{
 		Schema::drop('spaces');
 	}

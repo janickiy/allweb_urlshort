@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Http\Request;
 
 class Admin
 {
@@ -24,7 +25,7 @@ class Admin
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
         // If the user is a guest, or doesn't have permissions
         if ($this->auth->guest() || $this->auth->user()->role !== 1) {

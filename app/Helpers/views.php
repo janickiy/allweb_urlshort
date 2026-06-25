@@ -7,7 +7,7 @@
  * @param $previous
  * @return array|int
  */
-function calcGrowth($current, $previous)
+function calcGrowth(int|float|null $current, int|float|null $previous): int|float
 {
     if ($previous == 0 || $previous == null || $current == 0) {
         return 0;

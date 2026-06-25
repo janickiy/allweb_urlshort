@@ -4,7 +4,7 @@
 namespace App\Http\View\Composers;
 
 
-use App\Page;
+use App\Models\Page;
 use Illuminate\Contracts\View\View;
 
 class FooterPagesComposer
@@ -15,7 +15,7 @@ class FooterPagesComposer
      * @param  View  $view
      * @return void
      */
-    public function compose(View $view)
+    public function compose(View $view): void
     {
         try {
             $footerPages = Page::where('footer', 1)->get();

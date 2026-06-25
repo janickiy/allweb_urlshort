@@ -13,7 +13,7 @@
     </div>
 
     <div class="card-body">
-        @if($user->can('stats', ['App\Link', $remoteUserFeatures['option_stats']]))
+        @if($user->can('stats', ['App\Models\Link', $remoteUserFeatures['option_stats']]))
             <div id="clicksMap"></div>
             <script src="{{ asset('js/map.js') }}" defer></script>
             <script>
@@ -59,7 +59,7 @@
         <div class="font-weight-medium py-1">{{ __('Countries') }}</div>
     </div>
     <div class="card-body">
-        @if($user->can('stats', ['App\Link', $remoteUserFeatures['option_stats']]))
+        @if($user->can('stats', ['App\Models\Link', $remoteUserFeatures['option_stats']]))
             @if(count($countries) == 0)
                 {{ __('No data.') }}
             @else

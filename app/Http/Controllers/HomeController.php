@@ -2,25 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain;
-use App\Http\Requests\CreateLinkRequest;
-use App\{Link,Plan,Stat};
-use App\Traits\LinkTrait;
-use App\User;
+use App\Http\Requests\LinksController\CreateLinkRequest;
+use App\Services\HomeService;
+use App\Services\LinkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    use LinkTrait;
+    /**
+     * Inject services used by public home and shortening actions.
+     */
+    public function __construct(
+        private readonly HomeService $homeService,
+        private readonly LinkService $linkService,
+    ) {
+    }
 
     /**
-     * Show the application dashboard.
+     * Display the landing page or redirect custom-domain home requests.
      *
      * @param Request $request
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index(Request $request): mixed
     {
         // If the user is logged-in, redirect to dashboard
         if (Auth::check()) {
@@ -31,54 +36,29 @@ class HomeController extends Controller
             return redirect()->to(config('settings.index'), 301);
         }
 
-        // Get the local host
-        $local = parse_url(config('app.url'));
-
-        // Get the request host
-        $remote = $request->getHost();
-
-        $link = null;
-
-        if ($local['host'] != $remote) {
-            // Get the remote domain
-            $domain = Domain::where('name', '=', 'http://' . $remote)->first();
-
-            // If the domain exists
-            if ($domain) {
-                // If the domain has an index page defined
-                if ($domain->index_page) {
-                    return redirect()->to($domain->index_page, 301);
-                }
-            }
+        if ($redirect = $this->homeService->domainIndexRedirect($request)) {
+            return redirect()->to($redirect, 301);
         }
 
-        if (config('settings.stripe')) {
-            $plans = Plan::where('visibility', 1)->get();
-        } else {
-            $plans = null;
-        }
+        $data = $this->homeService->landingData();
 
-        $stats = [
-            'links' => Link::max('id'),
-            'redirects' => Stat::max('id'),
-            'users' => User::max('id')
-        ];
-
-        return view('home.index', ['plans' => $plans, 'stats' => $stats]);
+        return view('home.index', $data);
     }
 
     /**
+     * Create a guest or authenticated short link from public form input.
+     *
      * @param CreateLinkRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createLink(CreateLinkRequest $request)
+    public function createLink(CreateLinkRequest $request): mixed
     {
         if (!config('settings.short_guest')) {
             abort(404);
         }
 
-        $this->linkCreate($request);
+        $this->linkService->create($request->all());
 
-        return redirect()->back()->with('link', Link::where('user_id', '=', 0)->orderBy('id', 'desc')->limit(1)->get());
+        return redirect()->back()->with('link', $this->linkService->latestForUser(0, 1));
     }
 }

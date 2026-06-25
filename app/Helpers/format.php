@@ -6,7 +6,7 @@
  * @param null $value
  * @return string|null
  */
-function formatTitle($value = null)
+function formatTitle(mixed $value = null): mixed
 {
     if (is_array($value)) {
         return implode(" - ", $value);
@@ -22,7 +22,7 @@ function formatTitle($value = null)
  * @param $currency
  * @return string
  */
-function formatMoney($amount, $currency)
+function formatMoney(int|float $amount, string $currency): string
 {
     if (in_array(strtoupper($currency), config('currencies.stripe.zero-decimals'))) {
         return number_format($amount, 0, __('.'), __(','));
@@ -36,7 +36,7 @@ function formatMoney($amount, $currency)
  *
  * @return array
  */
-function formatStripeStatus()
+function formatStripeStatus(): array
 {
     $stripeStates = [
         'emulated' => ['status' => 'dark', 'title' => __('Emulated')],
@@ -57,7 +57,7 @@ function formatStripeStatus()
  *
  * @return array
  */
-function formatSpace()
+function formatSpace(): array
 {
     return [
         1 => 'success',
@@ -75,7 +75,7 @@ function formatSpace()
  * @param $key
  * @return mixed|string
  */
-function formatBrowser($key)
+function formatBrowser(mixed $key): string
 {
     $browser = [
         'Chrome' => 'chrome',
@@ -107,7 +107,7 @@ function formatBrowser($key)
  * @param $key
  * @return mixed|string
  */
-function formatPlatform($key)
+function formatPlatform(mixed $key): string
 {
     $platform = [
         'Windows' => 'windows',
@@ -136,7 +136,7 @@ function formatPlatform($key)
  * @param $key
  * @return mixed|string
  */
-function formatDevice($key)
+function formatDevice(mixed $key): string
 {
     $device = [
         'desktop' => 'desktop',
@@ -160,7 +160,7 @@ function formatDevice($key)
  * @param $key
  * @return string
  */
-function formatCountry($key)
+function formatCountry(mixed $key): string
 {
     if (array_key_exists($key, config('countries'))) {
         return strtolower($key);
@@ -178,7 +178,7 @@ function formatCountry($key)
  * @param string $rating
  * @return string
  */
-function gravatar($email, $size = 80, $default = 'identicon', $rating = 'g')
+function gravatar(string $email, int $size = 80, string $default = 'identicon', string $rating = 'g'): string
 {
     $url = 'https://www.gravatar.com/avatar/';
     $url .= md5(mb_strtolower(trim($email)));

@@ -27,7 +27,7 @@ class ContactMail extends Mailable
      *
      * @return $this
      */
-    public function build()
+    public function build(): self
     {
         return $this->from(request()->input('email'))
             ->subject(formatTitle([request()->input('subject'), config('settings.title')]))

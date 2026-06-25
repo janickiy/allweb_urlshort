@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('site_title', formatTitle([__('Dashboard'), config('settings.title')]))
 
-@section('content')
-<div class="bg-base-1 flex-fill">
+@section('admin_content')
+<div class="bg-base-1">
     @include('admin.dashboard.header')
     <div class="bg-base-1">
         <div class="container py-3 my-3">
@@ -196,7 +196,7 @@
                                                             <a href="{{ route('stats', $link->id) }}">{{ str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias))) }}</a>
 
                                                             <div class="text-dark text-truncate small">
-                                                                <span class="text-secondary cursor-help" data-toggle="tooltip-url" title="{{ $link->url }}">{{ $link->title ?? str_replace(['http://', 'https://'], '', $link->url) }}</span>
+                                                                <span class="text-secondary cursor-help" data-bs-toggle="tooltip-url" title="{{ $link->url }}">{{ $link->title ?? str_replace(['http://', 'https://'], '', $link->url) }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -219,6 +219,4 @@
 </div>
 @include('shared.modals.share_link')
 @include('shared.modals.delete_link')
-
-@include('admin.sidebar')
 @endsection

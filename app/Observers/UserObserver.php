@@ -2,17 +2,17 @@
 
 namespace App\Observers;
 
-use App\User;
+use App\Models\User;
 
 class UserObserver
 {
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return void
      */
-    public function deleting(User $user)
+    public function deleting(User $user): void
     {
         if ($user->isForceDeleting()) {
             $user->domains()->delete();

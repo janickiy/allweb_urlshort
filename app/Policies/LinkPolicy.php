@@ -3,8 +3,8 @@
 namespace App\Policies;
 
 use App\Traits\UserFeaturesTrait;
-use App\User;
-use App\Link;
+use App\Models\User;
+use App\Models\Link;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,10 +15,10 @@ class LinkPolicy
     /**
      * Determine whether the user can view any links.
      *
-     * @param \App\User $user
+     * @param \App\Models\User $user
      * @return mixed
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): mixed
     {
         //
     }
@@ -26,11 +26,11 @@ class LinkPolicy
     /**
      * Determine whether the user can view the link.
      *
-     * @param \App\User $user
-     * @param \App\Link $link
+     * @param \App\Models\User $user
+     * @param \App\Models\Link $link
      * @return mixed
      */
-    public function view(User $user, Link $link)
+    public function view(User $user, Link $link): mixed
     {
         //
     }
@@ -38,11 +38,11 @@ class LinkPolicy
     /**
      * Determine whether the user can create links.
      *
-     * @param \App\User $user
+     * @param \App\Models\User $user
      * @param $limit
      * @return mixed
      */
-    public function create(User $user, $limit)
+    public function create(User $user, mixed $limit): bool
     {
         if ($limit == -1) {
             return true;
@@ -60,11 +60,11 @@ class LinkPolicy
     /**
      * Determine whether the user can update the link.
      *
-     * @param \App\User $user
-     * @param \App\Link $link
+     * @param \App\Models\User $user
+     * @param \App\Models\Link $link
      * @return mixed
      */
-    public function update(User $user, Link $link)
+    public function update(User $user, Link $link): mixed
     {
         //
     }
@@ -72,11 +72,11 @@ class LinkPolicy
     /**
      * Determine whether the user can delete the link.
      *
-     * @param \App\User $user
-     * @param \App\Link $link
+     * @param \App\Models\User $user
+     * @param \App\Models\Link $link
      * @return mixed
      */
-    public function delete(User $user, Link $link)
+    public function delete(User $user, Link $link): mixed
     {
         //
     }
@@ -84,11 +84,11 @@ class LinkPolicy
     /**
      * Determine whether the user can restore the link.
      *
-     * @param \App\User $user
-     * @param \App\Link $link
+     * @param \App\Models\User $user
+     * @param \App\Models\Link $link
      * @return mixed
      */
-    public function restore(User $user, Link $link)
+    public function restore(User $user, Link $link): mixed
     {
         //
     }
@@ -96,11 +96,11 @@ class LinkPolicy
     /**
      * Determine whether the user can permanently delete the link.
      *
-     * @param \App\User $user
-     * @param \App\Link $link
+     * @param \App\Models\User $user
+     * @param \App\Models\Link $link
      * @return mixed
      */
-    public function forceDelete(User $user, Link $link)
+    public function forceDelete(User $user, Link $link): mixed
     {
         //
     }
@@ -110,7 +110,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function domains(User $user, $limit)
+    public function domains(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -124,7 +124,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function spaces(User $user, $limit)
+    public function spaces(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -138,7 +138,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function stats(User $user, $limit)
+    public function stats(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -152,7 +152,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function disabled(User $user, $limit)
+    public function disabled(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -166,7 +166,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function geo(User $user, $limit)
+    public function geo(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -180,7 +180,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function platform(User $user, $limit)
+    public function platform(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -194,7 +194,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function utm(User $user, $limit)
+    public function utm(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -208,7 +208,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function password(User $user, $limit)
+    public function password(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -222,7 +222,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function expiration(User $user, $limit)
+    public function expiration(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;
@@ -236,7 +236,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function api(User $user, $limit)
+    public function api(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;

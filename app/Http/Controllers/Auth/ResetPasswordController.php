@@ -28,7 +28,7 @@ class ResetPasswordController extends Controller
     protected $redirectTo = '/';
 
     /**
-     * Create a new controller instance.
+     * Apply guest middleware to password reset actions.
      *
      * @return void
      */

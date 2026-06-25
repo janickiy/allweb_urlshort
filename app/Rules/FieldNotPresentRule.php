@@ -23,7 +23,7 @@ class FieldNotPresentRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         return false;
     }
@@ -33,7 +33,7 @@ class FieldNotPresentRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return 'The validation error message.';
     }

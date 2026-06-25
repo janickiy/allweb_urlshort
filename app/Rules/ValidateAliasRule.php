@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Link;
+use App\Models\Link;
 use Illuminate\Contracts\Validation\Rule;
 
 class ValidateAliasRule implements Rule
@@ -17,7 +17,7 @@ class ValidateAliasRule implements Rule
      *
      * @param $userId
      */
-    public function __construct($userId)
+    public function __construct(int|string $userId)
     {
         $this->userId = $userId;
     }
@@ -29,7 +29,7 @@ class ValidateAliasRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $conditions = [];
 
@@ -64,7 +64,7 @@ class ValidateAliasRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('validation.unique');
     }

@@ -28,7 +28,7 @@ class ValidateUserPasswordRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         if (Hash::check($this->request->input($attribute), $this->request->user()->password)) {
             return true;
@@ -42,7 +42,7 @@ class ValidateUserPasswordRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('The current password is not correct.');
     }

@@ -2,122 +2,116 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\CreateLinkRequest;
-use App\Http\Requests\UpdateLinkRequest;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\LinksController\CreateLinkRequest;
+use App\Http\Requests\LinksController\UpdateLinkRequest;
 use App\Http\Resources\LinkCollectionResource;
 use App\Http\Resources\LinkResource;
-use App\Link;
-use App\Traits\LinkTrait;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Repositories\LinkRepository;
+use App\Services\LinkService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class LinkController extends Controller
 {
-    use LinkTrait;
-
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * Inject link repository and service dependencies for API actions.
      */
-    public function index()
-    {
-        $user = Auth::user();
-
-        return LinkCollectionResource::collection(Link::where('user_id', $user->id)->orderBy('id', 'desc')->paginate());
+    public function __construct(
+        private readonly LinkRepository $links,
+        private readonly LinkService $linkService,
+    ) {
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param CreateLinkRequest $request
-     * @return LinkResource
+     * Return the authenticated user paginated links as API resources.
      */
-    public function store(CreateLinkRequest $request)
+    public function index(Request $request): AnonymousResourceCollection
     {
-        if (!$request->input('multi_link')) {
-            $created = $this->linkCreate($request);
+        return LinkCollectionResource::collection(
+            $this->links->paginateLatestForUser($this->user($request)->id)
+        );
+    }
 
-            if ($created) {
-                return LinkResource::make($created);
-            }
+    /**
+     * Create a single link for the authenticated API user.
+     */
+    public function store(CreateLinkRequest $request): LinkResource|JsonResponse
+    {
+        if ($request->boolean('multi_link')) {
+            return $this->notFoundResponse();
         }
 
-        return response()->json([
-            'message' => 'Resource not found.',
-            'status' => 404
-        ], 404);
+        return LinkResource::make(
+            $this->linkService->create($request->validated(), $this->user($request))
+        );
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return LinkResource
+     * Return one link owned by the authenticated API user.
      */
-    public function show($id)
+    public function show(Request $request, mixed $id): LinkResource|JsonResponse
     {
-        $user = Auth::user();
-
-        $link = Link::where([['id', '=', $id], ['user_id', $user->id]])->first();
+        $link = $this->links->findForUser($id, $this->user($request)->id);
 
         if ($link) {
             return LinkResource::make($link);
         }
 
-        return response()->json([
-            'message' => 'Resource not found.',
-            'status' => 404
-        ], 404);
+        return $this->notFoundResponse();
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param UpdateLinkRequest $request
-     * @param $id
-     * @return LinkResource
+     * Update one link owned by the authenticated API user.
      */
-    public function update(UpdateLinkRequest $request, $id)
+    public function update(UpdateLinkRequest $request, mixed $id): LinkResource
     {
-        $user = Auth::user();
+        $link = $this->links->findForUserOrFail($id, $this->user($request)->id);
 
-        $link = Link::where([['id', '=', $id], ['user_id', '=', $user->id]])->firstOrFail();
-
-        $updated = $this->linkUpdate($request, $link);
-
-        if ($updated) {
-            return LinkResource::make($updated);
-        }
+        return LinkResource::make(
+            $this->linkService->update($link, $request->validated())
+        );
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     * @throws \Exception
+     * Delete one link owned by the authenticated API user.
      */
-    public function destroy($id)
+    public function destroy(Request $request, mixed $id): JsonResponse
     {
-        $user = Auth::user();
+        $link = $this->links->findForUser($id, $this->user($request)->id);
 
-        $link = Link::where([['id', '=', $id], ['user_id', '=', $user->id]])->first();
-
-        if ($link) {
-            $link->delete();
-
-            return response()->json([
-                'id' => $link->id,
-                'object' => 'link',
-                'deleted' => true,
-                'status' => 200
-            ], 200);
+        if (!$link) {
+            return $this->notFoundResponse();
         }
 
+        $this->linkService->delete($link);
+
+        return response()->json([
+            'id' => $link->id,
+            'object' => 'link',
+            'deleted' => true,
+            'status' => 200,
+        ]);
+    }
+
+    /**
+     * Resolve the authenticated API user from the current request.
+     */
+    private function user(Request $request): User
+    {
+        return $request->user();
+    }
+
+    /**
+     * Build the standard JSON response for missing API resources.
+     */
+    private function notFoundResponse(): JsonResponse
+    {
         return response()->json([
             'message' => 'Resource not found.',
-            'status' => 404
+            'status' => 404,
         ], 404);
     }
 }

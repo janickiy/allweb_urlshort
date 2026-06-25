@@ -2,16 +2,19 @@
 
 namespace App\Providers;
 
-use App\Domain;
-use App\Link;
+use App\Models\Domain;
+use App\Models\Link;
 use App\Observers\DomainObserver;
 use App\Observers\LinkObserver;
 use App\Observers\SpaceObserver;
 use App\Observers\UserObserver;
-use App\Space;
-use App\User;
+use App\Models\Space;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
+use Illuminate\Database\Schema\Builder as SchemaBuilder;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         // Fix for utf8mb migration @https://laravel.com/docs/master/migrations#creating-indexes
-        Schema::defaultStringLength(191);
+        SchemaBuilder::defaultStringLength(191);
     }
 
     /**
@@ -31,8 +34,10 @@ class AppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
+        Event::listen(Registered::class, SendEmailVerificationNotification::class);
+
         Space::observe(SpaceObserver::class);
         Link::observe(LinkObserver::class);
         Domain::observe(DomainObserver::class);

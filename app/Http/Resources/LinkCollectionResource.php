@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LinkCollectionResource extends JsonResource
@@ -12,7 +13,7 @@ class LinkCollectionResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function toArray($request)
+    public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
@@ -35,7 +36,7 @@ class LinkCollectionResource extends JsonResource
         ];
     }
 
-    public function with($request)
+    public function with(Request $request): array
     {
         return [
             'status' => 200

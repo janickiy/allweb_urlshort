@@ -3,8 +3,8 @@
 
 namespace App\Traits;
 
-use App\Plan;
-use App\User;
+use App\Models\Plan;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 trait UserFeaturesTrait
@@ -13,7 +13,7 @@ trait UserFeaturesTrait
      * @param $user
      * @return array
      */
-    protected function getFeatures($user)
+    protected function getFeatures(?User $user): array
     {
         $subscriptions = $features = [];
         // Get all the subscriptions the user is currently active on

@@ -2,185 +2,163 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{
+use App\Http\Requests\SettingsController\{
     DeleteUserAccountRequest,
     UpdateBillingRequest,
     UpdateUserRequest,
     UpdateUserSecurityRequest
 };
-use App\{Plan,Subscription,};
-use App\Traits\UserTrait;
+use App\Services\PaymentSettingsService;
+use App\Services\UserSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Laravel\Cashier\Invoice;
 
 class SettingsController extends Controller
 {
-    use UserTrait;
-
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Inject account and payment settings services.
      */
-    public function index()
-    {
-        $user = Auth::user();
-
-        return view('settings.content', ['view' => 'index', 'user' => $user]);
+    public function __construct(
+        private readonly UserSettingsService $users,
+        private readonly PaymentSettingsService $payments,
+    ) {
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Redirect the settings landing route to account settings.
      */
-    public function account()
+    public function index(): mixed
     {
-        $user = Auth::user();
-
-        return view('settings.content', ['view' => 'account', 'user' => $user]);
+        return view('settings.content', ['view' => 'index', 'user' => Auth::user()]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the authenticated user account settings form.
      */
-    public function security()
+    public function account(): mixed
     {
-        $user = Auth::user();
-
-        return view('settings.content', ['view' => 'security', 'user' => $user]);
+        return view('settings.content', ['view' => 'account', 'user' => Auth::user()]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the authenticated user password settings form.
      */
-    public function subscriptions()
+    public function security(): mixed
     {
-        $user = Auth::user();
-
-        $subscriptions = $user->subscriptions;
-
-        return view('settings.content', ['view' => 'payments.subscriptions.list', 'user' => $user, 'subscriptions' => $subscriptions]);
+        return view('settings.content', ['view' => 'security', 'user' => Auth::user()]);
     }
 
     /**
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the authenticated user subscription list.
      */
-    public function subscriptionsEdit($id)
+    public function subscriptions(): mixed
     {
         $user = Auth::user();
 
-        $subscription = Subscription::where([['id', $id], ['user_id', $user->id]])->firstOrFail();
-        $plan = Plan::withTrashed()->where('name', $subscription->name)->firstOrFail();
-
-        return view('settings.content', ['view' => 'payments.subscriptions.edit', 'user' => $user, 'subscription' => $subscription, 'plan' => $plan]);
+        return view('settings.content', [
+            'view' => 'payments.subscriptions.list',
+            'user' => $user,
+            'subscriptions' => $user->subscriptions,
+        ]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the selected subscription details for the authenticated user.
      */
-    public function paymentMethods()
+    public function subscriptionsEdit(mixed $id): mixed
     {
         $user = Auth::user();
 
+        return view('settings.content', array_merge([
+            'view' => 'payments.subscriptions.edit',
+            'user' => $user,
+        ], $this->payments->subscriptionEditData($user, $id)));
+    }
+
+    /**
+     * Display the authenticated user payment methods.
+     */
+    public function paymentMethods(): mixed
+    {
+        $user = Auth::user();
+
+        return view('settings.content', array_merge([
+            'view' => 'payments.methods.list',
+            'user' => $user,
+        ], $this->payments->paymentMethods($user)));
+    }
+
+    /**
+     * Display the form for adding a new payment method.
+     */
+    public function paymentMethodsNew(Request $request): mixed
+    {
         try {
-            $defaultPaymentMethod = $user->defaultPaymentMethod();
-            $paymentMethods = $user->paymentMethods();
-        } catch (\Exception $e) {
-            $defaultPaymentMethod = null;
-            $paymentMethods = null;
-        }
-
-        return view('settings.content', ['view' => 'payments.methods.list', 'user' => $user, 'defaultPaymentMethod' => $defaultPaymentMethod, 'paymentMethods' => $paymentMethods]);
-    }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
-     */
-    public function paymentMethodsNew(Request $request)
-    {
-        $user = Auth::user();
-
-        $hasDefaultPaymentMethod = $user->hasDefaultPaymentMethod();
-
-        try {
-            $intent = $user->createSetupIntent();
+            return view('settings.content', array_merge([
+                'view' => 'payments.methods.new',
+            ], $this->payments->newPaymentMethodData(Auth::user())));
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.methods')->with('error', $e->getMessage());
         }
-
-        return view('settings.content', ['view' => 'payments.methods.new', 'intent' => $intent, 'hasDefaultPaymentMethod' => $hasDefaultPaymentMethod]);
     }
 
     /**
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the form for editing an existing payment method.
      */
-    public function paymentMethodsEdit($id)
+    public function paymentMethodsEdit(mixed $id): mixed
     {
-        $user = Auth::user();
-
-        \Stripe\Stripe::setApiKey(config('cashier.secret'));
-
-        // Retrieve the payment method details
         try {
-            $defaultPaymentMethod = $user->defaultPaymentMethod();
-            $paymentMethod = \Stripe\PaymentMethod::retrieve($id);
+            return view('settings.content', array_merge([
+                'view' => 'payments.methods.edit',
+            ], $this->payments->editPaymentMethodData(Auth::user(), $id)));
         } catch (\Exception $e) {
-            // If the payment method does not exist
-            abort(404);
+            return redirect()->route('settings.payments.methods')->with('error', $e->getMessage());
         }
-
-        // If the payment method does not belong to the customer
-        if ($user->stripe_id != $paymentMethod->customer) {
-            abort(404);
-        }
-
-        return view('settings.content', ['view' => 'payments.methods.edit', 'id' => $id, 'defaultPaymentMethod' => $defaultPaymentMethod, 'paymentMethod' => $paymentMethod, 'intent' => $user->createSetupIntent()]);
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * Display the authenticated user billing information form.
      */
-    public function billing(Request $request)
+    public function billing(Request $request): mixed
     {
         $user = Auth::user();
 
         try {
-            \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            $customer = \Stripe\Customer::retrieve($user->stripe_id);
+            $customer = $this->payments->billingCustomer($user);
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.billing')->with('error', $e->getMessage());
         }
 
-        return view('settings.content', ['view' => 'payments.billing', 'user' => $user, 'customer' => $customer]);
+        return view('settings.content', [
+            'view' => 'payments.billing',
+            'user' => $user,
+            'customer' => $customer,
+        ]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the authenticated user invoice list.
      */
-    public function invoices()
+    public function invoices(): mixed
     {
         $user = Auth::user();
 
-        $invoices = $user->invoices();
-
-        return view('settings.content', ['view' => 'payments.invoices', 'user' => $user, 'invoices' => $invoices]);
+        return view('settings.content', [
+            'view' => 'payments.invoices',
+            'user' => $user,
+            'invoices' => $user->invoices(),
+        ]);
     }
 
     /**
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * Display a single invoice for the authenticated user.
      */
-    public function invoice($id)
+    public function invoice(mixed $id): mixed
     {
         $user = Auth::user();
 
         try {
-            \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            $invoice = new Invoice($user, \Stripe\Invoice::retrieve($id));
+            $invoice = $this->payments->invoice($user, $id);
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.invoices')->with('error', $e->getMessage());
         }
@@ -189,113 +167,76 @@ class SettingsController extends Controller
             'user' => $user,
             'invoice' => $invoice,
             'owner' => $user,
-            'product' => __('Subscription')
-
+            'product' => __('Subscription'),
         ]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the API settings page for the authenticated user.
      */
-    public function api()
+    public function api(): mixed
     {
-        $user = Auth::user();
-
-        return view('settings.content', ['view' => 'api', 'user' => $user]);
+        return view('settings.content', ['view' => 'api', 'user' => Auth::user()]);
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Display the account deletion confirmation page.
      */
-    public function delete()
+    public function delete(): mixed
     {
-        $user = Auth::user();
-
-        return view('settings.content', ['view' => 'delete', 'user' => $user]);
+        return view('settings.content', ['view' => 'delete', 'user' => Auth::user()]);
     }
 
     /**
-     * @param UpdateUserRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Update the authenticated user profile settings.
      */
-    public function updateAccount(UpdateUserRequest $request)
+    public function updateAccount(UpdateUserRequest $request): mixed
     {
-        $user = Auth::user();
-
-        $this->userUpdate($request, $user);
+        $this->users->updateProfile(Auth::user(), $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * @param UpdateUserSecurityRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Update the authenticated user password.
      */
-    public function updateSecurity(UpdateUserSecurityRequest $request)
+    public function updateSecurity(UpdateUserSecurityRequest $request): mixed
     {
-        $user = Auth::user();
-
-        $user->password = Hash::make($request->input('password'));
-        $user->save();
-
-        Auth::logoutOtherDevices($request->input('password'));
+        $this->users->updatePassword(Auth::user(), $request->input('password'));
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Attach a new payment method to the authenticated user.
      */
-    public function createPaymentMethod(Request $request)
+    public function createPaymentMethod(Request $request): mixed
     {
-        $user = Auth::user();
-
         try {
-            $paymentMethod = $user->addPaymentMethod($request->input('payment_method'));
-
-            // If the user marked his payment method as default, or if there's no default payment
-            if ($request->input('default') || !$user->hasDefaultPaymentMethod()) {
-                $user->updateDefaultPaymentMethod($request->input('payment_method'));
-            }
+            $paymentMethod = $this->payments->addPaymentMethod(
+                Auth::user(),
+                $request->input('payment_method'),
+                (bool) $request->input('default')
+            );
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.methods.new')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('settings.payments.methods')->with('success', __(':name has been added.', ['name' => $paymentMethod->card->last4]));
+        return redirect()
+            ->route('settings.payments.methods')
+            ->with('success', __(':name has been added.', ['name' => $paymentMethod->card->last4]));
     }
 
     /**
-     * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * Update an existing payment method for the authenticated user.
      */
-    public function updatePaymentMethod(Request $request, $id)
+    public function updatePaymentMethod(Request $request, mixed $id): mixed
     {
-        $user = Auth::user();
-
-        \Stripe\Stripe::setApiKey(config('cashier.secret'));
-
-        // Retrieve the payment method details
         try {
-            $paymentMethod = \Stripe\PaymentMethod::retrieve($id);
-        } catch (\Exception $e) {
-            // If the payment method does not exist
-            abort(404);
-        }
-
-        // If the payment method does not belong to the customer
-        if ($user->stripe_id != $paymentMethod->customer) {
-            abort(404);
-        }
-
-        // Update the payment method details
-        try {
-            if ($request->input('default')) {
-                $user->updateDefaultPaymentMethod($id);
-            }
+            $this->payments->updatePaymentMethod(Auth::user(), $id, (bool) $request->input('default'));
         } catch (\Exception $e) {
             $request->flash();
+
             return redirect()->route('settings.payments.methods.edit', $id)->with('error', $e->getMessage());
         }
 
@@ -303,93 +244,28 @@ class SettingsController extends Controller
     }
 
     /**
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * Delete an existing payment method for the authenticated user.
      */
-    public function deletePaymentMethod($id)
+    public function deletePaymentMethod(mixed $id): mixed
     {
-        $user = Auth::user();
-
-        \Stripe\Stripe::setApiKey(config('cashier.secret'));
-
-        // Retrieve the payment method details
         try {
-            $defaultPaymentMethod = $user->defaultPaymentMethod();
-            $paymentMethod = \Stripe\PaymentMethod::retrieve($id);
-        } catch (\Exception $e) {
-            // If the payment method does not exist
-            abort(404);
-        }
-
-        // If the payment method does not belong to the customer
-        if ($user->stripe_id != $paymentMethod->customer) {
-            abort(404);
-        }
-
-        // If the payment method is the default one
-        if ($defaultPaymentMethod->id == $paymentMethod->id) {
-
-            // Iterate over the user's subscriptions
-            foreach ($user->subscriptions as $subscription) {
-                // If the user has an active subscription
-                if ($subscription) {
-                    // Check if the subscription is Recurring or on Trial (and not already cancelled)
-                    if ($user->subscription($subscription->name)->recurring() || ($user->subscription($subscription->name)->onTrial() && !$user->subscription($subscription->name)->onGracePeriod())) {
-                        return redirect()->route('settings.payments.methods')->with('error', __('The default payment method can\'t be deleted while a subscription plan is active.'));
-                    }
-                }
-            }
-        }
-
-        try {
-            // If the deleted payment method is the default one
-            if ($defaultPaymentMethod->id == $paymentMethod->id) {
-                // Iterate over the other available payment methods
-                foreach ($user->paymentMethods() as $stripePaymentMethod) {
-                    // If the selected payment method is not the same with the available one
-                    if ($paymentMethod->id != $stripePaymentMethod->id) {
-                        // Attempt to update the default payment method to another available payment method
-                        if ($user->updateDefaultPaymentMethod($stripePaymentMethod->id)) {
-                            break;
-                        }
-                    }
-                }
-
-                // Delete the default payment method
-                $paymentMethod->detach();
-            } else {
-                $paymentMethod->detach();
-            }
+            $paymentMethod = $this->payments->deletePaymentMethod(Auth::user(), $id);
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.methods')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('settings.payments.methods')->with('success', __(':name has been deleted.', ['name' => $paymentMethod->card->last4]));
+        return redirect()
+            ->route('settings.payments.methods')
+            ->with('success', __(':name has been deleted.', ['name' => $paymentMethod->card->last4]));
     }
 
     /**
-     * @param UpdateBillingRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Update the authenticated user billing details.
      */
-    public function updateBilling(UpdateBillingRequest $request)
+    public function updateBilling(UpdateBillingRequest $request): mixed
     {
-        $user = Auth::user();
-
-        \Stripe\Stripe::setApiKey(config('cashier.secret'));
-
-        // Update the payment method details
         try {
-            \Stripe\Customer::update($user->stripe_id, [
-                'address' => [
-                    'city' => $request->input('city'),
-                    'country' => $request->input('country'),
-                    'line1' => $request->input('address'),
-                    'postal_code' => $request->input('postal_code'),
-                    'state' => $request->input('state'),
-                ],
-                'name' => $request->input('name'),
-                'phone' => $request->input('phone')
-            ]);
+            $this->payments->updateBilling(Auth::user(), $request->validated());
         } catch (\Exception $e) {
             return redirect()->route('settings.payments.billing')->with('error', $e->getMessage());
         }
@@ -398,86 +274,49 @@ class SettingsController extends Controller
     }
 
     /**
-     * @param $subscription
-     * @return \Illuminate\Http\RedirectResponse
+     * Cancel an active subscription for the authenticated user.
      */
-    public function cancelSubscription($subscription)
+    public function cancelSubscription(mixed $subscription): mixed
     {
-        $user = Auth::user();
-
-        // Get the user's subscription
-        $subscription = $user->subscription($subscription);
-
-        if ($subscription) {
-            try {
-                // Cancel the subscription
-                if ($subscription->hasIncompletePayment()) {
-                    $subscription->cancelNow();
-                } else {
-                    $subscription->cancel();
-                }
-            } catch (\Exception  $e) {
-                return back()->with('error', $e->getMessage());
-            }
+        try {
+            $this->payments->cancelSubscription(Auth::user(), $subscription);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * @param $subscription
-     * @return \Illuminate\Http\RedirectResponse
+     * Resume a canceled subscription for the authenticated user.
      */
-    public function resumeSubscription($subscription)
+    public function resumeSubscription(mixed $subscription): mixed
     {
-        $user = Auth::user();
-
-        // If the user has no payment method
-        if (!$user->hasDefaultPaymentMethod()) {
-            return back()->with('error', __('Your subscription can\'t be resumed without a payment method.'));
-        }
-
-        if ($user->hasIncompletePayment($subscription)) {
-            abort(403);
-        }
-
-        // Get the user's subscription
-        $subscription = $user->subscription($subscription);
-
-        // If there's a subscription
-        if ($subscription) {
-            try {
-                // Resume the subscription
-                $subscription->resume();
-            } catch (\Exception $e) {
-                return back()->with('error', $e->getMessage());
-            }
+        try {
+            $this->payments->resumeSubscription(Auth::user(), $subscription);
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
+     * Regenerate the authenticated user API token.
      */
-    public function updateApi()
+    public function updateApi(): mixed
     {
-        $user = Auth::user();
-
-        $user->api_token = Str::random(60);
-        $user->save();
+        $this->users->regenerateApiToken(Auth::user());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * @param DeleteUserAccountRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * Delete the authenticated user account after password confirmation.
      */
-    public function deleteAccount(DeleteUserAccountRequest $request)
+    public function deleteAccount(DeleteUserAccountRequest $request): mixed
     {
-        $user = Auth::user();
-        $user->forceDelete();
+        $this->users->deleteAccount(Auth::user());
 
         return redirect()->route('home');
     }

@@ -3,7 +3,7 @@
 
 namespace App\Traits;
 
-use App\User;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ trait UserTrait
      * @param null $admin
      * @return User|Model
      */
-    protected function userUpdate(Request $request, Model $user, $admin = null)
+    protected function userUpdate(Request $request, Model $user, ?bool $admin = null): Model
     {
         $user->name = $request->input('name');
         $user->email = $request->input('email');

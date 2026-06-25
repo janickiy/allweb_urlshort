@@ -26,11 +26,11 @@ class DomainLimitGateRule implements Rule
      * @param mixed $value
      * @return bool
      */
-    public function passes($attribute, $value)
+    public function passes(mixed $attribute, mixed $value): bool
     {
         $user = request()->user();
 
-        if ($user->can('create', ['App\Domain', $this->getFeatures($user)['option_domains']])) {
+        if ($user->can('create', ['App\Models\Domain', $this->getFeatures($user)['option_domains']])) {
             return true;
         }
     }
@@ -40,7 +40,7 @@ class DomainLimitGateRule implements Rule
      *
      * @return string
      */
-    public function message()
+    public function message(): string
     {
         return __('You added too many domains.');
     }

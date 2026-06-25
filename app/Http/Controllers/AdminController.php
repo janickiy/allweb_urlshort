@@ -2,706 +2,504 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\{
+use App\Http\Requests\AdminController\{
     CreateLanguageRequest,
     CreatePageRequest,
     CreatePlanRequest,
     CreateSubscriptionRequest,
-    UpdateDomainRequest,
+    UpdateSettingsCaptchaRequest,
+    UpdateSettingsContactRequest,
+    UpdateSettingsEmailRequest,
     UpdateSettingsGeneralRequest,
-    UpdateLinkRequest,
     UpdateSettingsAppearanceRequest,
+    UpdateSettingsInvoiceRequest,
+    UpdateSettingsLegalRequest,
     UpdatePageRequest,
     UpdatePlanRequest,
     UpdateSettingsPaymentRequest,
-    UpdateSpaceRequest,
+    UpdateSettingsRegistrationRequest,
+    UpdateSettingsShortenerRequest,
+    UpdateSettingsSocialRequest
+};
+use App\Http\Requests\DomainsController\UpdateDomainRequest;
+use App\Http\Requests\LinksController\UpdateLinkRequest;
+use App\Http\Requests\SpacesController\UpdateSpaceRequest;
+use App\Http\Requests\SettingsController\{
     UpdateUserRequest
 };
-use App\{Language, Link, Page, Plan, Setting, Space, Subscription, User, Domain};
-use App\Traits\{DomainTrait, LinkTrait, SpaceTrait, UserFeaturesTrait, UserTrait};
+use App\Repositories\DomainRepository;
+use App\Repositories\LinkRepository;
+use App\Repositories\SpaceRepository;
+use App\Services\AdminService;
+use App\Services\DomainService;
+use App\Services\LinkService;
+use App\Services\SettingsService;
+use App\Services\SpaceService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Stripe;
 
 class AdminController extends Controller
 {
-    use LinkTrait, SpaceTrait, DomainTrait, UserTrait, UserFeaturesTrait;
-
     /**
-     * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * Inject repositories and services used by admin controller actions.
      */
-    public function dashboard(Request $request)
-    {
-        $user = Auth::user();
-
-        $stats = [
-            'users' => User::withTrashed()->count(),
-            'subscriptions' => Subscription::count(),
-            'plans' => Plan::withTrashed()->count(),
-            'links' => Link::max('id'),
-            'spaces' => Space::max('id'),
-            'domains' => Domain::max('id')
-        ];
-
-        $users = User::withTrashed()->orderBy('id', 'desc')->limit(10)->get();
-
-        $subscriptions = $links = null;
-        if (config('settings.stripe')) {
-            $subscriptions = Subscription::orderBy('id', 'desc')->limit(10)->get();
-        } else {
-            $links = Link::orderBy('id', 'desc')->limit(10)->get();
-        }
-
-        return view('admin.dashboard.content', ['stats' => $stats, 'users' => $users, 'subscriptions' => $subscriptions, 'links' => $links, 'user' => $user]);
+    public function __construct(
+        private readonly AdminService $adminService,
+        private readonly DomainRepository $domainRepository,
+        private readonly DomainService $domainService,
+        private readonly LinkRepository $linkRepository,
+        private readonly LinkService $linkService,
+        private readonly SettingsService $settingsService,
+        private readonly SpaceRepository $spaceRepository,
+        private readonly SpaceService $spaceService,
+    ) {
     }
 
     /**
+     * Display the admin dashboard with aggregated platform metrics.
+     *
+     * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsGeneral()
+    public function dashboard(Request $request): mixed
+    {
+        return view('admin.dashboard.content', $this->adminService->dashboardData(Auth::user()));
+    }
+
+    /**
+     * Display the general settings screen in the admin panel.
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function settingsGeneral(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.general']);
     }
 
     /**
+     * Display the appearance settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsAppearance()
+    public function settingsAppearance(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.appearance']);
     }
 
     /**
+     * Display the email settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsEmail()
+    public function settingsEmail(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.email']);
     }
 
     /**
+     * Display the social links settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsSocial()
+    public function settingsSocial(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.social']);
     }
 
     /**
+     * Display the payment settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsPayment()
+    public function settingsPayment(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.payment']);
     }
 
     /**
+     * Display the invoice settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsInvoice()
+    public function settingsInvoice(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.invoice']);
     }
 
     /**
+     * Display the registration settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsRegistration()
+    public function settingsRegistration(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.registration']);
     }
 
     /**
+     * Display the legal settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsLegal()
+    public function settingsLegal(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.legal']);
     }
 
     /**
+     * Display the contact settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsContact()
+    public function settingsContact(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.contact']);
     }
 
     /**
+     * Display the captcha settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsCaptcha()
+    public function settingsCaptcha(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.captcha']);
     }
 
     /**
+     * Display the shortener settings screen in the admin panel.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function settingsShortener()
+    public function settingsShortener(): mixed
     {
         return view('admin.content', ['view' => 'admin.settings.shortener']);
     }
 
     /**
+     * Display the paginated language list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function languages(Request $request)
+    public function languages(Request $request): mixed
     {
-        $search = $request->input('search');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $languages = Language::when($search, function ($query) use ($search) {
-            return $query->search($search);
-        })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'sort' => $request->input('sort')]);
-
-        return view('admin.content', ['view' => 'admin.languages.list', 'languages' => $languages]);
+        return view('admin.content', $this->adminService->languagesListData($request));
     }
 
     /**
+     * Display the form for uploading a new language file.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function languagesNew()
+    public function languagesNew(): mixed
     {
         return view('admin.content', ['view' => 'admin.languages.new']);
     }
 
     /**
+     * Display the language edit form for the selected language.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function languagesEdit($id)
+    public function languagesEdit(mixed $id): mixed
     {
-        $language = Language::where('code', $id)->firstOrFail();
-
-        return view('admin.content', ['view' => 'admin.languages.edit', 'id' => $id, 'languages' => Language::all(), 'language' => $language]);
+        return view('admin.content', $this->adminService->languageEditData($id));
     }
 
     /**
+     * Display the paginated user list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function users(Request $request)
+    public function users(Request $request): mixed
     {
-        $search = $request->input('search');
-        $role = $request->input('role');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-        $by = $request->input('by');
-
-        $users = User::withTrashed()
-            ->when(isset($role) && is_numeric($role), function ($query) use ($role) {
-                return $query->searchRole($role);
-            })
-            ->when($search, function ($query) use ($search, $by) {
-                if ($by == 'email') {
-                    return $query->searchEmail($search);
-
-                }
-                return $query->searchName($search);
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'by' => $by, 'role' => $role, 'sort' => $request->input('sort')]);
-
-        return view('admin.content', ['view' => 'admin.users.list', 'users' => $users]);
+        return view('admin.content', $this->adminService->usersListData($request));
     }
 
     /**
+     * Display the user edit form and account statistics.
+     *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function usersEdit(Request $request, $id)
+    public function usersEdit(Request $request, mixed $id): mixed
     {
-        $user = User::withTrashed()
-            ->where('id', $id)
-            ->firstOrFail();
-
-        $stats = [
-            'subscriptions' => Subscription::where('user_id', $user->id)->count(),
-            'links' => Link::where('user_id', $user->id)->count(),
-            'spaces' => Space::where('user_id', $user->id)->count(),
-            'domains' => Domain::where('user_id', $user->id)->count()
-        ];
-
-        return view('admin.content', ['view' => 'settings.account', 'admin' => true, 'user' => $user, 'stats' => $stats]);
+        return view('admin.content', $this->adminService->userEditData($id));
     }
 
     /**
+     * Display the paginated link list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function links(Request $request)
+    public function links(Request $request): mixed
     {
-        $userId = $request->input('user_id');
-        $spaceId = $request->input('space_id');
-        $domainId = $request->input('domain_id');
-        $search = $request->input('search');
-        $type = $request->input('type');
-        $by = $request->input('by');
-
-        if ($request->input('sort') == 'min') {
-            $sort = ['clicks', 'asc'];
-        } elseif ($request->input('sort') == 'max') {
-            $sort = ['clicks', 'desc'];
-        } elseif ($request->input('sort') == 'asc') {
-            $sort = ['id', 'asc'];
-        } else {
-            $sort = ['id', 'desc'];
-        }
-
-        $links = Link::when($type, function ($query) use ($type) {
-            if ($type == 1) {
-                return $query->searchActive();
-            } else {
-                return $query->searchExpired();
-            }
-        })
-            ->when($search, function ($query) use ($search, $by) {
-                if ($by == 'url') {
-                    return $query->searchUrl($search);
-                } elseif ($by == 'alias') {
-                    return $query->searchAlias($search);
-                }
-                return $query->searchTitle($search);
-            })
-            ->when($userId, function ($query) use ($userId) {
-                return $query->userId($userId);
-            })
-            ->when($spaceId, function ($query) use ($spaceId) {
-                return $query->spaceId($spaceId);
-            })
-            ->when($domainId, function ($query) use ($domainId) {
-                return $query->domainId($domainId);
-            })
-            ->orderBy($sort[0], $sort[1])
-            ->paginate(10)
-            ->appends(['search' => $search, 'by' => $by, 'sort' => $request->input('sort'), 'user_id' => $userId]);
-
-        $filters = [];
-
-        if ($userId) {
-            $user = User::where('id', '=', $userId)->first();
-            if ($user) {
-                $filters['user'] = $user->name;
-            }
-        }
-
-        if ($spaceId) {
-            $space = Space::where('id', '=', $spaceId)->first();
-            if ($space) {
-                $filters['space'] = $space->name;
-            }
-        }
-
-        if ($domainId) {
-            $domain = Domain::where('id', '=', $domainId)->first();
-            if ($domain) {
-                $filters['domain'] = str_replace(['http://', 'https://'], '', $domain->name);
-            }
-        }
-
-        return view('admin.content', ['view' => 'admin.links.list', 'links' => $links, 'filters' => $filters]);
+        return view('admin.content', $this->adminService->linksListData($request));
     }
 
     /**
+     * Display the admin link edit form for the selected link.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    function linksEdit($id)
+    public function linksEdit(mixed $id): mixed
     {
-        $link = Link::where([['id', '=', $id]])->firstOrFail();
-
-        $user = Auth::user();
-
-        // Get the user's spaces
-        $spaces = Space::where('user_id', $link->user_id)->get();
-
-        // Get the user's domains
-        $domains = Domain::where('user_id', $link->user_id)->get();
-
-        return view('admin.content', ['view' => 'links.edit', 'admin' => true, 'domains' => $domains, 'spaces' => $spaces, 'link' => $link, 'features' => $this->getFeatures($user)]);
+        return view('admin.content', $this->adminService->linkEditData($id, Auth::user()));
     }
 
     /**
+     * Display the paginated space list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function spaces(Request $request)
+    public function spaces(Request $request): mixed
     {
-        $userId = $request->input('user_id');
-        $search = $request->input('search');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $spaces = Space::when($search, function ($query) use ($search) {
-            return $query->searchName($search);
-        })
-            ->when($userId, function ($query) use ($userId) {
-                return $query->userId($userId);
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'sort' => $request->input('sort'), 'user_id' => $userId]);
-
-        $filters = [];
-
-        if ($userId) {
-            $user = User::where('id', '=', $userId)->first();
-            if ($user) {
-                $filters['user'] = $user->name;
-            }
-        }
-
-        return view('admin.content', ['view' => 'admin.spaces.list', 'spaces' => $spaces, 'filters' => $filters]);
+        return view('admin.content', $this->adminService->spacesListData($request));
     }
 
     /**
+     * Display the admin space edit form for the selected space.
+     *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function spacesEdit(Request $request, $id)
+    public function spacesEdit(Request $request, mixed $id): mixed
     {
-        $space = Space::where([['id', '=', $id]])->firstOrFail();
-
-        $stats = [
-            'links' => Link::where([['user_id', '=', $space->user_id], ['space_id', '=', $space->id]])->count(),
-        ];
-
-        return view('admin.content', ['view' => 'spaces.edit', 'admin' => true, 'space' => $space, 'stats' => $stats]);
+        return view('admin.content', $this->adminService->spaceEditData($id));
     }
 
     /**
+     * Display the paginated domain list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function domains(Request $request)
+    public function domains(Request $request): mixed
     {
-        $userId = $request->input('user_id');
-        $search = $request->input('search');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $domains = Domain::when($search, function ($query) use ($search) {
-            return $query->searchName($search);
-        })
-            ->when($userId, function ($query) use ($userId) {
-                return $query->userId($userId);
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'sort' => $request->input('sort'), 'user_id' => $userId]);
-
-        $filters = [];
-
-        if ($userId) {
-            $user = User::where('id', '=', $userId)->first();
-            if ($user) {
-                $filters['user'] = $user->name;
-            }
-        }
-
-        return view('admin.content', ['view' => 'admin.domains.list', 'domains' => $domains, 'filters' => $filters]);
+        return view('admin.content', $this->adminService->domainsListData($request));
     }
 
     /**
+     * Display the admin domain edit form for the selected domain.
+     *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function domainsEdit(Request $request, $id)
+    public function domainsEdit(Request $request, mixed $id): mixed
     {
-        $domain = Domain::where([['id', '=', $id]])->firstOrFail();
-
-        $stats = [
-            'links' => Link::where([['user_id', '=', $domain->user_id], ['domain_id', '=', $domain->id]])->count(),
-        ];
-
-        return view('admin.content', ['view' => 'domains.edit', 'admin' => true, 'domain' => $domain, 'stats' => $stats]);
+        return view('admin.content', $this->adminService->domainEditData($id));
     }
 
     /**
+     * Display the paginated page list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function pages(Request $request)
+    public function pages(Request $request): mixed
     {
-        $search = $request->input('search');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $pages = Page::when($search, function ($query) use ($search) {
-            return $query->search($search);
-        })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'sort' => $request->input('sort')]);
-
-        return view('admin.content', ['view' => 'admin.pages.list', 'pages' => $pages]);
+        return view('admin.content', $this->adminService->pagesListData($request));
     }
 
     /**
+     * Display the form for creating a new static page.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function pagesNew()
+    public function pagesNew(): mixed
     {
         return view('admin.content', ['view' => 'admin.pages.new']);
     }
 
     /**
+     * Display the edit form for the selected static page.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function pagesEdit($id)
+    public function pagesEdit(mixed $id): mixed
     {
-        $page = Page::where('id', $id)->firstOrFail();
-
-        return view('admin.content', ['view' => 'admin.pages.edit', 'page' => $page]);
+        return view('admin.content', $this->adminService->pageEditData($id));
     }
 
     /**
+     * Display the paginated subscription plan list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function plans(Request $request)
+    public function plans(Request $request): mixed
     {
-        $search = $request->input('search');
-        $visibility = $request->input('visibility');
-        $status = $request->input('status');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $stripe = config('settings.stripe');
-
-        $plans = Plan::withTrashed()
-            ->when(!$stripe, function ($query) {
-                return $query->where([['amount_month', '=', 0], ['amount_year', '=', 0]]);
-            })
-            ->when($search, function ($query) use ($search) {
-                return $query->search($search);
-            })
-            ->when(isset($visibility) && is_numeric($visibility), function ($query) use ($visibility) {
-                return $query->visibility((int)$visibility);
-            })
-            ->when(isset($status) && is_numeric($status), function ($query) use ($status) {
-                if ($status) {
-                    $query->whereNotNull('deleted_at');
-                } else {
-                    $query->whereNull('deleted_at');
-                }
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'visibility' => $visibility, 'status' => $status, 'sort' => $request->input('sort')]);
-
-        return view('admin.content', ['view' => 'admin.plans.list', 'plans' => $plans]);
+        return view('admin.content', $this->adminService->plansListData($request));
     }
 
     /**
+     * Display the form for creating a new subscription plan.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function plansNew()
+    public function plansNew(): mixed
     {
         return view('admin.content', ['view' => 'admin.plans.new']);
     }
 
     /**
+     * Display the edit form for the selected subscription plan.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function plansEdit($id)
+    public function plansEdit(mixed $id): mixed
     {
-        $plan = Plan::withTrashed()->where('id', $id)->firstOrFail();
-
-        return view('admin.content', ['view' => 'admin.plans.edit', 'plan' => $plan]);
+        return view('admin.content', $this->adminService->planEditData($id));
     }
 
     /**
+     * Display the paginated subscription list in the admin panel.
+     *
      * @param Request $request
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function subscriptions(Request $request)
+    public function subscriptions(Request $request): mixed
     {
-        $userId = $request->input('user_id');
-        $search = $request->input('search');
-        $status = $request->input('status');
-        $plan = $request->input('plan');
-        $sort = ($request->input('sort') == 'asc' ? 'asc' : 'desc');
-
-        $subscriptions = Subscription::with(['user' => function ($query) {
-            return $query->withTrashed();
-        }])
-            ->when(isset($status) && !empty($status), function ($query) use ($status) {
-                return $query->status($status);
-            })
-            ->when(isset($plan) && !empty($plan), function ($query) use ($plan) {
-                return $query->plan($plan);
-            })
-            ->when($userId, function ($query) use ($userId) {
-                return $query->userId($userId);
-            })
-            ->orderBy('id', $sort)
-            ->paginate(10)
-            ->appends(['search' => $search, 'status' => $status, 'plan' => $plan, 'user_id' => $userId]);
-
-        // Get all the plans
-        $plans = Plan::where([['amount_month', '>', 0], ['amount_year', '>', 0]])->get();
-
-        $filters = [];
-
-        if ($userId) {
-            $user = User::where('id', '=', $userId)->first();
-            if ($user) {
-                $filters['user'] = $user->name;
-            }
-        }
-
-        return view('admin.content', ['view' => 'admin.subscriptions.list', 'subscriptions' => $subscriptions, 'plans' => $plans, 'filters' => $filters]);
+        return view('admin.content', $this->adminService->subscriptionsListData($request));
     }
 
     /**
+     * Display the form for creating an emulated subscription.
+     *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function subscriptionsNew()
+    public function subscriptionsNew(): mixed
     {
-        $plans = Plan::where([['amount_month', '>', 0], ['amount_year', '>', 0]])->get();
-
-        return view('admin.content', ['view' => 'admin.subscriptions.new', 'plans' => $plans]);
+        return view('admin.content', $this->adminService->subscriptionNewData());
     }
 
     /**
+     * Display the edit form for the selected subscription.
+     *
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function subscriptionsEdit($id)
+    public function subscriptionsEdit(mixed $id): mixed
     {
-        $subscription = Subscription::where('id', $id)->firstOrFail();
-        $plan = Plan::withTrashed()->where('name', $subscription->name)->firstOrFail();
-        $user = User::withTrashed()->where('id', $subscription->user_id)->firstOrFail();
-
-        return view('admin.content', ['view' => 'settings.payments.subscriptions.edit', 'admin' => true, 'subscription' => $subscription, 'plan' => $plan, 'user' => $user]);
+        return view('admin.content', $this->adminService->subscriptionEditData($id));
     }
 
     /**
-     * Update the general settings
+     * Persist general settings submitted from the admin panel.
      *
      * @param UpdateSettingsGeneralRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsGeneral(UpdateSettingsGeneralRequest $request)
+    public function updateSettingsGeneral(UpdateSettingsGeneralRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['title', 'tagline', 'index', 'timezone', 'tracking_code'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the registration settings
+     * Persist registration settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsRegistration(Request $request)
+    public function updateSettingsRegistration(UpdateSettingsRegistrationRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['registration_registration', 'registration_captcha', 'registration_verification'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the contact settings
+     * Persist contact settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsContact(Request $request)
+    public function updateSettingsContact(UpdateSettingsContactRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['contact_captcha', 'contact_email'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the captcha settings
+     * Persist captcha settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsCaptcha(Request $request)
+    public function updateSettingsCaptcha(UpdateSettingsCaptchaRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['captcha_site_key', 'captcha_secret_key', 'captcha_registration', 'captcha_contact', 'captcha_shorten'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the captcha settings
+     * Persist shortener settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsShortener(Request $request)
+    public function updateSettingsShortener(UpdateSettingsShortenerRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['short_guest', 'short_bad_words'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the legal settings
+     * Persist legal settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsLegal(Request $request)
+    public function updateSettingsLegal(UpdateSettingsLegalRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['legal_terms_url', 'legal_privacy_url', 'legal_cookie_url'];
 
-        foreach ($rows as $row) {
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the appearance
+     * Persist appearance settings and uploaded branding assets.
      *
      * @param UpdateSettingsAppearanceRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsAppearance(UpdateSettingsAppearanceRequest $request)
+    public function updateSettingsAppearance(UpdateSettingsAppearanceRequest $request): mixed
     {
         if ($request->validated()) {
             // The rows to be updated
@@ -721,8 +519,7 @@ class AdminController extends Controller
                         $request->file($row)->move(public_path('uploads/brand'), $fileName);
                     }
 
-                    // Update the database
-                    Setting::where('name', $row)->update(['value' => $fileName]);
+                    $this->settingsService->updateKeys([$row], [$row => $fileName]);
 
                     session()->flash('success', __('Settings saved.'));
                 }
@@ -731,168 +528,134 @@ class AdminController extends Controller
             // The rows to be updated
             $rows = ['theme'];
 
-            foreach ($rows as $row) {
-                // Update the database
-                Setting::where('name', $row)->update(['value' => $request->input($row)]);
-            }
+            $this->settingsService->updateKeys($rows, $request->all());
         }
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the email settings
+     * Persist email settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsEmail(Request $request)
+    public function updateSettingsEmail(UpdateSettingsEmailRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['email_driver', 'email_host', 'email_port', 'email_encryption', 'email_address', 'email_username', 'email_password'];
 
-        foreach ($rows as $row) {
-            // Update the database
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the social settings
+     * Persist social profile settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsSocial(Request $request)
+    public function updateSettingsSocial(UpdateSettingsSocialRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['social_facebook', 'social_twitter', 'social_instagram', 'social_youtube'];
 
-        foreach ($rows as $row) {
-            // Update the database
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the payment settings
+     * Persist payment provider settings submitted from the admin panel.
      *
      * @param UpdateSettingsPaymentRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsPayment(UpdateSettingsPaymentRequest $request)
+    public function updateSettingsPayment(UpdateSettingsPaymentRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['stripe', 'stripe_key', 'stripe_secret', 'stripe_wh_secret'];
 
-        foreach ($rows as $row) {
-            // Update the database
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the invoice settings
+     * Persist invoice settings submitted from the admin panel.
      *
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSettingsInvoice(Request $request)
+    public function updateSettingsInvoice(UpdateSettingsInvoiceRequest $request): mixed
     {
         // The rows to be updated
         $rows = ['invoice_vendor', 'invoice_address', 'invoice_city', 'invoice_state', 'invoice_postal_code', 'invoice_country', 'invoice_phone', 'invoice_vat_number'];
 
-        foreach ($rows as $row) {
-            // Update the database
-            Setting::where('name', $row)->update(['value' => $request->input($row)]);
-        }
+        $this->settingsService->updateKeys($rows, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Emulate a subscription
+     * Create an emulated subscription for a user from admin input.
      *
      * @param CreateSubscriptionRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createSubscription(CreateSubscriptionRequest $request)
+    public function createSubscription(CreateSubscriptionRequest $request): mixed
     {
-        $user = User::where('email', '=', $request->input('email'))->firstOrFail();
-
-        $plan = Plan::where('plan_month', '=', $request->input('plan'))->orWhere('plan_year', '=', $request->input('plan'))->firstOrFail();
-
-        $subscription = new Subscription;
-
-        $end_date = Carbon::now()->add($request->trial_days, 'day');
-
-        $subscription->user_id = $user->id;
-        $subscription->name = $plan->name;
-        $subscription->stripe_status = 'emulated';
-        $subscription->stripe_id = '';
-        $subscription->stripe_plan = $request->input('plan');
-        $subscription->quantity = 1;
-        $subscription->trial_ends_at = $end_date;
-        $subscription->ends_at = $end_date;
         try {
-            $subscription->save();
+            $name = $this->adminService->createSubscription($request->validated());
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('admin.subscriptions')->with('success', __(':name has been created.', ['name' => $plan->name]));
+        return redirect()->route('admin.subscriptions')->with('success', __(':name has been created.', ['name' => $name]));
     }
 
     /**
-     * Delete a subscription model
+     * Delete an emulated subscription and redirect back with feedback.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteSubscription($id)
+    public function deleteSubscription(mixed $id): mixed
     {
-        $subscription = Subscription::where([['id', '=', $id], ['stripe_status', '=', 'emulated']])->firstOrFail();
+        $name = $this->adminService->deleteEmulatedSubscription($id);
 
-        Subscription::destroy($id);
-
-        return redirect()->route('admin.subscriptions')->with('success', __(':name has been deleted.', ['name' => $subscription->name]));
+        return redirect()->route('admin.subscriptions')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**
-     * Upload language files
+     * Upload and register a new language file from admin input.
      *
      * @param CreateLanguageRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createLanguage(CreateLanguageRequest $request)
+    public function createLanguage(CreateLanguageRequest $request): mixed
     {
         if ($request->validated()) {
 
             $file = $this->readLanguage($request);
             $this->uploadLanguage($request, $file);
 
-            // Update the database
-            Language::updateOrCreate(['code' => $file->lang_code], ['name' => $file->lang_name, 'dir' => $file->lang_dir]);
+            $name = $this->adminService->syncLanguage($file);
 
-            session()->flash('success', __(':name language uploaded.', ['name' => $file->lang_name]));
+            session()->flash('success', __(':name language uploaded.', ['name' => $name]));
         }
 
         return redirect()->route('admin.languages');
     }
 
     /**
-     * Read the Language file contents
+     * Read and decode the uploaded language JSON payload.
      *
      * @param Request $request
      * @return mixed
      */
-    private function readLanguage(Request $request)
+    private function readLanguage(Request $request): mixed
     {
         $uploadedFile = file_get_contents($request->file('language'));
         $file = json_decode($uploadedFile);
@@ -901,264 +664,134 @@ class AdminController extends Controller
     }
 
     /**
-     * Upload the language file on disk
+     * Store the uploaded language JSON file on the language disk.
      *
      * @param Request $request
      * @param $file
      */
-    private function uploadLanguage(Request $request, $file)
+    private function uploadLanguage(Request $request, mixed $file): mixed
     {
         Storage::disk('languages')->put($file->lang_code . '.json', File::get($request->file('language')));
     }
 
     /**
-     * Update the Language file
+     * Update language metadata and default-language state.
      *
      * @param Request $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateLanguage(Request $request, $id)
+    public function updateLanguage(Request $request, mixed $id): mixed
     {
-        // Get the language
-        $language = Language::findOrFail($id);
-
-        // If the current language is not default
-        if ($language->default == 0) {
-            if ($request->has('default')) {
-                // Reset the default language
-                Language::query()->update(['default' => 0]);
-
-                // Set the new default language
-                $language->default = 1;
-                $language->save();
-            }
-        }
+        $this->adminService->updateLanguageDefault($id, $request->has('default'));
 
         return redirect()->route('admin.languages.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete the Language file
+     * Delete a language after validating default-language constraints.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteLanguage($id)
+    public function deleteLanguage(mixed $id): mixed
     {
-        // If there's more than 1 language available
-        if (Language::count() > 1) {
-            // Get the language
-            $language = Language::findOrFail($id);
-
-            // If the language to be deletes is set as default
-            if ($language->default) {
-                $redirect = redirect()->route('admin.languages')->with('error', __('The default language can\'t be deleted.'));
-            } else {
-                // Delete the database record
-                Language::destroy($id);
-
-                // Delete the file
-                Storage::disk('languages')->delete($id . '.json');
-
-                $redirect = redirect()->route('admin.languages')->with('success', __(':name has been deleted.', ['name' => $language->name]));
-            }
-        } else {
-            $redirect = redirect()->route('admin.languages')->with('error', __('The default language can\'t be deleted.'));
+        try {
+            $name = $this->adminService->deleteLanguage($id);
+            Storage::disk('languages')->delete($id . '.json');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.languages')->with('error', $e->getMessage());
         }
 
-        return $redirect;
+        return redirect()->route('admin.languages')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**
-     * Create the Page
+     * Create a static page from validated admin input.
      *
      * @param CreatePageRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createPage(CreatePageRequest $request)
+    public function createPage(CreatePageRequest $request): mixed
     {
-        $page = new Page;
+        $name = $this->adminService->createPage($request->all());
 
-        $page->title = $request->input('title');
-        $page->slug = $request->input('slug');
-        $page->footer = $request->input('footer') == 1 ? 1 : 0;
-        $page->content = $request->input('content');
-
-        $page->save();
-
-        return redirect()->route('admin.pages')->with('success', __(':name has been created.', ['name' => $request->input('title')]));
+        return redirect()->route('admin.pages')->with('success', __(':name has been created.', ['name' => $name]));
     }
 
     /**
-     * Update the Page
+     * Update the selected static page from validated admin input.
      *
      * @param UpdatePageRequest $request
      * @param $id
      * @return mixed
      */
-    public function updatePage(UpdatePageRequest $request, $id)
+    public function updatePage(UpdatePageRequest $request, mixed $id): mixed
     {
-        $page = Page::findOrFail($id);
-
-        $page->title = $request->input('title');
-        $page->slug = $request->input('slug');
-        $page->footer = $request->input('footer') == 1 ? 1 : 0;
-        $page->content = $request->input('content');
-
-        $page->save();
+        $this->adminService->updatePage($id, $request->all());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete the Page
+     * Delete the selected static page and redirect with feedback.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deletePage($id)
+    public function deletePage(mixed $id): mixed
     {
-        $page = Page::findOrFail($id);
+        $name = $this->adminService->deletePage($id);
 
-        Page::destroy($id);
-
-        return redirect()->route('admin.pages')->with('success', __(':name has been deleted.', ['name' => $page->title]));
+        return redirect()->route('admin.pages')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**
-     * Create the Plan
+     * Create a subscription plan and its payment provider records.
      *
      * @param CreatePlanRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createPlan(CreatePlanRequest $request)
+    public function createPlan(CreatePlanRequest $request): mixed
     {
-        $plan = new Plan;
-
         try {
-            Stripe\Stripe::setApiKey(config('cashier.secret'));
-            $stripeProduct = Stripe\Product::create([
-                "name" => $request->input('name'),
-                "type" => 'service'
-            ]);
-
-            $monthlyPlan = Stripe\Plan::create([
-                "product" => $stripeProduct->id,
-                "amount" => $request->input('amount_month'),
-                "interval" => 'month',
-                "currency" => $request->input('currency')
-            ]);
-
-            $yearlyPlan = Stripe\Plan::create([
-                "product" => $stripeProduct->id,
-                "amount" => $request->input('amount_year'),
-                "interval" => 'year',
-                "currency" => $request->input('currency')
-            ]);
-
-            $plan->product = $stripeProduct->id;
-            $plan->name = $request->input('name');
-            $plan->description = $request->input('description');
-            $plan->trial_days = $request->input('trial_days');
-            $plan->currency = $request->input('currency');
-            $plan->plan_month = $monthlyPlan->id;
-            $plan->plan_year = $yearlyPlan->id;
-            $plan->amount_month = $request->input('amount_month');
-            $plan->amount_year = $request->input('amount_year');
-            $plan->visibility = $request->input('visibility');
-            $plan->color = $request->input('color');
-            $plan->option_links = $request->input('option_links');
-            $plan->option_spaces = $request->input('option_spaces');
-            $plan->option_domains = $request->input('option_domains');
-            $plan->option_password = $request->input('option_password');
-            $plan->option_expiration = $request->input('option_expiration');
-            $plan->option_stats = $request->input('option_stats');
-            $plan->option_geo = $request->input('option_geo');
-            $plan->option_platform = $request->input('option_platform');
-            $plan->option_disabled = $request->input('option_disabled');
-            $plan->option_utm = $request->input('option_utm');
-            $plan->option_api = $request->input('option_api');
-            $plan->save();
+            $name = $this->adminService->createPlan($request->validated());
         } catch (\Exception $e) {
             $request->flash();
             return redirect()->route('admin.plans.new')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('admin.plans')->with('success', __(':name has been created.', ['name' => $request->input('name')]));
+        return redirect()->route('admin.plans')->with('success', __(':name has been created.', ['name' => $name]));
     }
 
     /**
-     * Update the Plan
+     * Update the selected subscription plan and related provider metadata.
      *
      * @param UpdatePlanRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updatePlan(UpdatePlanRequest $request, $id)
+    public function updatePlan(UpdatePlanRequest $request, mixed $id): mixed
     {
-        $plan = Plan::withTrashed()->findOrFail($id);
-
-        // If the payments module is not enabled
-        if (!config('settings.stripe')) {
-            // Prevent updating any plans other than the default one
-            if ($plan->amount_month > 0 || $plan->amount_year > 0) {
-                abort(404);
-            }
+        try {
+            $this->adminService->updatePlan($id, $request->all());
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        if ($plan->amount_month && $plan->amount_year) {
-            try {
-                Stripe\Stripe::setApiKey(config('cashier.secret'));
-                Stripe\Product::update($plan->product, [
-                    'name' => $request->input('name')
-                ]);
-            } catch (\Exception $e) {
-                return back()->with('error', $e->getMessage());
-            }
-
-            // Update the subscriptions with the new plan name
-            Subscription::where('name', $plan->name)->update(['name' => $request->input('name')]);
-
-            $plan->trial_days = $request->input('trial_days');
-            $plan->visibility = $request->input('visibility');
-        }
-        $plan->name = $request->input('name');
-        $plan->description = $request->input('description');
-        $plan->color = $request->input('color');
-        $plan->option_links = $request->input('option_links');
-        $plan->option_spaces = $request->input('option_spaces');
-        $plan->option_domains = $request->input('option_domains');
-        $plan->option_password = $request->input('option_password');
-        $plan->option_expiration = $request->input('option_expiration');
-        $plan->option_stats = $request->input('option_stats');
-        $plan->option_geo = $request->input('option_geo');
-        $plan->option_platform = $request->input('option_platform');
-        $plan->option_disabled = $request->input('option_disabled');
-        $plan->option_utm = $request->input('option_utm');
-        $plan->option_api = $request->input('option_api');
-        $plan->save();
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Soft delete the Plan
+     * Soft-delete the selected subscription plan when allowed.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function disablePlan($id)
+    public function disablePlan(mixed $id): mixed
     {
-        $plan = Plan::findOrFail($id);
-
-        // Do not delete the default plan
-        if ($plan->amount_month == 0 && $plan->amount_year == 0) {
-            return redirect()->route('admin.plans')->with('error', __('The default plan can\'t be deleted.'));
-        }
-
         try {
-            Plan::destroy($id);
+            $this->adminService->disablePlan($id);
         } catch (\Exception $e) {
             return redirect()->route('admin.plans')->with('error', $e->getMessage());
         }
@@ -1167,181 +800,174 @@ class AdminController extends Controller
     }
 
     /**
-     * Restore the Plan
+     * Restore a previously disabled subscription plan.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restorePlan($id)
+    public function restorePlan(mixed $id): mixed
     {
-        $plan = Plan::withTrashed()->findOrFail($id);
-        $plan->restore();
+        $this->adminService->restorePlan($id);
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update the User
+     * Update a user profile from admin input while enforcing role safeguards.
      *
      * @param UpdateUserRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateUser(UpdateUserRequest $request, $id)
+    public function updateUser(UpdateUserRequest $request, mixed $id): mixed
     {
-        $user = User::withTrashed()->findOrFail($id);
-
-        if (Auth::id() == $user->id && $request->input('role') == 0) {
+        try {
+            $this->adminService->updateUser($id, $request->validated(), Auth::id());
+        } catch (\Exception $e) {
             return back()->with('error', __('Operation denied.'));
         }
-
-        $this->userUpdate($request, $user, true);
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete the User
+     * Permanently delete a user account after permission checks.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function deleteUser($id)
+    public function deleteUser(mixed $id): mixed
     {
-        $user = User::withTrashed()->findOrFail($id);
-
-        if (Auth::id() == $user->id && $user->role == 1) {
+        try {
+            $name = $this->adminService->deleteUser($id, Auth::id());
+        } catch (\Exception $e) {
             return back()->with('error', __('Operation denied.'));
         }
 
-        $user->forceDelete();
-
-        return redirect()->route('admin.users')->with('success', __(':name has been deleted.', ['name' => $user->name]));
+        return redirect()->route('admin.users')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**
-     * Soft delete the User
+     * Soft-delete a user account after permission checks.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function disableUser($id)
+    public function disableUser(mixed $id): mixed
     {
-        $user = User::findOrFail($id);
-
-        if (Auth::id() == $user->id && $user->role == 1) {
+        try {
+            $this->adminService->disableUser($id, Auth::id());
+        } catch (\Exception $e) {
             return back()->with('error', __('Operation denied.'));
         }
-
-        $user->delete();
 
         return redirect()->route('admin.users.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
-     * Restore the soft deleted User
+     * Restore a previously disabled user account.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function restoreUser($id)
+    public function restoreUser(mixed $id): mixed
     {
-        $user = User::withTrashed()->findOrFail($id);
-        $user->restore();
+        $this->adminService->restoreUser($id);
 
         return redirect()->route('admin.users.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
-     * Update a link model
+     * Update the selected link from validated admin input.
      *
      * @param UpdateLinkRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateLink(UpdateLinkRequest $request, $id)
+    public function updateLink(UpdateLinkRequest $request, mixed $id): mixed
     {
-        $link = Link::where('id', '=', $id)->firstOrFail();
+        $link = $this->linkRepository->findOrFail($id);
 
-        $this->linkUpdate($request, $link);
+        $this->linkService->update($link, $request->all());
 
         return redirect()->route('admin.links.edit', $id)->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete a link model
+     * Delete the selected link and redirect with feedback.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function deleteLink($id)
+    public function deleteLink(mixed $id): mixed
     {
-        $link = Link::where('id', $id)->firstOrFail();
-        $link->delete();
+        $link = $this->linkRepository->findOrFail($id);
+        $name = $this->linkService->displayName($link);
+        $this->linkService->delete($link);
 
-        return redirect()->route('admin.links')->with('success', __(':name has been deleted.', ['name' => str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name . '/' . $link->alias : route('link.redirect', $link->alias)))]));
+        return redirect()->route('admin.links')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**
-     * Update a space model
+     * Update the selected space from validated admin input.
      *
      * @param UpdateSpaceRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateSpace(UpdateSpaceRequest $request, $id)
+    public function updateSpace(UpdateSpaceRequest $request, mixed $id): mixed
     {
-        $space = Space::where('id', $id)->firstOrFail();
+        $space = $this->spaceRepository->findOrFail($id);
 
-        $this->spaceUpdate($request, $space);
+        $this->spaceService->update($space, $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete a space model
+     * Delete the selected space and redirect with feedback.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function deleteSpace($id)
+    public function deleteSpace(mixed $id): mixed
     {
-        $space = Space::where('id', $id)->firstOrFail();
-        $space->delete();
+        $space = $this->spaceRepository->findOrFail($id);
+        $this->spaceService->delete($space);
 
         return redirect()->route('admin.spaces')->with('success', __(':name has been deleted.', ['name' => $space->name]));
     }
 
     /**
-     * Update the domain model
+     * Update the selected domain from validated admin input.
      *
      * @param UpdateDomainRequest $request
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function updateDomain(UpdateDomainRequest $request, $id)
+    public function updateDomain(UpdateDomainRequest $request, mixed $id): mixed
     {
-        $domain = Domain::where([['id', '=', $id]])->firstOrFail();
+        $domain = $this->domainRepository->findOrFail($id);
 
-        $this->domainUpdate($request, $domain);
+        $this->domainService->update($domain, $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete a domain model
+     * Delete the selected domain and redirect with feedback.
      *
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      * @throws \Exception
      */
-    public function deleteDomain($id)
+    public function deleteDomain(mixed $id): mixed
     {
-        $domain = Domain::where([['id', '=', $id]])->firstOrFail();
-        $domain->delete();
+        $domain = $this->domainRepository->findOrFail($id);
+        $this->domainService->delete($domain);
 
         return redirect()->route('admin.domains')->with('success', __(':name has been deleted.', ['name' => str_replace(['http://', 'https://'], '', $domain->name)]));
     }
