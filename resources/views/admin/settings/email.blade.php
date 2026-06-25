@@ -1,67 +1,68 @@
-@section('site_title', formatTitle([__('Settings'), config('settings.title')]))
+@include('shared.message')
 
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['title' => __('Settings')],
-]])
+<form action="{{ route('admin.settings.email.update') }}" method="post" enctype="multipart/form-data">
+    @csrf
 
-<h2 class="mb-3 d-inline-block">{{ __('Settings') }}</h2>
+    <div class="card card-primary card-outline shadow-sm mb-0">
+        <div class="card-header">
+            <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                @include('icons.email', ['class' => 'fill-current icon-text'])
+                {{ __('Email') }}
+            </h3>
+        </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header"><div class="font-weight-medium py-1">{{ __('Email') }}</div></div>
-    <div class="card-body">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="i_email_driver" class="form-label">{{ __('Driver') }}</label>
+                    <select name="email_driver" id="i_email_driver" class="form-select">
+                        @foreach(['smtp', 'log'] as $value)
+                            <option value="{{ $value }}" @if (old('email_driver', config('settings.email_driver')) == $value) selected @endif>{{ ucfirst($value) }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        @include('shared.message')
+                <div class="col-md-6">
+                    <label for="i_email_encryption" class="form-label">{{ __('Encryption') }}</label>
+                    <select name="email_encryption" id="i_email_encryption" class="form-select">
+                        @foreach(['tls', 'ssl'] as $value)
+                            <option value="{{ $value }}" @if (old('email_encryption', config('settings.email_encryption')) == $value) selected @endif>{{ strtoupper($value) }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <form action="{{ route('admin.settings.email.update') }}" method="post" enctype="multipart/form-data">
+                <div class="col-md-8">
+                    <label for="i_email_host" class="form-label">{{ __('Host') }}</label>
+                    <input type="text" name="email_host" id="i_email_host" class="form-control" value="{{ old('email_host', config('settings.email_host')) }}">
+                </div>
 
-            @csrf
+                <div class="col-md-4">
+                    <label for="i_email_port" class="form-label">{{ __('Port') }}</label>
+                    <input type="number" name="email_port" id="i_email_port" class="form-control" value="{{ old('email_port', config('settings.email_port')) }}">
+                </div>
 
-            <div class="form-group">
-                <label for="i_email_driver">{{ __('Driver') }}</label>
-                <select name="email_driver" id="i_email_driver" class="custom-select">
-                    @foreach(['smtp', 'log'] as $value)
-                        <option value="{{ $value }}" @if (config('settings.email_driver') == $value) selected @endif>{{ ucfirst($value) }}</option>
-                    @endforeach
-                </select>
+                <div class="col-md-6">
+                    <label for="i_email_address" class="form-label">{{ __('Email address') }}</label>
+                    <input type="email" name="email_address" id="i_email_address" class="form-control" value="{{ old('email_address', config('settings.email_address')) }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="i_email_username" class="form-label">{{ __('Username') }}</label>
+                    <input type="text" name="email_username" id="i_email_username" class="form-control" value="{{ old('email_username', config('settings.email_username')) }}">
+                </div>
+
+                <div class="col-12">
+                    <label for="i_email_password" class="form-label">{{ __('Password') }}</label>
+                    <input type="password" name="email_password" id="i_email_password" class="form-control" value="{{ old('email_password', config('settings.email_password')) }}">
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="i_email_host">{{ __('Host') }}</label>
-                <input type="text" name="email_host" id="i_email_host" class="form-control" value="{{ config('settings.email_host') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="i_email_port">{{ __('Port') }}</label>
-                <input type="number" name="email_port" id="i_email_port" class="form-control" value="{{ config('settings.email_port') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="i_email_encryption">{{ __('Encryption') }}</label>
-                <select name="email_encryption" id="i_email_encryption" class="custom-select">
-                    @foreach(['tls', 'ssl'] as $value)
-                        <option value="{{ $value }}" @if (config('settings.email_encryption') == $value) selected @endif>{{ strtoupper($value) }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="i_email_address">{{ __('Email address') }}</label>
-                <input type="email" name="email_address" id="i_email_address" class="form-control" value="{{ config('settings.email_address') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="i_email_username">{{ __('Username') }}</label>
-                <input type="text" name="email_username" id="i_email_username" class="form-control" value="{{ config('settings.email_username') }}">
-            </div>
-
-            <div class="form-group">
-                <label for="i_email_password">{{ __('Password') }}</label>
-                <input type="password" name="email_password" id="i_email_password" class="form-control" value="{{ config('settings.email_password') }}">
-            </div>
-
-            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-        </form>
-
+        <div class="card-footer bg-body d-flex justify-content-end">
+            <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
+                {{ __('Save') }}
+            </button>
+        </div>
     </div>
-</div>
+</form>

@@ -1,42 +1,43 @@
-@section('site_title', formatTitle([__('Settings'), config('settings.title')]))
+@include('shared.message')
 
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['title' => __('Settings')],
-]])
+<form action="{{ route('admin.settings.registration.update') }}" method="post" enctype="multipart/form-data">
+    @csrf
 
-<h2 class="mb-3 d-inline-block">{{ __('Settings') }}</h2>
+    <div class="card card-primary card-outline shadow-sm mb-0">
+        <div class="card-header">
+            <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                @include('icons.users', ['class' => 'fill-current icon-text'])
+                {{ __('Registration') }}
+            </h3>
+        </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header"><div class="font-weight-medium py-1">{{ __('Registration') }}</div></div>
-    <div class="card-body">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="i_registration_registration" class="form-label">{{ __('Registration') }}</label>
+                    <select name="registration_registration" id="i_registration_registration" class="form-select">
+                        @foreach([0 => __('Disabled'), 1 => __('Enabled')] as $key => $value)
+                            <option value="{{ $key }}" @if (old('registration_registration', config('settings.registration_registration')) == $key) selected @endif>{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-        @include('shared.message')
-
-        <form action="{{ route('admin.settings.registration.update') }}" method="post" enctype="multipart/form-data">
-
-            @csrf
-
-            <div class="form-group">
-                <label for="i_registration_registration">{{ __('Registration') }}</label>
-                <select name="registration_registration" id="i_registration_registration" class="custom-select">
-                    @foreach([0 => __('Disabled'), 1 => __('Enabled')] as $key => $value)
-                        <option value="{{ $key }}" @if (config('settings.registration_registration') == $key) selected @endif>{{ $value }}</option>
-                    @endforeach
-                </select>
+                <div class="col-md-6">
+                    <label for="i_registration_verification" class="form-label">{{ __('Email verification') }}</label>
+                    <select name="registration_verification" id="i_registration_verification" class="form-select">
+                        @foreach([0 => __('Disabled'), 1 => __('Enabled')] as $key => $value)
+                            <option value="{{ $key }}" @if (old('registration_verification', config('settings.registration_verification')) == $key) selected @endif>{{ $value }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="i_registration_verification">{{ __('Email verification') }}</label>
-                <select name="registration_verification" id="i_registration_verification" class="custom-select">
-                    @foreach([0 => __('Disabled'), 1 => __('Enabled')] as $key => $value)
-                        <option value="{{ $key }}" @if (config('settings.registration_verification') == $key) selected @endif>{{ $value }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-        </form>
-
+        <div class="card-footer bg-body d-flex justify-content-end">
+            <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
+                {{ __('Save') }}
+            </button>
+        </div>
     </div>
-</div>
+</form>
