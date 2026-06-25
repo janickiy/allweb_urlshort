@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\PageRepository;
+use Illuminate\View\View;
 
 class PageController extends Controller
 {
@@ -15,8 +16,11 @@ class PageController extends Controller
 
     /**
      * Display a public static page by slug.
+     *
+     * @param string $url
+     * @return View
      */
-    public function index(mixed $url): mixed
+    public function index(string $url): View
     {
         return view('page.page', ['page' => $this->pages->findBySlugOrFail($url)]);
     }

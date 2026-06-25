@@ -111,17 +111,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::prefix('payments')
                 ->middleware('payment')
                 ->group(function () {
-                    Route::get('methods', 'paymentMethods')->name('settings.payments.methods');
-                    Route::get('methods/new', 'paymentMethodsNew')->name('settings.payments.methods.new');
-                    Route::post('methods/new', 'createPaymentMethod');
-                    Route::get('methods/edit/{id}', 'paymentMethodsEdit')->name('settings.payments.methods.edit');
-                    Route::post('methods/edit/{id}', 'updatePaymentMethod');
-                    Route::post('methods/delete/{id}', 'deletePaymentMethod')->name('settings.payments.methods.delete');
+                    Route::prefix('methods')
+                        ->group(function () {
+                            Route::get('/', 'paymentMethods')->name('settings.payments.methods');
+                            Route::get('new', 'paymentMethodsNew')->name('settings.payments.methods.new');
+                            Route::post('new', 'createPaymentMethod');
+                            Route::get('edit/{id}', 'paymentMethodsEdit')->name('settings.payments.methods.edit');
+                            Route::post('edit/{id}', 'updatePaymentMethod');
+                            Route::post('delete/{id}', 'deletePaymentMethod')->name('settings.payments.methods.delete');
+                        });
 
-                    Route::get('subscriptions', 'subscriptions')->name('settings.payments.subscriptions');
-                    Route::get('subscriptions/edit/{id}', 'subscriptionsEdit')->name('settings.payments.subscriptions.edit');
-                    Route::post('subscriptions/cancel/{subscription}', 'cancelSubscription')->name('settings.payments.subscriptions.cancel');
-                    Route::post('subscriptions/resume/{subscription}', 'resumeSubscription')->name('settings.payments.subscriptions.resume');
+                    Route::prefix('subscriptions')
+                        ->group(function () {
+                            Route::get('/', 'subscriptions')->name('settings.payments.subscriptions');
+                            Route::get('edit/{id}', 'subscriptionsEdit')->name('settings.payments.subscriptions.edit');
+                            Route::post('cancel/{subscription}', 'cancelSubscription')->name('settings.payments.subscriptions.cancel');
+                            Route::post('resume/{subscription}', 'resumeSubscription')->name('settings.payments.subscriptions.resume');
+                        });
 
                     Route::get('invoices', 'invoices')->name('settings.payments.invoices');
                     Route::get('invoice/{invoice}', 'invoice')->name('settings.payments.invoice');
@@ -134,8 +140,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('payment')
         ->controller(CheckoutController::class)
         ->group(function () {
-            Route::get('collect/{period}', 'collect')->name('checkout.collect');
-            Route::post('collect/{period}', 'updatePaymentDetails');
+            Route::prefix('collect/{period}')
+                ->group(function () {
+                    Route::get('/', 'collect')->name('checkout.collect');
+                    Route::post('/', 'updatePaymentDetails');
+                });
+
             Route::get('confirm/{id}', 'show')->name('checkout.confirm');
             Route::get('cancelled', 'cancelled')->name('checkout.cancelled');
             Route::get('complete', 'complete')->name('checkout.complete');

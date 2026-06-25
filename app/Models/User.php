@@ -53,10 +53,10 @@ class User extends Authenticatable implements MustVerifyEmail, HasLocalePreferen
      * Filter users by a partial name match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchName(Builder $query, mixed $value): Builder
+    public function scopeSearchName(Builder $query, string $value): Builder
     {
         return $query->where('name', 'like', '%' . $value . '%');
     }
@@ -65,10 +65,10 @@ class User extends Authenticatable implements MustVerifyEmail, HasLocalePreferen
      * Filter users by a partial email match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchEmail(Builder $query, mixed $value): Builder
+    public function scopeSearchEmail(Builder $query, string $value): Builder
     {
         return $query->where('email', 'like', '%' . $value . '%');
     }
@@ -77,10 +77,10 @@ class User extends Authenticatable implements MustVerifyEmail, HasLocalePreferen
      * Filter users by role.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeSearchRole(Builder $query, mixed $value): Builder
+    public function scopeSearchRole(Builder $query, int|string $value): Builder
     {
         return $query->where('role', '=', $value);
     }

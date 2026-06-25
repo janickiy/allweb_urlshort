@@ -3,49 +3,31 @@
 namespace App\Rules;
 
 use App\Models\Space;
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractNullableIdRule;
 
-class ValidateSpaceOwnershipRule implements Rule
+class ValidateSpaceOwnershipRule extends AbstractNullableIdRule
 {
     /**
-     * @var
+     * Create a space ownership rule for a user.
      */
-    private $userId;
-
-    /**
-     * Create a new rule instance.
-     *
-     * @return void
-     */
-    public function __construct(int|string $userId)
+    public function __construct(private readonly int|string $userId)
     {
-        $this->userId = $userId;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Determine if the space belongs to the user.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, int|string|null $value): bool
     {
         if (empty($value)) {
             return true;
         }
 
-        if (Space::where([['id', '=', $value], ['user_id', '=', $this->userId]])->exists()) {
-            return true;
-        }
-
-        return false;
+        return Space::where([['id', '=', $value], ['user_id', '=', $this->userId]])->exists();
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

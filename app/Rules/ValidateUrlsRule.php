@@ -2,36 +2,22 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateUrlsRule implements Rule
+class ValidateUrlsRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if every newline-separated value is a URL under the max length.
      */
-    public function __construct()
+    public function passes(string $attribute, string $value): bool
     {
-        //
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        // Get the URLs
         $urls = preg_split('/\n|\r/', $value, -1, PREG_SPLIT_NO_EMPTY);
 
-        // Validate URLs
+        if ($urls === false) {
+            return false;
+        }
+
         foreach ($urls as $url) {
-            // If the input contains an invalid url
-            // or if the input exceeds 2048 characters
             if (!filter_var($url, FILTER_VALIDATE_URL) || mb_strlen($url) > 2048) {
                 return false;
             }
@@ -41,9 +27,7 @@ class ValidateUrlsRule implements Rule
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

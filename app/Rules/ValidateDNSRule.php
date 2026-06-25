@@ -2,42 +2,34 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateDNSRule implements Rule
+class ValidateDNSRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the DNS A record points to this server.
      */
-    public function __construct()
+    public function passes(string $attribute, string $value): bool
     {
-        //
-    }
+        $parsed = parse_url($value);
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        $value = parse_url($value);
+        if (!is_array($parsed) || !isset($parsed['host'])) {
+            return false;
+        }
 
         try {
-            $dns = dns_get_record($value['host']);
-        } catch (\Exception $e) {
+            $dns = dns_get_record($parsed['host']);
+        } catch (\Exception) {
+            return false;
+        }
+
+        if ($dns === false) {
             return false;
         }
 
         foreach ($dns as $record) {
-            if ($record['type'] == 'A') {
-                if ($record['ip'] == request()->server('SERVER_ADDR')) {
-                    return true;
-                }
+            if (($record['type'] ?? null) === 'A' && ($record['ip'] ?? null) === request()->server('SERVER_ADDR')) {
+                return true;
             }
         }
 
@@ -45,9 +37,7 @@ class ValidateDNSRule implements Rule
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

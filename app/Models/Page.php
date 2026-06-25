@@ -27,10 +27,10 @@ class Page extends Model
      * Filter pages by a partial title match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearch(Builder $query, mixed $value): Builder
+    public function scopeSearch(Builder $query, string $value): Builder
     {
         return $query->where('title', 'like', '%' . $value . '%');
     }
@@ -38,9 +38,9 @@ class Page extends Model
     /**
      * Sanitize the page title before storing it.
      *
-     * @param $value
+     * @param string $value
      */
-    public function setTitleAttribute(mixed $value): void
+    public function setTitleAttribute(string $value): void
     {
         $this->attributes['title'] = strip_tags($value);
     }
@@ -48,9 +48,9 @@ class Page extends Model
     /**
      * Sanitize the page URL before storing it.
      *
-     * @param $value
+     * @param string $value
      */
-    public function setUrlAttribute(mixed $value): void
+    public function setUrlAttribute(string $value): void
     {
         $this->attributes['url'] = filter_var(htmlspecialchars(strip_tags($value)));
     }

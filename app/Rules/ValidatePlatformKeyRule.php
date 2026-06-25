@@ -2,40 +2,22 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidatePlatformKeyRule implements Rule
+class ValidatePlatformKeyRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the platform key exists in configuration.
      */
-    public function __construct()
+    public function passes(string $attribute, string $value): bool
     {
-        //
+        $platforms = config('platforms');
+
+        return is_array($platforms) && in_array($value, $platforms, true);
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        if (in_array($value, config('platforms'))) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

@@ -3,49 +3,31 @@
 namespace App\Rules;
 
 use App\Models\Domain;
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractNullableIdRule;
 
-class ValidateDomainOwnershipRule implements Rule
+class ValidateDomainOwnershipRule extends AbstractNullableIdRule
 {
     /**
-     * @var
+     * Create a domain ownership rule for a user.
      */
-    private $userId;
-
-    /**
-     * Create a new rule instance.
-     *
-     * @param $userId
-     */
-    public function __construct(int|string $userId)
+    public function __construct(private readonly int|string $userId)
     {
-        $this->userId = $userId;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Determine if the domain belongs to the user.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, int|string|null $value): bool
     {
         if (empty($value)) {
             return true;
         }
 
-        if (Domain::where([['id', '=', $value], ['user_id', '=', $this->userId]])->exists()) {
-            return true;
-        }
-
-        return false;
+        return Domain::where([['id', '=', $value], ['user_id', '=', $this->userId]])->exists();
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

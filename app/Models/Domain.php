@@ -20,10 +20,10 @@ class Domain extends Model
      * Filter domains by a partial name match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchName(Builder $query, mixed $value): Builder
+    public function scopeSearchName(Builder $query, string $value): Builder
     {
         return $query->where('name', 'like', '%' . $value . '%');
     }
@@ -42,7 +42,7 @@ class Domain extends Model
     /**
      * Get the links assigned to this domain.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function links(): HasMany
     {
@@ -51,8 +51,6 @@ class Domain extends Model
 
     /**
      * Get the user that owns this domain, including soft-deleted users.
-     *
-     * @return mixed
      */
     public function user(): BelongsTo
     {
@@ -63,10 +61,10 @@ class Domain extends Model
      * Filter domains by owner user ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeUserId(Builder $query, mixed $value): Builder
+    public function scopeUserId(Builder $query, int|string $value): Builder
     {
         return $query->where('user_id', '=', $value);
     }

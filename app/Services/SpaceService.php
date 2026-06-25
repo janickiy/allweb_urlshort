@@ -9,11 +9,17 @@ use App\Repositories\SpaceRepository;
 
 class SpaceService
 {
+    /**
+     * Inject dependencies used by space operations.
+     */
     public function __construct(private readonly SpaceRepository $spaces)
     {
     }
 
-    public function create(array $input, User $user): Space
+    /**
+     * Create a user space from input data.
+     */
+    public function create(array $input, User $user)
     {
         return $this->spaces->createFromDto(SpaceData::fromArray([
             'name' => $input['name'],
@@ -22,23 +28,80 @@ class SpaceService
         ]));
     }
 
-    public function update(Space $space, array $input): Space
+    /**
+     * Update a space from input data.
+     */
+    public function update(Space $space, array $input)
     {
         $this->spaces->updateFromDto($space->id, SpaceData::fromArray([
             'name' => $input['name'],
             'color' => $this->color($input['color'] ?? null, 0),
         ]));
 
-        return $space->refresh();
+        return $this->spaces->findOrFail($space->id);
     }
 
+    /**
+     * Update a space owned by a user.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function updateForUser(int|string $id, User $user, array $input): Space
+    {
+        return $this->update($this->spaces->findForUserOrFail($id, $user->id), $input);
+    }
+
+    /**
+     * Update a space by primary key for admin workflows.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function updateById(int|string $id, array $input): Space
+    {
+        return $this->update($this->spaces->findOrFail($id), $input);
+    }
+
+    /**
+     * Delete a space.
+     */
     public function delete(Space $space): bool
     {
-        return (bool) $space->delete();
+        return $this->spaces->delete($space->id);
     }
 
-    private function color(mixed $color, int $default): int
+    /**
+     * Delete a space owned by a user and return its display name.
+     */
+    public function deleteForUser(int|string $id, User $user): string
+    {
+        return $this->deleteAndReturnName($this->spaces->findForUserOrFail($id, $user->id));
+    }
+
+    /**
+     * Delete a space by primary key for admin workflows and return its display name.
+     */
+    public function deleteById(int|string $id): string
+    {
+        return $this->deleteAndReturnName($this->spaces->findOrFail($id));
+    }
+
+    /**
+     * Normalize a color value with a default fallback.
+     */
+    private function color(int|string|null $color, int $default): int
     {
         return array_key_exists($color, formatSpace()) ? (int) $color : $default;
+    }
+
+    /**
+     * Delete a space model and return the name that should be shown to users.
+     */
+    private function deleteAndReturnName(Space $space): string
+    {
+        $name = $space->name;
+
+        $this->delete($space);
+
+        return $name;
     }
 }

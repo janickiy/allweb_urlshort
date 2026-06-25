@@ -24,6 +24,9 @@ class StatsService
         't.umblr.com' => 'Tumblr',
     ];
 
+    /**
+     * Inject dependencies used by statistics operations.
+     */
     public function __construct(
         private readonly LinkRepository $links,
         private readonly StatRepository $stats,
@@ -32,6 +35,8 @@ class StatsService
     }
 
     /**
+     * Build general statistics data for a link.
+     *
      * @return array<string, mixed>
      */
     public function general(int|string $id): array
@@ -51,6 +56,8 @@ class StatsService
     }
 
     /**
+     * Build geographic statistics data for a link.
+     *
      * @return array<string, mixed>
      */
     public function geographic(int|string $id): array
@@ -71,6 +78,8 @@ class StatsService
     }
 
     /**
+     * Build grouped statistics data for a link.
+     *
      * @return array<string, mixed>
      */
     public function grouped(int|string $id, string $view, string $column, string $resultKey): array
@@ -89,6 +98,8 @@ class StatsService
     }
 
     /**
+     * Build social referrer statistics data for a link.
+     *
      * @return array<string, mixed>
      */
     public function social(int|string $id): array
@@ -110,6 +121,8 @@ class StatsService
     }
 
     /**
+     * Build shared statistics view data for a link.
+     *
      * @return array<string, mixed>
      */
     private function baseData(int|string $id): array
@@ -131,6 +144,8 @@ class StatsService
     }
 
     /**
+     * Build daily, weekly, monthly, and total click summaries.
+     *
      * @return array<string, array<string, int>>
      */
     private function summary(Link $link): array
@@ -150,6 +165,9 @@ class StatsService
         ];
     }
 
+    /**
+     * Abort when the current user cannot view link statistics.
+     */
     private function guard(Link $link): void
     {
         if ($link->public) {

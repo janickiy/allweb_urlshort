@@ -18,7 +18,7 @@ class EnvironmentController extends \RachidLaasri\LaravelInstaller\Controllers\E
      * @param Redirector $redirect
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function saveWizard(Request $request, Redirector $redirect): mixed
+    public function saveWizard(Request $request, Redirector $redirect): \Illuminate\Http\RedirectResponse
     {
         $rules = config('installer.environment.form.rules');
         $messages = [
@@ -51,7 +51,7 @@ class EnvironmentController extends \RachidLaasri\LaravelInstaller\Controllers\E
      * @param Request $request
      * @return bool
      */
-    private function checkDatabaseConnection(Request $request): mixed
+    private function checkDatabaseConnection(Request $request): bool
     {
         $connection = $request->input('database_connection');
 

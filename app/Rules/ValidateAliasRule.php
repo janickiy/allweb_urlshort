@@ -3,33 +3,21 @@
 namespace App\Rules;
 
 use App\Models\Link;
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateAliasRule implements Rule
+class ValidateAliasRule extends AbstractStringRule
 {
     /**
-     * @var
+     * Create a new alias uniqueness rule for a user.
      */
-    protected $userId;
-
-    /**
-     * Create a new rule instance.
-     *
-     * @param $userId
-     */
-    public function __construct(int|string $userId)
+    public function __construct(protected readonly int|string $userId)
     {
-        $this->userId = $userId;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Determine if the alias is unique within its domain scope.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, string $value): bool
     {
         $conditions = [];
 
@@ -41,7 +29,7 @@ class ValidateAliasRule implements Rule
             $conditions[] = ['id', '!=', request()->route('id')];
 
             $link = Link::findOrFail(request()->route('id'));
-            $conditions[] = ['domain_id', '=', $link->domain->id ?? null];
+            $conditions[] = ['domain_id', '=', $link->domain?->id];
         } else {
             // If the request has a link under a domain
             if (request()->input('domain')) {
@@ -52,17 +40,11 @@ class ValidateAliasRule implements Rule
             }
         }
 
-        if (Link::where($conditions)->exists()) {
-            return false;
-        }
-
-        return true;
+        return !Link::where($conditions)->exists();
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

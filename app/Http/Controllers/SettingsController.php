@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SettingsController\{
+use App\Http\Requests\Settings\{
     DeleteUserAccountRequest,
     UpdateBillingRequest,
     UpdateUserRequest,
@@ -12,6 +12,8 @@ use App\Services\PaymentSettingsService;
 use App\Services\UserSettingsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class SettingsController extends Controller
 {
@@ -27,7 +29,7 @@ class SettingsController extends Controller
     /**
      * Redirect the settings landing route to account settings.
      */
-    public function index(): mixed
+    public function index(): View
     {
         return view('settings.content', ['view' => 'index', 'user' => Auth::user()]);
     }
@@ -35,7 +37,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user account settings form.
      */
-    public function account(): mixed
+    public function account(): View
     {
         return view('settings.content', ['view' => 'account', 'user' => Auth::user()]);
     }
@@ -43,7 +45,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user password settings form.
      */
-    public function security(): mixed
+    public function security(): View
     {
         return view('settings.content', ['view' => 'security', 'user' => Auth::user()]);
     }
@@ -51,7 +53,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user subscription list.
      */
-    public function subscriptions(): mixed
+    public function subscriptions(): View
     {
         $user = Auth::user();
 
@@ -65,7 +67,7 @@ class SettingsController extends Controller
     /**
      * Display the selected subscription details for the authenticated user.
      */
-    public function subscriptionsEdit(mixed $id): mixed
+    public function subscriptionsEdit(int|string $id): View
     {
         $user = Auth::user();
 
@@ -78,7 +80,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user payment methods.
      */
-    public function paymentMethods(): mixed
+    public function paymentMethods(): View
     {
         $user = Auth::user();
 
@@ -91,7 +93,7 @@ class SettingsController extends Controller
     /**
      * Display the form for adding a new payment method.
      */
-    public function paymentMethodsNew(Request $request): mixed
+    public function paymentMethodsNew(): View|RedirectResponse
     {
         try {
             return view('settings.content', array_merge([
@@ -105,7 +107,7 @@ class SettingsController extends Controller
     /**
      * Display the form for editing an existing payment method.
      */
-    public function paymentMethodsEdit(mixed $id): mixed
+    public function paymentMethodsEdit(int|string $id): View|RedirectResponse
     {
         try {
             return view('settings.content', array_merge([
@@ -119,7 +121,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user billing information form.
      */
-    public function billing(Request $request): mixed
+    public function billing(): View|RedirectResponse
     {
         $user = Auth::user();
 
@@ -139,7 +141,7 @@ class SettingsController extends Controller
     /**
      * Display the authenticated user invoice list.
      */
-    public function invoices(): mixed
+    public function invoices(): View
     {
         $user = Auth::user();
 
@@ -153,7 +155,7 @@ class SettingsController extends Controller
     /**
      * Display a single invoice for the authenticated user.
      */
-    public function invoice(mixed $id): mixed
+    public function invoice(int|string $id): View|RedirectResponse
     {
         $user = Auth::user();
 
@@ -174,7 +176,7 @@ class SettingsController extends Controller
     /**
      * Display the API settings page for the authenticated user.
      */
-    public function api(): mixed
+    public function api(): View
     {
         return view('settings.content', ['view' => 'api', 'user' => Auth::user()]);
     }
@@ -182,7 +184,7 @@ class SettingsController extends Controller
     /**
      * Display the account deletion confirmation page.
      */
-    public function delete(): mixed
+    public function delete(): View
     {
         return view('settings.content', ['view' => 'delete', 'user' => Auth::user()]);
     }
@@ -190,7 +192,7 @@ class SettingsController extends Controller
     /**
      * Update the authenticated user profile settings.
      */
-    public function updateAccount(UpdateUserRequest $request): mixed
+    public function updateAccount(UpdateUserRequest $request): RedirectResponse
     {
         $this->users->updateProfile(Auth::user(), $request->validated());
 
@@ -200,7 +202,7 @@ class SettingsController extends Controller
     /**
      * Update the authenticated user password.
      */
-    public function updateSecurity(UpdateUserSecurityRequest $request): mixed
+    public function updateSecurity(UpdateUserSecurityRequest $request): RedirectResponse
     {
         $this->users->updatePassword(Auth::user(), $request->input('password'));
 
@@ -210,7 +212,7 @@ class SettingsController extends Controller
     /**
      * Attach a new payment method to the authenticated user.
      */
-    public function createPaymentMethod(Request $request): mixed
+    public function createPaymentMethod(Request $request): RedirectResponse
     {
         try {
             $paymentMethod = $this->payments->addPaymentMethod(
@@ -230,7 +232,7 @@ class SettingsController extends Controller
     /**
      * Update an existing payment method for the authenticated user.
      */
-    public function updatePaymentMethod(Request $request, mixed $id): mixed
+    public function updatePaymentMethod(Request $request, int|string $id): RedirectResponse
     {
         try {
             $this->payments->updatePaymentMethod(Auth::user(), $id, (bool) $request->input('default'));
@@ -246,7 +248,7 @@ class SettingsController extends Controller
     /**
      * Delete an existing payment method for the authenticated user.
      */
-    public function deletePaymentMethod(mixed $id): mixed
+    public function deletePaymentMethod(int|string $id): RedirectResponse
     {
         try {
             $paymentMethod = $this->payments->deletePaymentMethod(Auth::user(), $id);
@@ -262,7 +264,7 @@ class SettingsController extends Controller
     /**
      * Update the authenticated user billing details.
      */
-    public function updateBilling(UpdateBillingRequest $request): mixed
+    public function updateBilling(UpdateBillingRequest $request): RedirectResponse
     {
         try {
             $this->payments->updateBilling(Auth::user(), $request->validated());
@@ -276,7 +278,7 @@ class SettingsController extends Controller
     /**
      * Cancel an active subscription for the authenticated user.
      */
-    public function cancelSubscription(mixed $subscription): mixed
+    public function cancelSubscription(string $subscription): RedirectResponse
     {
         try {
             $this->payments->cancelSubscription(Auth::user(), $subscription);
@@ -290,7 +292,7 @@ class SettingsController extends Controller
     /**
      * Resume a canceled subscription for the authenticated user.
      */
-    public function resumeSubscription(mixed $subscription): mixed
+    public function resumeSubscription(string $subscription): RedirectResponse
     {
         try {
             $this->payments->resumeSubscription(Auth::user(), $subscription);
@@ -304,7 +306,7 @@ class SettingsController extends Controller
     /**
      * Regenerate the authenticated user API token.
      */
-    public function updateApi(): mixed
+    public function updateApi(): RedirectResponse
     {
         $this->users->regenerateApiToken(Auth::user());
 
@@ -314,7 +316,7 @@ class SettingsController extends Controller
     /**
      * Delete the authenticated user account after password confirmation.
      */
-    public function deleteAccount(DeleteUserAccountRequest $request): mixed
+    public function deleteAccount(DeleteUserAccountRequest $request): RedirectResponse
     {
         $this->users->deleteAccount(Auth::user());
 

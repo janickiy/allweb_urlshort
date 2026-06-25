@@ -5,8 +5,8 @@ namespace App\Repositories;
 use App\Models\Stat;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 class StatRepository extends BaseRepository
@@ -20,11 +20,17 @@ class StatRepository extends BaseRepository
         'language',
     ];
 
+    /**
+     * Inject the stat model used by the repository.
+     */
     public function __construct(Stat $model)
     {
         parent::__construct($model);
     }
 
+    /**
+     * Return the latest statistics for links owned by a user.
+     */
     public function latestForUser(int $userId, int $limit): Collection
     {
         return $this->query()
@@ -34,6 +40,17 @@ class StatRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * Return the highest stat identifier currently stored.
+     */
+    public function maxId(): int
+    {
+        return (int) $this->query()->max('id');
+    }
+
+    /**
+     * Paginate statistics for a link.
+     */
     public function paginateForLink(int $linkId, int $perPage = 10): LengthAwarePaginator
     {
         return $this->query()
@@ -42,6 +59,9 @@ class StatRepository extends BaseRepository
             ->paginate($perPage);
     }
 
+    /**
+     * Count link statistics since a given date.
+     */
     public function countForLinkSince(int $linkId, Carbon $since): int
     {
         return $this->query()
@@ -50,6 +70,9 @@ class StatRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * Count link statistics between two dates.
+     */
     public function countForLinkBetween(int $linkId, Carbon $start, Carbon $end): int
     {
         return $this->query()
@@ -58,6 +81,9 @@ class StatRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * Return grouped statistics for a link by a selected column.
+     */
     public function groupForLink(int $linkId, string $column, ?array $values = null, bool $paginate = true, int $perPage = 10): LengthAwarePaginator|Collection
     {
         $query = $this->groupQuery($linkId, $column)
@@ -66,6 +92,9 @@ class StatRepository extends BaseRepository
         return $paginate ? $query->paginate($perPage) : $query->get();
     }
 
+    /**
+     * Build the aggregate query used for grouped link statistics.
+     */
     private function groupQuery(int $linkId, string $column): Builder
     {
         if (!in_array($column, self::GROUPABLE_COLUMNS, true)) {

@@ -27,10 +27,10 @@ class Plan extends Model
      * Filter plans by a partial name match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearch(Builder $query, mixed $value): Builder
+    public function scopeSearch(Builder $query, string $value): Builder
     {
         return $query->where('name', 'like', '%' . $value . '%');
     }
@@ -39,10 +39,10 @@ class Plan extends Model
      * Filter plans by visibility value.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeVisibility(Builder $query, mixed $value): Builder
+    public function scopeVisibility(Builder $query, int|string $value): Builder
     {
         return $query->where('visibility', '=', $value);
     }
@@ -50,9 +50,9 @@ class Plan extends Model
     /**
      * Sanitize the plan name before storing it.
      *
-     * @param $value
+     * @param string $value
      */
-    public function setNameAttribute(mixed $value): void
+    public function setNameAttribute(string $value): void
     {
         $this->attributes['name'] = strip_tags($value);
     }

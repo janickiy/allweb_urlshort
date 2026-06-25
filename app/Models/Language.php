@@ -43,10 +43,10 @@ class Language extends Model
      * Filter languages by a partial name match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearch(Builder $query, mixed $value): Builder
+    public function scopeSearch(Builder $query, string $value): Builder
     {
         return $query->where('name', 'like', '%'.$value.'%');
     }

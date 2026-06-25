@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\DTO\PageData;
 use App\DTO\PlanData;
+use App\DTO\LanguageData;
 use App\DTO\SubscriptionData;
 use App\Models\User;
 use App\Repositories\DomainRepository;
@@ -17,12 +18,17 @@ use App\Repositories\UserRepository;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 class AdminService
 {
     use UserFeaturesTrait;
 
+    /**
+     * Inject dependencies used by admin service operations.
+     */
     public function __construct(
         private readonly DomainRepository $domains,
         private readonly LanguageRepository $languages,
@@ -37,6 +43,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin dashboard.
+     *
      * @return array<string, mixed>
      */
     public function dashboardData(User $user): array
@@ -58,7 +66,10 @@ class AdminService
     }
 
     /**
-     * @return array<string, mixed>
+     * Build the data required for the admin languages list.
+     *
+     * @param Request $request
+     * @return array
      */
     public function languagesListData(Request $request): array
     {
@@ -69,7 +80,14 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a language.
+     *
      * @return array<string, mixed>
+     */
+
+    /**
+     * @param string $id
+     * @return array
      */
     public function languageEditData(string $id): array
     {
@@ -82,6 +100,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin users list.
+     *
      * @return array<string, mixed>
      */
     public function usersListData(Request $request): array
@@ -98,6 +118,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a user from the admin panel.
+     *
      * @return array<string, mixed>
      */
     public function userEditData(int|string $id): array
@@ -118,6 +140,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin links list.
+     *
      * @return array<string, mixed>
      */
     public function linksListData(Request $request): array
@@ -140,6 +164,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a link from the admin panel.
+     *
      * @return array<string, mixed>
      */
     public function linkEditData(int|string $id, User $admin): array
@@ -157,6 +183,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin spaces list.
+     *
      * @return array<string, mixed>
      */
     public function spacesListData(Request $request): array
@@ -171,6 +199,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a space from the admin panel.
+     *
      * @return array<string, mixed>
      */
     public function spaceEditData(int|string $id): array
@@ -188,6 +218,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin domains list.
+     *
      * @return array<string, mixed>
      */
     public function domainsListData(Request $request): array
@@ -202,6 +234,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a domain from the admin panel.
+     *
      * @return array<string, mixed>
      */
     public function domainEditData(int|string $id): array
@@ -219,6 +253,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin pages list.
+     *
      * @return array<string, mixed>
      */
     public function pagesListData(Request $request): array
@@ -230,6 +266,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a page.
+     *
      * @return array<string, mixed>
      */
     public function pageEditData(int|string $id): array
@@ -241,6 +279,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin plans list.
+     *
      * @return array<string, mixed>
      */
     public function plansListData(Request $request): array
@@ -257,6 +297,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a plan.
+     *
      * @return array<string, mixed>
      */
     public function planEditData(int|string $id): array
@@ -268,6 +310,8 @@ class AdminService
     }
 
     /**
+     * Build the data required for the admin subscriptions list.
+     *
      * @return array<string, mixed>
      */
     public function subscriptionsListData(Request $request): array
@@ -289,6 +333,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to create an emulated subscription.
+     *
      * @return array<string, mixed>
      */
     public function subscriptionNewData(): array
@@ -300,6 +346,8 @@ class AdminService
     }
 
     /**
+     * Build the data required to edit a subscription.
+     *
      * @return array<string, mixed>
      */
     public function subscriptionEditData(int|string $id): array
@@ -316,6 +364,8 @@ class AdminService
     }
 
     /**
+     * Create an emulated subscription for a user.
+     *
      * @param array<string, mixed> $input
      */
     public function createSubscription(array $input): string
@@ -338,6 +388,9 @@ class AdminService
         return $plan->name;
     }
 
+    /**
+     * Delete an emulated subscription and return its plan name.
+     */
     public function deleteEmulatedSubscription(int|string $id): string
     {
         $subscription = $this->subscriptions->emulatedOrFail($id);
@@ -348,16 +401,34 @@ class AdminService
         return $name;
     }
 
+    /**
+     * Synchronize a language definition from a translation file object.
+     */
     public function syncLanguage(object $file): string
     {
-        $this->languages->updateOrCreateByCode($file->lang_code, [
+        $this->languages->updateOrCreateByCode($file->lang_code, LanguageData::fromArray([
             'name' => $file->lang_name,
             'dir' => $file->lang_dir,
-        ]);
+        ]));
 
         return $file->lang_name;
     }
 
+    /**
+     * Import an uploaded language JSON file and return its display name.
+     */
+    public function importLanguage(UploadedFile $language): string
+    {
+        $file = $this->readLanguageFile($language);
+
+        Storage::disk('languages')->put($file->lang_code . '.json', $this->languageFileContents($language));
+
+        return $this->syncLanguage($file);
+    }
+
+    /**
+     * Mark a language as default when requested.
+     */
     public function updateLanguageDefault(int|string $id, bool $makeDefault): void
     {
         $language = $this->languages->findOrFail($id);
@@ -367,6 +438,9 @@ class AdminService
         }
     }
 
+    /**
+     * Delete a non-default language and return its name.
+     */
     public function deleteLanguage(int|string $id): string
     {
         if ($this->languages->count() <= 1) {
@@ -381,11 +455,48 @@ class AdminService
 
         $name = $language->name;
         $this->languages->delete($id);
+        Storage::disk('languages')->delete($id . '.json');
 
         return $name;
     }
 
     /**
+     * Decode a language JSON upload into an object.
+     */
+    private function readLanguageFile(UploadedFile $language): object
+    {
+        $file = json_decode($this->languageFileContents($language));
+
+        if (! is_object($file)) {
+            throw new RuntimeException(__('Invalid language file.'));
+        }
+
+        return $file;
+    }
+
+    /**
+     * Read the uploaded language JSON file contents.
+     */
+    private function languageFileContents(UploadedFile $language): string
+    {
+        $path = $language->getRealPath();
+
+        if (! is_string($path)) {
+            throw new RuntimeException(__('Invalid language file.'));
+        }
+
+        $contents = file_get_contents($path);
+
+        if ($contents === false) {
+            throw new RuntimeException(__('Invalid language file.'));
+        }
+
+        return $contents;
+    }
+
+    /**
+     * Create a page and return its title.
+     *
      * @param array<string, mixed> $input
      */
     public function createPage(array $input): string
@@ -396,6 +507,8 @@ class AdminService
     }
 
     /**
+     * Update a page with validated attributes.
+     *
      * @param array<string, mixed> $input
      */
     public function updatePage(int|string $id, array $input): void
@@ -403,6 +516,9 @@ class AdminService
         $this->pages->updateFromDto($id, PageData::fromArray($this->pageAttributes($input)));
     }
 
+    /**
+     * Delete a page and return its title.
+     */
     public function deletePage(int|string $id): string
     {
         $page = $this->pages->findOrFail($id);
@@ -414,6 +530,8 @@ class AdminService
     }
 
     /**
+     * Create a Stripe-backed plan and store it locally.
+     *
      * @param array<string, mixed> $input
      */
     public function createPlan(array $input): string
@@ -454,6 +572,8 @@ class AdminService
     }
 
     /**
+     * Update a plan and synchronize Stripe metadata when needed.
+     *
      * @param array<string, mixed> $input
      */
     public function updatePlan(int|string $id, array $input): void
@@ -470,7 +590,7 @@ class AdminService
             \Stripe\Stripe::setApiKey(config('cashier.secret'));
             \Stripe\Product::update($plan->product, ['name' => $input['name']]);
 
-            $this->subscriptions->renamePlan($plan->name, $input['name']);
+            $this->subscriptions->renamePlan($plan->name, SubscriptionData::fromArray(['name' => $input['name']]));
             $attributes['trial_days'] = $input['trial_days'];
             $attributes['visibility'] = $input['visibility'];
         }
@@ -478,6 +598,9 @@ class AdminService
         $this->plans->updateFromDto($id, PlanData::fromArray($attributes));
     }
 
+    /**
+     * Soft-delete a paid plan after validating admin rules.
+     */
     public function disablePlan(int|string $id): void
     {
         $plan = $this->plans->findOrFail($id);
@@ -489,12 +612,17 @@ class AdminService
         $this->plans->delete($id);
     }
 
+    /**
+     * Restore a soft-deleted plan.
+     */
     public function restorePlan(int|string $id): void
     {
         $this->plans->restore($id);
     }
 
     /**
+     * Update a user from the admin panel.
+     *
      * @param array<string, mixed> $input
      */
     public function updateUser(int|string $id, array $input, int $currentUserId): void
@@ -508,6 +636,9 @@ class AdminService
         $this->userSettings->updateProfile($user, $input, true);
     }
 
+    /**
+     * Permanently delete a user from the admin panel.
+     */
     public function deleteUser(int|string $id, int $currentUserId): string
     {
         $user = $this->users->withTrashedFindOrFail($id);
@@ -522,6 +653,9 @@ class AdminService
         return $name;
     }
 
+    /**
+     * Soft-delete a user from the admin panel.
+     */
     public function disableUser(int|string $id, int $currentUserId): void
     {
         $user = $this->users->findOrFail($id);
@@ -533,12 +667,17 @@ class AdminService
         $this->users->softDelete($user);
     }
 
+    /**
+     * Restore a soft-deleted user from the admin panel.
+     */
     public function restoreUser(int|string $id): void
     {
         $this->users->restore($this->users->withTrashedFindOrFail($id));
     }
 
     /**
+     * Resolve display names for active admin filters.
+     *
      * @param array<string, mixed> $filters
      * @return array<string, string>
      */
@@ -561,12 +700,17 @@ class AdminService
         return $names;
     }
 
+    /**
+     * Normalize the requested sort direction.
+     */
     private function sort(Request $request): string
     {
         return $request->input('sort') === 'asc' ? 'asc' : 'desc';
     }
 
     /**
+     * Map page input into repository attributes.
+     *
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
@@ -581,6 +725,8 @@ class AdminService
     }
 
     /**
+     * Map plan input into repository attributes.
+     *
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */

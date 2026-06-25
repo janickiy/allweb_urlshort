@@ -17,7 +17,7 @@ class CreateSubscriptionsTable extends Migration
 		{
 			$table->bigIncrements('id');
 			$table->unsignedBigInteger('user_id');
-			$table->string('name')->index('name');
+			$table->string('name')->index('subscriptions_name_index');
 			$table->string('stripe_id');
 			$table->string('stripe_status');
 			$table->string('stripe_plan')->nullable();

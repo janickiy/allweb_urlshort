@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class DevelopersController extends Controller
 {
     /**
      * Display the developer documentation page.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(): mixed
+    public function index(): View
     {
         return view('developers.index');
     }

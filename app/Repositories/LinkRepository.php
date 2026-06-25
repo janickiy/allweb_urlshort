@@ -2,25 +2,40 @@
 
 namespace App\Repositories;
 
+use App\DTO\DataTransferObject;
+use App\DTO\LinkData;
 use App\Models\Link;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 
 class LinkRepository extends BaseRepository
 {
+    /**
+     * Inject the link model used by the repository.
+     */
     public function __construct(Link $model)
     {
         parent::__construct($model);
     }
 
+    /**
+     * Create a new link query builder with its default relationships.
+     */
     public function query(): Builder
     {
         return $this->model->newQuery();
     }
 
+
     /**
-     * @param array<string, mixed> $filters
+     * Paginate links that belong to a user with filters.
+     *
+     * @param int $userId
+     * @param array $filters
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForUser(int $userId, array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
@@ -51,6 +66,13 @@ class LinkRepository extends BaseRepository
             ]);
     }
 
+    /**
+     * Find a user link by primary key or return null.
+     *
+     * @param int|string $id
+     * @param int $userId
+     * @return Link|null
+     */
     public function findForUser(int|string $id, int $userId): ?Link
     {
         return $this->query()
@@ -59,7 +81,14 @@ class LinkRepository extends BaseRepository
             ->first();
     }
 
-    public function findForUserOrFail(int|string $id, int $userId): Link
+    /**
+     * Find a user link by primary key or throw when it does not exist.
+     *
+     * @param int|string $id
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function findForUserOrFail(int|string $id, int $userId)
     {
         return $this->query()
             ->where('id', $id)
@@ -67,6 +96,13 @@ class LinkRepository extends BaseRepository
             ->firstOrFail();
     }
 
+    /**
+     * Return the latest links for a user.
+     *
+     * @param int $userId
+     * @param int $limit
+     * @return Collection
+     */
     public function latestForUser(int $userId, int $limit): Collection
     {
         return $this->query()
@@ -76,6 +112,13 @@ class LinkRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * Paginate the latest links for a user.
+     *
+     * @param int $userId
+     * @param int $perPage
+     * @return LengthAwarePaginator
+     */
     public function paginateLatestForUser(int $userId, int $perPage = 15): LengthAwarePaginator
     {
         return $this->query()
@@ -84,6 +127,9 @@ class LinkRepository extends BaseRepository
             ->paginate($perPage);
     }
 
+    /**
+     * Return the latest links across all users.
+     */
     public function latest(int $limit): Collection
     {
         return $this->query()
@@ -92,12 +138,17 @@ class LinkRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * Return the highest link identifier currently stored.
+     */
     public function maxId(): int
     {
         return (int) $this->query()->max('id');
     }
 
     /**
+     * Paginate links for the admin panel with filters.
+     *
      * @param array<string, mixed> $filters
      */
     public function paginateForAdmin(array $filters = [], int $perPage = 10): LengthAwarePaginator
@@ -128,11 +179,17 @@ class LinkRepository extends BaseRepository
             ]);
     }
 
+    /**
+     * Count links that belong to a user.
+     */
     public function countForUser(int $userId): int
     {
         return $this->query()->where('user_id', $userId)->count();
     }
 
+    /**
+     * Count links that belong to a user space.
+     */
     public function countForSpace(int $userId, int $spaceId): int
     {
         return $this->query()
@@ -141,6 +198,9 @@ class LinkRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * Count links that belong to a user domain.
+     */
     public function countForDomain(int $userId, int $domainId): int
     {
         return $this->query()
@@ -149,6 +209,9 @@ class LinkRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * Find a link by alias and domain scope.
+     */
     public function findByAliasForDomain(string $alias, ?int $domainId): ?Link
     {
         return $this->query()
@@ -157,6 +220,27 @@ class LinkRepository extends BaseRepository
             ->first();
     }
 
+    /**
+     * Return the assigned domain name for a link when it exists.
+     */
+    public function domainName(Link $link): ?string
+    {
+        if ($link->domain_id === null) {
+            return null;
+        }
+
+        if ($link->relationLoaded('domain')) {
+            return $link->domain?->name;
+        }
+
+        $domainName = $link->domain()->value('name');
+
+        return $domainName === null ? null : (string) $domainName;
+    }
+
+    /**
+     * Check whether an alias already exists in a domain scope.
+     */
     public function aliasExists(string $alias, ?int $domainId, int|string|null $exceptId = null): bool
     {
         return $this->query()
@@ -167,9 +251,11 @@ class LinkRepository extends BaseRepository
     }
 
     /**
+     * Insert multiple link rows in one database operation.
+     *
      * @param array<int, array<string, mixed>> $rows
      */
-    public function bulkInsert(array $rows): bool
+    protected function bulkInsert(array $rows): bool
     {
         if ($rows === []) {
             return true;
@@ -178,12 +264,37 @@ class LinkRepository extends BaseRepository
         return $this->query()->insert($rows);
     }
 
-    public function incrementClicks(Link $link): bool
+    /**
+     * Insert multiple links from data transfer objects in one database operation.
+     *
+     * @param array<int, DataTransferObject> $dtos
+     */
+    public function bulkInsertFromDtos(array $dtos): bool
     {
-        return $link->forceFill(['clicks' => ((int) $link->clicks) + 1])->save();
+        $now = Carbon::now();
+
+        return $this->bulkInsert(array_map(
+            fn (DataTransferObject $dto): array => array_merge($dto->toArray(), [
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]),
+            $dtos
+        ));
     }
 
     /**
+     * Increment the click counter for a link.
+     */
+    public function incrementClicks(Link $link): bool
+    {
+        return $this->updateFromDto($link->id, LinkData::fromArray([
+            'clicks' => ((int) $link->clicks) + 1,
+        ]));
+    }
+
+    /**
+     * Resolve a link sort filter into column and direction values.
+     *
      * @return array{0: string, 1: string}
      */
     private function sortFromFilter(?string $sort): array

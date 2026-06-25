@@ -9,7 +9,7 @@ class LinkObserver
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\Models\Link  $link
+     * @param  Link  $link
      * @return void
      */
     public function deleting(Link $link): void

@@ -2,33 +2,19 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateStripeCredentialsRule implements Rule
+class ValidateStripeCredentialsRule extends AbstractStringRule
 {
     /**
-     * @var
+     * The authentication error returned by Stripe.
      */
-    private $message;
+    private ?string $message = null;
 
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the Stripe secret key authenticates successfully.
      */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, string $value): bool
     {
         try {
             \Stripe\Stripe::setApiKey($value);
@@ -48,12 +34,10 @@ class ValidateStripeCredentialsRule implements Rule
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {
-        return $this->message;
+        return $this->message ?? __('Invalid Stripe credentials.');
     }
 }

@@ -9,11 +9,11 @@ class WebhookController extends CashierWebhookController
     /**
      * Handle a Stripe invoice payment succeeded webhook event.
      *
-     * @param  array  $payload
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handleInvoicePaymentSucceeded(mixed $payload): mixed
+    public function handleInvoicePaymentSucceeded(): \Symfony\Component\HttpFoundation\Response
     {
         // Handle The Event
+        return $this->successMethod();
     }
 }

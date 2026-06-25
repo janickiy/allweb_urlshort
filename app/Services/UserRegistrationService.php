@@ -10,11 +10,16 @@ use Illuminate\Support\Str;
 
 class UserRegistrationService
 {
+    /**
+     * Inject dependencies used by user registration operations.
+     */
     public function __construct(private readonly UserRepository $users)
     {
     }
 
     /**
+     * Create a public user account unless the email already exists.
+     *
      * @param array<string, mixed> $data
      */
     public function createPublicUser(array $data): ?User
@@ -40,6 +45,8 @@ class UserRegistrationService
     }
 
     /**
+     * Create the initial installer administrator account.
+     *
      * @param array<string, mixed> $data
      */
     public function createInstallerAdmin(array $data): User

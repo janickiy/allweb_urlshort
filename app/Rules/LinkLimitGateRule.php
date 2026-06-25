@@ -3,38 +3,24 @@
 namespace App\Rules;
 
 use App\Models\Link;
-use App\Traits\UserFeaturesTrait;
-use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\Auth;
+use App\Rules\Base\AbstractLimitGateRule;
 
-class LinkLimitGateRule implements Rule
+class LinkLimitGateRule extends AbstractLimitGateRule
 {
-    use UserFeaturesTrait;
-
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Return the model class checked by the rule.
      */
-    public function __construct()
+    protected static function modelClass(): string
     {
-        //
+        return Link::class;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Return the feature-map key checked by the rule.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    protected static function featureKey(): string
     {
-        $user = request()->user();
-
-        if ($user->can('create', ['App\Models\Link', $this->getFeatures($user)['option_links']])) {
-            return true;
-        }
+        return 'option_links';
     }
 
     /**

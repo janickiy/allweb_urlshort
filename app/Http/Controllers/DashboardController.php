@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\DashboardService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
@@ -17,9 +18,9 @@ class DashboardController extends Controller
     /**
      * Display the authenticated user dashboard overview.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(): mixed
+    public function index(): View
     {
         return view('dashboard.content', $this->dashboard->dataFor(Auth::user()));
     }

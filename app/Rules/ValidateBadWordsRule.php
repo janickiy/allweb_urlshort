@@ -2,33 +2,22 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateBadWordsRule implements Rule
+class ValidateBadWordsRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the value avoids configured banned words.
      */
-    public function __construct()
+    public function passes(string $attribute, string $value): bool
     {
-        //
-    }
+        $bannedWords = preg_split('/\n|\r/', (string) config('settings.short_bad_words'), -1, PREG_SPLIT_NO_EMPTY);
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        $bannedWords = preg_split('/\n|\r/', config('settings.short_bad_words'), -1, PREG_SPLIT_NO_EMPTY);
+        if ($bannedWords === false) {
+            return true;
+        }
 
         foreach ($bannedWords as $word) {
-            // Search for the word in string
             if (strpos($value, $word) !== false) {
                 return false;
             }
@@ -38,9 +27,7 @@ class ValidateBadWordsRule implements Rule
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

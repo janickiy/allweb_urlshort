@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SpacesController\{CreateSpaceRequest, UpdateSpaceRequest};
+use App\Http\Requests\Spaces\{CreateSpaceRequest, UpdateSpaceRequest};
 use App\Repositories\SpaceRepository;
 use App\Services\SpaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class SpacesController extends Controller
 {
@@ -23,9 +25,9 @@ class SpacesController extends Controller
      * Display the authenticated user space list with filters.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(Request $request): mixed
+    public function index(Request $request): View
     {
         $user = Auth::user();
 
@@ -40,9 +42,8 @@ class SpacesController extends Controller
     /**
      * Display the form for creating a new space.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function spacesNew(): mixed
+    public function spacesNew(): View
     {
         return view('spaces.content', ['view' => 'new']);
     }
@@ -51,9 +52,9 @@ class SpacesController extends Controller
      * Display the edit form for a space owned by the user.
      *
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function spacesEdit(mixed $id): mixed
+    public function spacesEdit(int|string $id): View
     {
         $user = Auth::user();
 
@@ -66,13 +67,13 @@ class SpacesController extends Controller
      * Create a space for the authenticated user.
      *
      * @param CreateSpaceRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function createSpace(CreateSpaceRequest $request): mixed
+    public function createSpace(CreateSpaceRequest $request): RedirectResponse
     {
-        $this->spaceService->create($request->validated(), Auth::user());
+        $space = $this->spaceService->create($request->validated(), Auth::user());
 
-        return redirect()->route('spaces')->with('success', __(':name has been created.', ['name' => $request->input('name')]));
+        return redirect()->route('spaces')->with('success', __(':name has been created.', ['name' => $space->name]));
     }
 
     /**
@@ -80,15 +81,11 @@ class SpacesController extends Controller
      *
      * @param UpdateSpaceRequest $request
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function updateSpace(UpdateSpaceRequest $request, mixed $id): mixed
+    public function updateSpace(UpdateSpaceRequest $request, int|string $id): RedirectResponse
     {
-        $user = Auth::user();
-
-        $space = $this->spaces->findForUserOrFail($id, $user->id);
-
-        $this->spaceService->update($space, $request->validated());
+        $this->spaceService->updateForUser($id, Auth::user(), $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
@@ -97,17 +94,13 @@ class SpacesController extends Controller
      * Delete a space owned by the authenticated user.
      *
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws \Exception
      */
-    public function deleteSpace(mixed $id): mixed
+    public function deleteSpace(int|string $id): RedirectResponse
     {
-        $user = Auth::user();
+        $name = $this->spaceService->deleteForUser($id, Auth::user());
 
-        $space = $this->spaces->findForUserOrFail($id, $user->id);
-
-        $this->spaceService->delete($space);
-
-        return redirect()->route('spaces')->with('success', __(':name has been deleted.', ['name' => $space->name]));
+        return redirect()->route('spaces')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 }

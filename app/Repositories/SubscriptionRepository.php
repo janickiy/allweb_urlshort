@@ -2,19 +2,26 @@
 
 namespace App\Repositories;
 
+use App\DTO\DataTransferObject;
 use App\Models\Subscription;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class SubscriptionRepository extends BaseRepository
 {
+    /**
+     * Inject the subscription model used by the repository.
+     */
     public function __construct(Subscription $model)
     {
         parent::__construct($model);
     }
 
-    public function findForUserOrFail(int|string $id, int $userId): Subscription
+    /**
+     * Find a user subscription by primary key or throw when it does not exist.
+     */
+    public function findForUserOrFail(int|string $id, int $userId)
     {
         return $this->query()
             ->where('id', $id)
@@ -22,6 +29,30 @@ class SubscriptionRepository extends BaseRepository
             ->firstOrFail();
     }
 
+    /**
+     * Return subscriptions that belong to a user.
+     */
+    public function forUser(int $userId): Collection
+    {
+        return $this->query()
+            ->where('user_id', $userId)
+            ->get();
+    }
+
+    /**
+     * Find a user subscription by plan name or return null.
+     */
+    public function findForUserByName(int $userId, string $name): ?Subscription
+    {
+        return $this->query()
+            ->where('user_id', $userId)
+            ->where('name', $name)
+            ->first();
+    }
+
+    /**
+     * Return the most recent subscriptions.
+     */
     public function recent(int $limit): Collection
     {
         return $this->query()
@@ -30,11 +61,17 @@ class SubscriptionRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * Count all subscriptions.
+     */
     public function count(): int
     {
         return $this->query()->count();
     }
 
+    /**
+     * Count subscriptions that belong to a user.
+     */
     public function countForUser(int $userId): int
     {
         return $this->query()
@@ -42,6 +79,9 @@ class SubscriptionRepository extends BaseRepository
             ->count();
     }
 
+    /**
+     * Find an emulated subscription or throw when it does not exist.
+     */
     public function emulatedOrFail(int|string $id): Subscription
     {
         return $this->query()
@@ -50,14 +90,19 @@ class SubscriptionRepository extends BaseRepository
             ->firstOrFail();
     }
 
-    public function renamePlan(string $oldName, string $newName): int
+    /**
+     * Rename the plan name on matching subscriptions.
+     */
+    public function renamePlan(string $oldName, DataTransferObject $dto): int
     {
         return $this->query()
             ->where('name', $oldName)
-            ->update(['name' => $newName]);
+            ->update($dto->toArray());
     }
 
     /**
+     * Paginate subscriptions for the admin panel with filters.
+     *
      * @param array<string, mixed> $filters
      */
     public function paginateForAdmin(array $filters = [], int $perPage = 10): LengthAwarePaginator

@@ -16,15 +16,15 @@ class CreateStatsTable extends Migration
 		Schema::create('stats', function(Blueprint $table)
 		{
 			$table->integer('id', true);
-			$table->integer('link_id')->index('link_id');
-			$table->integer('user_id')->index('user_id');
-			$table->string('referrer', 255)->nullable()->index('referrer');
+			$table->integer('link_id')->index('stats_link_id_index');
+			$table->integer('user_id')->index('stats_user_id_index');
+			$table->string('referrer', 255)->nullable()->index('stats_referrer_index');
 			$table->string('platform', 64)->nullable();
 			$table->string('browser', 64)->nullable();
 			$table->string('device', 64);
 			$table->char('country', 2)->nullable();
 			$table->char('language', 2)->nullable();
-			$table->timestamp('created_at')->useCurrent()->index('created_at');
+			$table->timestamp('created_at')->useCurrent()->index('stats_created_at_index');
 		});
 	}
 

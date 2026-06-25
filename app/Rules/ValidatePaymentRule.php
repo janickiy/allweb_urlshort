@@ -2,25 +2,20 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractScalarRule;
 
-class ValidatePaymentRule implements Rule
+class ValidatePaymentRule extends AbstractScalarRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if payment settings may be saved.
      */
-    public function __construct()
+    public function passes(string $attribute, int|float|string|bool|null $value): bool
     {
-        //
+        return true;
     }
 
-
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

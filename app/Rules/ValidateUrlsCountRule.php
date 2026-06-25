@@ -2,47 +2,29 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateUrlsCountRule implements Rule
+class ValidateUrlsCountRule extends AbstractStringRule
 {
     /**
-     * @var
+     * Create a URL-count validation rule.
      */
-    protected $count;
-
-    /**
-     * Create a new rule instance.
-     *
-     * @param int $count
-     */
-    public function __construct(int $count = 10)
+    public function __construct(protected readonly int $count = 10)
     {
-        // Maximum number of URLs to be shortened
-        $this->count = $count;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Determine if the newline-separated URL list is within the configured limit.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, string $value): bool
     {
-        // Count the number of URLs to be shortened
-        if (count(preg_split('/\n|\r/', $value, -1, PREG_SPLIT_NO_EMPTY)) > $this->count) {
-            return false;
-        }
+        $urls = preg_split('/\n|\r/', $value, -1, PREG_SPLIT_NO_EMPTY);
 
-        return true;
+        return $urls !== false && count($urls) <= $this->count;
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

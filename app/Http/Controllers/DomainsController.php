@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\DomainsController\CreateDomainRequest;
-use App\Http\Requests\DomainsController\UpdateDomainRequest;
+use App\Http\Requests\Domains\CreateDomainRequest;
+use App\Http\Requests\Domains\UpdateDomainRequest;
 use App\Repositories\DomainRepository;
 use App\Services\DomainService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class DomainsController extends Controller
 {
@@ -24,9 +26,9 @@ class DomainsController extends Controller
      * Display the authenticated user domain list with filters.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(Request $request): mixed
+    public function index(Request $request): View
     {
         $user = Auth::user();
 
@@ -41,9 +43,9 @@ class DomainsController extends Controller
     /**
      * Display the form for creating a new custom domain.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function domainsNew(): mixed
+    public function domainsNew(): View
     {
         return view('domains.content', ['view' => 'new']);
     }
@@ -52,9 +54,9 @@ class DomainsController extends Controller
      * Display the edit form for a domain owned by the user.
      *
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function domainsEdit(mixed $id): mixed
+    public function domainsEdit(int|string $id): View
     {
         $user = Auth::user();
 
@@ -67,9 +69,9 @@ class DomainsController extends Controller
      * Create a custom domain for the authenticated user.
      *
      * @param CreateDomainRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function createDomain(CreateDomainRequest $request): mixed
+    public function createDomain(CreateDomainRequest $request): RedirectResponse
     {
         $domain = $this->domainService->create($request->validated(), Auth::user());
 
@@ -81,15 +83,11 @@ class DomainsController extends Controller
      *
      * @param UpdateDomainRequest $request
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function updateDomain(UpdateDomainRequest $request, mixed $id): mixed
+    public function updateDomain(UpdateDomainRequest $request, int|string $id): RedirectResponse
     {
-        $user = Auth::user();
-
-        $domain = $this->domains->findForUserOrFail($id, $user->id);
-
-        $this->domainService->update($domain, $request->validated());
+        $this->domainService->updateForUser($id, Auth::user(), $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
@@ -98,17 +96,13 @@ class DomainsController extends Controller
      * Delete a custom domain owned by the authenticated user.
      *
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws \Exception
      */
-    public function deleteDomain(mixed $id): mixed
+    public function deleteDomain(int|string $id): RedirectResponse
     {
-        $user = Auth::user();
+        $name = $this->domainService->deleteForUser($id, Auth::user());
 
-        $domain = $this->domains->findForUserOrFail($id, $user->id);
-
-        $this->domainService->delete($domain);
-
-        return redirect()->route('domains')->with('success', __(':name has been deleted.', ['name' => str_replace(['http://', 'https://'], '', $domain->name)]));
+        return redirect()->route('domains')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 }

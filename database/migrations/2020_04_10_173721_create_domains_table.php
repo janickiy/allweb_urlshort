@@ -16,10 +16,10 @@ class CreateDomainsTable extends Migration
 		Schema::create('domains', function(Blueprint $table)
 		{
 			$table->integer('id', true);
-			$table->string('name', 255)->index('name');
+			$table->string('name', 255)->index('domains_name_index');
 			$table->string('index_page', 255)->nullable();
 			$table->string('not_found_page', 255)->nullable();
-			$table->integer('user_id')->index('user_id');
+			$table->integer('user_id')->index('domains_user_id_index');
 			$table->timestamps();
 		});
 	}

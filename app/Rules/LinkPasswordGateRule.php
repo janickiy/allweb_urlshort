@@ -2,48 +2,23 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractFeatureGateRule;
 
-class LinkPasswordGateRule implements Rule
+class LinkPasswordGateRule extends AbstractFeatureGateRule
 {
-    private $userFeatures;
-
     /**
-     * Create a new rule instance.
-     *
-     * @param $userFeatures
+     * Return the policy ability checked by the rule.
      */
-    public function __construct(mixed $userFeatures)
+    protected static function ability(): string
     {
-        $this->userFeatures = $userFeatures;
+        return 'password';
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Return the feature-map key checked by the rule.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    protected static function featureKey(): string
     {
-        //
-        $user = request()->user();
-
-        if ($user->can('password', ['App\Models\Link', $this->userFeatures['option_password']])) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
-     */
-    public function message(): string
-    {
-        return __('You don\'t have access to this feature.');
+        return 'option_password';
     }
 }

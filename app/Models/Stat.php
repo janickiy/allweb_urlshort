@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Stat extends Model
 {
-    protected $dates = ['created_at'];
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
 
     public $timestamps = false;
 }

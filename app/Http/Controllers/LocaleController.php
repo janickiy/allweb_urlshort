@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\LocaleService;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 class LocaleController extends Controller
 {
@@ -18,9 +19,9 @@ class LocaleController extends Controller
      * Store the selected locale and redirect back to the previous page.
      *
      * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function index(Request $request): mixed
+    public function index(Request $request): RedirectResponse
     {
         $this->locales->select($request->input('locale'));
 

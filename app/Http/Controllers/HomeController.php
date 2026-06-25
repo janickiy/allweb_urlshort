@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LinksController\CreateLinkRequest;
+use App\Http\Requests\Links\CreateLinkRequest;
 use App\Services\HomeService;
 use App\Services\LinkService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {
@@ -23,21 +25,12 @@ class HomeController extends Controller
      * Display the landing page or redirect custom-domain home requests.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return RedirectResponse|View;
      */
-    public function index(Request $request): mixed
+    public function index(Request $request): RedirectResponse|View
     {
-        // If the user is logged-in, redirect to dashboard
-        if (Auth::check()) {
-            return redirect()->route('dashboard');
-        }
-
-        if (config('settings.index')) {
-            return redirect()->to(config('settings.index'), 301);
-        }
-
-        if ($redirect = $this->homeService->domainIndexRedirect($request)) {
-            return redirect()->to($redirect, 301);
+        if ($redirect = $this->homeService->landingRedirect($request, Auth::check())) {
+            return redirect()->to($redirect['url'], $redirect['status']);
         }
 
         $data = $this->homeService->landingData();
@@ -49,16 +42,10 @@ class HomeController extends Controller
      * Create a guest or authenticated short link from public form input.
      *
      * @param CreateLinkRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function createLink(CreateLinkRequest $request): mixed
+    public function createLink(CreateLinkRequest $request): RedirectResponse
     {
-        if (!config('settings.short_guest')) {
-            abort(404);
-        }
-
-        $this->linkService->create($request->all());
-
-        return redirect()->back()->with('link', $this->linkService->latestForUser(0, 1));
+        return redirect()->back()->with('link', $this->linkService->createForGuest($request->validated()));
     }
 }

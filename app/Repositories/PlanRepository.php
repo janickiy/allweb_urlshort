@@ -5,20 +5,29 @@ namespace App\Repositories;
 use App\Models\Plan;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class PlanRepository extends BaseRepository
 {
+    /**
+     * Inject the plan model used by the repository.
+     */
     public function __construct(Plan $model)
     {
         parent::__construct($model);
     }
 
+    /**
+     * Create a new plan query builder.
+     */
     public function query(): Builder
     {
         return $this->model->newQuery();
     }
 
+    /**
+     * Return plans that are visible to users.
+     */
     public function visible(): Collection
     {
         return $this->query()
@@ -26,6 +35,9 @@ class PlanRepository extends BaseRepository
             ->get();
     }
 
+    /**
+     * Return the free plan when it exists.
+     */
     public function free(): ?Plan
     {
         return $this->query()
@@ -34,6 +46,9 @@ class PlanRepository extends BaseRepository
             ->first();
     }
 
+    /**
+     * Return visible paid plans.
+     */
     public function paid(): Collection
     {
         return $this->query()
@@ -42,7 +57,10 @@ class PlanRepository extends BaseRepository
             ->get();
     }
 
-    public function paidByIdOrFail(int|string $id): Plan
+    /**
+     * Find a paid plan by primary key or throw when it does not exist.
+     */
+    public function paidByIdOrFail(int|string $id)
     {
         return $this->query()
             ->where('id', $id)
@@ -51,23 +69,35 @@ class PlanRepository extends BaseRepository
             ->firstOrFail();
     }
 
-    public function withTrashedByNameOrFail(string $name): Plan
+    /**
+     * Find a plan by name including trashed records or throw.
+     */
+    public function withTrashedByNameOrFail(string $name)
     {
         return $this->queryWithTrashed()
             ->where('name', $name)
             ->firstOrFail();
     }
 
-    public function withTrashedFindOrFail(int|string $id): Plan
+    /**
+     * Find a plan by primary key including trashed records or throw.
+     */
+    public function withTrashedFindOrFail(int|string $id)
     {
         return $this->queryWithTrashed()->findOrFail($id);
     }
 
+    /**
+     * Count plans including trashed records.
+     */
     public function withTrashedCount(): int
     {
         return $this->queryWithTrashed()->count();
     }
 
+    /**
+     * Paginate plans for the admin panel with filters.
+     */
     public function paginateForAdmin(?string $search, mixed $visibility, mixed $status, string $sort = 'desc', int $perPage = 10): LengthAwarePaginator
     {
         $stripe = config('settings.stripe');
@@ -84,7 +114,10 @@ class PlanRepository extends BaseRepository
             ->appends(['search' => $search, 'visibility' => $visibility, 'status' => $status, 'sort' => $sort]);
     }
 
-    public function findByStripePlanOrFail(string $stripePlan): Plan
+    /**
+     * Find a plan by Stripe plan identifier or throw.
+     */
+    public function findByStripePlanOrFail(string $stripePlan)
     {
         return $this->query()
             ->where('plan_month', $stripePlan)
@@ -92,6 +125,9 @@ class PlanRepository extends BaseRepository
             ->firstOrFail();
     }
 
+    /**
+     * Restore a soft-deleted plan by primary key.
+     */
     public function restore(int|string $id): bool
     {
         $plan = $this->withTrashedFindOrFail($id);
@@ -99,6 +135,9 @@ class PlanRepository extends BaseRepository
         return (bool) $plan->restore();
     }
 
+    /**
+     * Create a plan query builder including trashed records.
+     */
     private function queryWithTrashed(): Builder
     {
         return $this->model->newQuery()->withTrashed();

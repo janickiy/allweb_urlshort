@@ -9,7 +9,7 @@ class DomainObserver
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\Models\Domain  $domain
+     * @param  Domain  $domain
      * @return void
      */
     public function deleting(Domain $domain): void

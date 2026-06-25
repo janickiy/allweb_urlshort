@@ -19,10 +19,10 @@ class Space extends Model
      * Filter spaces by a partial name match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchName(Builder $query, mixed $value): Builder
+    public function scopeSearchName(Builder $query, string $value): Builder
     {
         return $query->where('name', 'like', '%' . $value . '%');
     }
@@ -55,10 +55,10 @@ class Space extends Model
      * Filter spaces by owner user ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeUserId(Builder $query, mixed $value): Builder
+    public function scopeUserId(Builder $query, int|string $value): Builder
     {
         return $query->where('user_id', '=', $value);
     }

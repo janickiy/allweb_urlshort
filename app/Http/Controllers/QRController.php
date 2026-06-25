@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\LinkRepository;
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class QRController extends Controller
 {
@@ -17,7 +17,7 @@ class QRController extends Controller
     /**
      * Generate a QR code response for a link owned by the user.
      */
-    public function index(Request $request, mixed $id): mixed
+    public function index(int|string $id): View
     {
         return view('qr.content', ['link' => $this->links->findOrFail($id)]);
     }

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\UserRegistrationService;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\View\View;
 
 class RegisterController extends Controller
 {
@@ -45,7 +48,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data): mixed
+    protected function validator(array $data): ValidatorContract
     {
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
@@ -60,9 +63,9 @@ class RegisterController extends Controller
      * Create a public user account after registration validation passes.
      *
      * @param  array  $data
-     * @return \App\Models\User
+     * @return User|null
      */
-    protected function create(array $data): mixed
+    protected function create(array $data): ?User
     {
         return $this->registrations->createPublicUser($data);
     }
@@ -70,9 +73,9 @@ class RegisterController extends Controller
     /**
      * Display the registration form when public registration is enabled.
      *
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function showRegistrationForm(): mixed
+    public function showRegistrationForm(): View
     {
         // If registration is enabled
         if (config('settings.registration_registration')) {

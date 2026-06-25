@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use App\DTO\RedirectResult;
 use App\DTO\StatData;
+use App\Enums\RedirectDecision;
 use App\Models\Link;
-use App\Models\Stat;
 use App\Repositories\DomainRepository;
 use App\Repositories\LinkRepository;
 use App\Repositories\StatRepository;
@@ -15,6 +16,9 @@ use WhichBrowser\Parser as UserAgent;
 
 class RedirectService
 {
+    /**
+     * Inject dependencies used by redirect resolution.
+     */
     public function __construct(
         private readonly DomainRepository $domains,
         private readonly LinkRepository $links,
@@ -22,44 +26,47 @@ class RedirectService
     ) {
     }
 
-    public function resolve(Request $request, string $alias): RedirectDecision
+    /**
+     * Resolve a short-link alias into a redirect decision.
+     */
+    public function resolve(Request $request, string $alias): RedirectResult
     {
         $link = $this->findLink($request, $alias);
 
         if (!$link) {
-            return new RedirectDecision(RedirectDecision::TYPE_NOT_FOUND, target: $this->notFoundRedirect($request));
+            return new RedirectResult(RedirectDecision::NotFound, target: $this->notFoundRedirect($request));
         }
 
         if ($request->segments()[1] ?? null) {
-            return new RedirectDecision(RedirectDecision::TYPE_PREVIEW, $link);
+            return new RedirectResult(RedirectDecision::Preview, $link);
         }
 
         if ((int) $link->user_id === 0) {
-            return new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $link->url);
+            return new RedirectResult(RedirectDecision::Redirect, $link, $link->url);
         }
 
         if ($link->ends_at && Carbon::now()->greaterThan($link->ends_at)) {
             return $link->expiration_url
-                ? new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $link->expiration_url)
-                : new RedirectDecision(RedirectDecision::TYPE_EXPIRED, $link);
+                ? new RedirectResult(RedirectDecision::Redirect, $link, $link->expiration_url)
+                : new RedirectResult(RedirectDecision::Expired, $link);
         }
 
         if ($link->password) {
-            return new RedirectDecision(RedirectDecision::TYPE_PASSWORD, $link);
+            return new RedirectResult(RedirectDecision::Password, $link);
         }
 
         if ($link->disabled) {
-            return new RedirectDecision(RedirectDecision::TYPE_DISABLED, $link);
+            return new RedirectResult(RedirectDecision::Disabled, $link);
         }
 
         if ($this->containsBannedWord($link->url)) {
-            return new RedirectDecision(RedirectDecision::TYPE_BANNED, $link);
+            return new RedirectResult(RedirectDecision::Banned, $link);
         }
 
         $userAgent = new UserAgent($this->headers($request));
 
         if ($userAgent->device->type === 'bot') {
-            return new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $link->url);
+            return new RedirectResult(RedirectDecision::Redirect, $link, $link->url);
         }
 
         $stat = $this->recordStat($request, $link, $userAgent);
@@ -67,19 +74,22 @@ class RedirectService
 
         foreach ($link->platform_target ?? [] as $platform) {
             if ($stat->platform === $platform->key) {
-                return new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $platform->value);
+                return new RedirectResult(RedirectDecision::Redirect, $link, $platform->value);
             }
         }
 
         foreach ($link->geo_target ?? [] as $geo) {
             if ($stat->country === $geo->key) {
-                return new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $geo->value);
+                return new RedirectResult(RedirectDecision::Redirect, $link, $geo->value);
             }
         }
 
-        return new RedirectDecision(RedirectDecision::TYPE_REDIRECT, $link, $link->url);
+        return new RedirectResult(RedirectDecision::Redirect, $link, $link->url);
     }
 
+    /**
+     * Find the link matching the requested alias and host.
+     */
     private function findLink(Request $request, string $alias): ?Link
     {
         $localHost = parse_url(config('app.url'), PHP_URL_HOST);
@@ -94,6 +104,9 @@ class RedirectService
         return $this->links->findByAliasForDomain($alias, null);
     }
 
+    /**
+     * Return the custom not-found redirect target for a host.
+     */
     private function notFoundRedirect(Request $request): ?string
     {
         $localHost = parse_url(config('app.url'), PHP_URL_HOST);
@@ -106,6 +119,9 @@ class RedirectService
         return $this->domains->findByHost($remoteHost)?->not_found_page;
     }
 
+    /**
+     * Check whether a URL contains a banned word.
+     */
     private function containsBannedWord(string $url): bool
     {
         $words = preg_split('/\n|\r/', config('settings.short_bad_words'), -1, PREG_SPLIT_NO_EMPTY);
@@ -119,7 +135,10 @@ class RedirectService
         return false;
     }
 
-    private function recordStat(Request $request, Link $link, UserAgent $userAgent): Stat
+    /**
+     * Record a click statistic for a link.
+     */
+    private function recordStat(Request $request, Link $link, UserAgent $userAgent)
     {
         $referrer = $request->headers->get('referer');
 
@@ -135,6 +154,9 @@ class RedirectService
         ]));
     }
 
+    /**
+     * Resolve the visitor country code from request data.
+     */
     private function country(Request $request): ?string
     {
         $path = storage_path('app/geoip/GeoLite2-Country.mmdb');
@@ -151,6 +173,8 @@ class RedirectService
     }
 
     /**
+     * Extract custom GeoIP headers from the request.
+     *
      * @return array<string, string>
      */
     private function headers(Request $request): array

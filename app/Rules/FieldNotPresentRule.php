@@ -2,36 +2,21 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class FieldNotPresentRule implements Rule
+class FieldNotPresentRule implements ValidationRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Fail validation whenever a forbidden field is present.
      */
-    public function __construct()
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        //
+        $fail($this->message());
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        return false;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

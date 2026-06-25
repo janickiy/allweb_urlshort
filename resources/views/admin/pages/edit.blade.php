@@ -39,7 +39,7 @@
                 <label for="i_slug">{{ __('Slug') }}</label>
                 <div class="input-group">
                     <div class="input-group-prepend">
-                        <span class="input-group-text">{{ str_replace(['http://', 'https://'], '', route('page', '')) }}/</span>
+                        <span class="input-group-text">{{ str_replace(['http://', 'https://'], '', url('/page')) }}/</span>
                     </div>
                     <input type="text" name="slug" id="i_slug" class="form-control{{ $errors->has('slug') ? ' is-invalid' : '' }}" value="{{ $page->slug }}">
                 </div>

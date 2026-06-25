@@ -16,8 +16,8 @@ class CreateSpacesTable extends Migration
 		Schema::create('spaces', function(Blueprint $table)
 		{
 			$table->integer('id', true);
-			$table->integer('user_id')->index('user_id');
-			$table->string('name', 255)->index('name');
+			$table->integer('user_id')->index('spaces_user_id_index');
+			$table->string('name', 255)->index('spaces_name_index');
 			$table->integer('color')->nullable();
 			$table->timestamps();
 		});

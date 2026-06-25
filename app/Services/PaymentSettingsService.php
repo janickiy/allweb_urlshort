@@ -14,6 +14,9 @@ use Stripe\Stripe;
 
 class PaymentSettingsService
 {
+    /**
+     * Inject dependencies used by payment settings operations.
+     */
     public function __construct(
         private readonly SubscriptionRepository $subscriptions,
         private readonly PlanRepository $plans,
@@ -21,6 +24,8 @@ class PaymentSettingsService
     }
 
     /**
+     * Build data required to edit a user subscription.
+     *
      * @return array<string, mixed>
      */
     public function subscriptionEditData(User $user, int|string $id): array
@@ -34,6 +39,8 @@ class PaymentSettingsService
     }
 
     /**
+     * Return saved payment methods for a user.
+     *
      * @return array<string, mixed>
      */
     public function paymentMethods(User $user): array
@@ -52,6 +59,8 @@ class PaymentSettingsService
     }
 
     /**
+     * Build data required to add a payment method.
+     *
      * @return array<string, mixed>
      */
     public function newPaymentMethodData(User $user): array
@@ -63,6 +72,8 @@ class PaymentSettingsService
     }
 
     /**
+     * Build data required to edit a saved payment method.
+     *
      * @return array<string, mixed>
      */
     public function editPaymentMethodData(User $user, string $id): array
@@ -77,6 +88,9 @@ class PaymentSettingsService
         ];
     }
 
+    /**
+     * Return billing customer data for a user.
+     */
     public function billingCustomer(User $user): Customer
     {
         $this->setApiKey();
@@ -84,6 +98,9 @@ class PaymentSettingsService
         return Customer::retrieve($user->stripe_id);
     }
 
+    /**
+     * Return a user invoice by identifier.
+     */
     public function invoice(User $user, string $id): CashierInvoice
     {
         $this->setApiKey();
@@ -91,6 +108,9 @@ class PaymentSettingsService
         return new CashierInvoice($user, StripeInvoice::retrieve($id));
     }
 
+    /**
+     * Attach a payment method to a user and optionally make it default.
+     */
     public function addPaymentMethod(User $user, string $paymentMethodId, bool $makeDefault): object
     {
         $paymentMethod = $user->addPaymentMethod($paymentMethodId);
@@ -102,6 +122,9 @@ class PaymentSettingsService
         return $paymentMethod;
     }
 
+    /**
+     * Update the default payment method for a user.
+     */
     public function updatePaymentMethod(User $user, string $id, bool $makeDefault): void
     {
         $this->ownedPaymentMethod($user, $id);
@@ -111,14 +134,17 @@ class PaymentSettingsService
         }
     }
 
+    /**
+     * Detach a saved payment method from a user.
+     */
     public function deletePaymentMethod(User $user, string $id): object
     {
         $defaultPaymentMethod = $user->defaultPaymentMethod();
         $paymentMethod = $this->ownedPaymentMethod($user, $id);
 
         if ($defaultPaymentMethod && $defaultPaymentMethod->id === $paymentMethod->id) {
-            foreach ($user->subscriptions as $subscription) {
-                if ($subscription && ($user->subscription($subscription->name)->recurring() || ($user->subscription($subscription->name)->onTrial() && !$user->subscription($subscription->name)->onGracePeriod()))) {
+            foreach ($this->subscriptions->forUser($user->id) as $subscription) {
+                if ($subscription->recurring() || ($subscription->onTrial() && !$subscription->onGracePeriod())) {
                     throw new RuntimeException(__('The default payment method can\'t be deleted while a subscription plan is active.'));
                 }
             }
@@ -136,6 +162,8 @@ class PaymentSettingsService
     }
 
     /**
+     * Update billing details for a user.
+     *
      * @param array<string, mixed> $input
      */
     public function updateBilling(User $user, array $input): void
@@ -155,9 +183,12 @@ class PaymentSettingsService
         ]);
     }
 
+    /**
+     * Cancel an active subscription for a user.
+     */
     public function cancelSubscription(User $user, string $name): void
     {
-        $subscription = $user->subscription($name);
+        $subscription = $this->subscriptions->findForUserByName($user->id, $name);
 
         if (!$subscription) {
             return;
@@ -171,23 +202,29 @@ class PaymentSettingsService
         $subscription->cancel();
     }
 
+    /**
+     * Resume a canceled subscription for a user.
+     */
     public function resumeSubscription(User $user, string $name): void
     {
         if (!$user->hasDefaultPaymentMethod()) {
             throw new RuntimeException(__('Your subscription can\'t be resumed without a payment method.'));
         }
 
-        if ($user->hasIncompletePayment($name)) {
-            abort(403);
-        }
-
-        $subscription = $user->subscription($name);
+        $subscription = $this->subscriptions->findForUserByName($user->id, $name);
 
         if ($subscription) {
+            if ($subscription->hasIncompletePayment()) {
+                abort(403);
+            }
+
             $subscription->resume();
         }
     }
 
+    /**
+     * Return a payment method owned by a user or throw.
+     */
     private function ownedPaymentMethod(User $user, string $id): PaymentMethod
     {
         $this->setApiKey();
@@ -205,6 +242,9 @@ class PaymentSettingsService
         return $paymentMethod;
     }
 
+    /**
+     * Configure the Stripe API key from application settings.
+     */
     private function setApiKey(): void
     {
         Stripe::setApiKey(config('cashier.secret'));

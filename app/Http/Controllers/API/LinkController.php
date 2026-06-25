@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LinksController\CreateLinkRequest;
-use App\Http\Requests\LinksController\UpdateLinkRequest;
+use App\Http\Requests\Links\CreateLinkRequest;
+use App\Http\Requests\Links\UpdateLinkRequest;
 use App\Http\Resources\LinkCollectionResource;
 use App\Http\Resources\LinkResource;
 use App\Models\User;
-use App\Repositories\LinkRepository;
 use App\Services\LinkService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,12 +16,10 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class LinkController extends Controller
 {
     /**
-     * Inject link repository and service dependencies for API actions.
+     * Inject link service dependencies for API actions.
      */
-    public function __construct(
-        private readonly LinkRepository $links,
-        private readonly LinkService $linkService,
-    ) {
+    public function __construct(private readonly LinkService $linkService)
+    {
     }
 
     /**
@@ -31,7 +28,7 @@ class LinkController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         return LinkCollectionResource::collection(
-            $this->links->paginateLatestForUser($this->user($request)->id)
+            $this->linkService->paginateLatestForUser($this->user($request)->id)
         );
     }
 
@@ -52,9 +49,9 @@ class LinkController extends Controller
     /**
      * Return one link owned by the authenticated API user.
      */
-    public function show(Request $request, mixed $id): LinkResource|JsonResponse
+    public function show(Request $request, int|string $id): LinkResource|JsonResponse
     {
-        $link = $this->links->findForUser($id, $this->user($request)->id);
+        $link = $this->linkService->findForUser($id, $this->user($request));
 
         if ($link) {
             return LinkResource::make($link);
@@ -66,27 +63,23 @@ class LinkController extends Controller
     /**
      * Update one link owned by the authenticated API user.
      */
-    public function update(UpdateLinkRequest $request, mixed $id): LinkResource
+    public function update(UpdateLinkRequest $request, int|string $id): LinkResource
     {
-        $link = $this->links->findForUserOrFail($id, $this->user($request)->id);
-
         return LinkResource::make(
-            $this->linkService->update($link, $request->validated())
+            $this->linkService->updateForUser($id, $this->user($request), $request->validated())
         );
     }
 
     /**
      * Delete one link owned by the authenticated API user.
      */
-    public function destroy(Request $request, mixed $id): JsonResponse
+    public function destroy(Request $request, int|string $id): JsonResponse
     {
-        $link = $this->links->findForUser($id, $this->user($request)->id);
+        $link = $this->linkService->deleteForApiUser($id, $this->user($request));
 
         if (!$link) {
             return $this->notFoundResponse();
         }
-
-        $this->linkService->delete($link);
 
         return response()->json([
             'id' => $link->id,

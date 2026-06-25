@@ -7,11 +7,16 @@ use GuzzleHttp\Psr7\Header;
 
 class UrlMetadataService
 {
+    /**
+     * Inject the HTTP client used for URL metadata lookups.
+     */
     public function __construct(private readonly ?HttpClient $client = null)
     {
     }
 
     /**
+     * Fetch a URL and extract metadata from its response.
+     *
      * @return array<string, string>
      */
     public function parse(string $url): array
@@ -37,6 +42,8 @@ class UrlMetadataService
     }
 
     /**
+     * Extract title and meta tags from raw HTML.
+     *
      * @return array<string, string>
      */
     public function formatMetaTags(string $html): array

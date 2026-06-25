@@ -2,48 +2,31 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class ValidateLinkPasswordRule implements Rule
+class ValidateLinkPasswordRule extends AbstractStringRule
 {
-    private $request;
-
-    private $password;
-
     /**
-     * Create a new rule instance.
-     *
-     * validatePassword constructor.
-     * @param Request $request
+     * Create a link password validation rule.
      */
-    public function __construct(Request $request, string $password)
-    {
-        $this->request = $request;
-        $this->password = $password;
+    public function __construct(
+        private readonly Request $request,
+        private readonly string $password,
+    ) {
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Determine if the provided password matches the link password.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, string $value): bool
     {
-        if (Hash::check($this->request->input($attribute), $this->password)) {
-            return true;
-        }
-
-        return false;
+        return Hash::check($this->request->input($attribute), $this->password);
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

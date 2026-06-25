@@ -50,7 +50,7 @@ class Link extends Model
     /**
      * Get the click statistics recorded for this link.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function stats(): HasMany
     {
@@ -59,8 +59,6 @@ class Link extends Model
 
     /**
      * Get the user that owns this link, including soft-deleted users.
-     *
-     * @return mixed
      */
     public function user(): BelongsTo
     {
@@ -71,10 +69,10 @@ class Link extends Model
      * Filter links by a partial title match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchTitle(Builder $query, mixed $value): Builder
+    public function scopeSearchTitle(Builder $query, string $value): Builder
     {
         return $query->where('title', 'like', '%' . $value . '%');
     }
@@ -83,10 +81,10 @@ class Link extends Model
      * Filter links by a partial destination URL match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchUrl(Builder $query, mixed $value): Builder
+    public function scopeSearchUrl(Builder $query, string $value): Builder
     {
         return $query->where('url', 'like', '%' . $value . '%');
     }
@@ -95,10 +93,10 @@ class Link extends Model
      * Filter links by a partial alias match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearchAlias(Builder $query, mixed $value): Builder
+    public function scopeSearchAlias(Builder $query, string $value): Builder
     {
         return $query->where('alias', 'like', '%' . $value . '%');
     }
@@ -107,10 +105,10 @@ class Link extends Model
      * Filter links by space ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeSearchSpace(Builder $query, mixed $value): Builder
+    public function scopeSearchSpace(Builder $query, int|string $value): Builder
     {
         return $query->where('space_id', '=', $value);
     }
@@ -119,10 +117,10 @@ class Link extends Model
      * Filter links by domain ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeSearchDomain(Builder $query, mixed $value): Builder
+    public function scopeSearchDomain(Builder $query, int|string $value): Builder
     {
         return $query->where('domain_id', '=', $value);
     }
@@ -131,7 +129,6 @@ class Link extends Model
      * Filter links whose expiration date is in the past.
      *
      * @param Builder $query
-     * @param $value
      * @return Builder
      */
     public function scopeSearchExpired(Builder $query): Builder
@@ -143,7 +140,6 @@ class Link extends Model
      * Filter links that have not expired yet.
      *
      * @param Builder $query
-     * @param $value
      * @return Builder
      */
     public function scopeSearchActive(Builder $query): Builder
@@ -155,10 +151,10 @@ class Link extends Model
      * Filter links by owner user ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeUserId(Builder $query, mixed $value): Builder
+    public function scopeUserId(Builder $query, int|string $value): Builder
     {
         return $query->where('user_id', '=', $value);
     }
@@ -167,10 +163,10 @@ class Link extends Model
      * Filter links by assigned space ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeSpaceId(Builder $query, mixed $value): Builder
+    public function scopeSpaceId(Builder $query, int|string $value): Builder
     {
         return $query->where('space_id', '=', $value);
     }
@@ -179,10 +175,10 @@ class Link extends Model
      * Filter links by assigned domain ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeDomainId(Builder $query, mixed $value): Builder
+    public function scopeDomainId(Builder $query, int|string $value): Builder
     {
         return $query->where('domain_id', '=', $value);
     }

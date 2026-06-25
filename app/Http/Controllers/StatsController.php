@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\StatsService;
-use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class StatsController extends Controller
 {
@@ -18,9 +18,9 @@ class StatsController extends Controller
      * Display the general statistics screen for a link.
      *
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(mixed $id): mixed
+    public function index(int|string $id): View
     {
         return view('stats.content', $this->stats->general($id));
     }
@@ -28,11 +28,10 @@ class StatsController extends Controller
     /**
      * Display geographic statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function geographic(Request $request, mixed $id): mixed
+    public function geographic(int|string $id): View
     {
         return view('stats.content', $this->stats->geographic($id));
     }
@@ -40,11 +39,10 @@ class StatsController extends Controller
     /**
      * Display browser statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function browsers(Request $request, mixed $id): mixed
+    public function browsers(int|string $id): View
     {
         return view('stats.content', $this->stats->grouped($id, 'browsers', 'browser', 'browsers'));
     }
@@ -52,11 +50,10 @@ class StatsController extends Controller
     /**
      * Display platform statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function platforms(Request $request, mixed $id): mixed
+    public function platforms(int|string $id): View
     {
         return view('stats.content', $this->stats->grouped($id, 'platforms', 'platform', 'platforms'));
     }
@@ -64,11 +61,10 @@ class StatsController extends Controller
     /**
      * Display device statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function devices(Request $request, mixed $id): mixed
+    public function devices(int|string $id): View
     {
         return view('stats.content', $this->stats->grouped($id, 'devices', 'device', 'devices'));
     }
@@ -76,11 +72,10 @@ class StatsController extends Controller
     /**
      * Display referrer source statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function sources(Request $request, mixed $id): mixed
+    public function sources(int|string $id): View
     {
         return view('stats.content', $this->stats->grouped($id, 'sources', 'referrer', 'referrers'));
     }
@@ -88,11 +83,10 @@ class StatsController extends Controller
     /**
      * Display social referrer statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function social(Request $request, mixed $id): mixed
+    public function social(int|string $id): View
     {
         return view('stats.content', $this->stats->social($id));
     }
@@ -100,11 +94,10 @@ class StatsController extends Controller
     /**
      * Display language statistics for a link.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function languages(Request $request, mixed $id): mixed
+    public function languages(int|string $id): View
     {
         return view('stats.content', $this->stats->grouped($id, 'languages', 'language', 'languages'));
     }

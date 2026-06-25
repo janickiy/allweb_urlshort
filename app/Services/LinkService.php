@@ -6,12 +6,16 @@ use App\DTO\LinkData;
 use App\Models\Link;
 use App\Models\User;
 use App\Repositories\LinkRepository;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 
 class LinkService
 {
+    /**
+     * Inject dependencies used by link operations.
+     */
     public function __construct(
         private readonly AliasGenerator $aliases,
         private readonly LinkRepository $links,
@@ -19,7 +23,10 @@ class LinkService
     ) {
     }
 
-    public function create(array $input, ?User $user = null): Link
+    /**
+     * Create a single short link from input data.
+     */
+    public function create(array $input, ?User $user = null)
     {
         return $this->links->createFromDto(LinkData::fromArray(
             $this->attributesForCreate($input, $user?->id ?? 0)
@@ -27,63 +34,196 @@ class LinkService
     }
 
     /**
+     * Create links for a user and return the newly created links for UI feedback.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function createForUser(array $input, User $user): Collection
+    {
+        if (!empty($input['multi_link'])) {
+            $created = $this->createMany($input, $user);
+
+            return $this->latestForUser($user->id, count($created));
+        }
+
+        $this->create($input, $user);
+
+        return $this->latestForUser($user->id, 1);
+    }
+
+    /**
+     * Create a public guest link and return it for UI feedback.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function createForGuest(array $input): Collection
+    {
+        if (!config('settings.short_guest')) {
+            abort(404);
+        }
+
+        $this->create($input);
+
+        return $this->latestForUser(0, 1);
+    }
+
+    /**
+     * Create multiple short links from a newline-separated URL list.
+     *
      * @return array<int, array<string, mixed>>
      */
     public function createMany(array $input, User $user): array
     {
         $urls = preg_split('/\n|\r/', $input['urls'] ?? '', -1, PREG_SPLIT_NO_EMPTY);
-        $now = Carbon::now();
+        $dtos = [];
         $rows = [];
 
         foreach ($urls as $url) {
             $metadata = $this->metadata->parse($url);
 
-            $rows[] = [
+            $dto = LinkData::fromArray([
                 'user_id' => $user->id,
                 'url' => $url,
                 'alias' => $this->aliases->generate($input['domain'] ?? null),
                 'title' => isset($metadata['title']) ? trim($metadata['title']) : null,
                 'space_id' => $input['space'] ?? null,
                 'domain_id' => $input['domain'] ?? null,
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            ]);
+
+            $dtos[] = $dto;
+            $rows[] = $dto->toArray();
         }
 
-        $this->links->bulkInsert($rows);
+        $this->links->bulkInsertFromDtos($dtos);
 
         return $rows;
     }
 
+    /**
+     * Update an existing short link from input data.
+     */
     public function update(Link $link, array $input): Link
     {
         $this->links->updateFromDto($link->id, LinkData::fromArray(
             $this->attributesForUpdate($input, $link)
         ));
 
-        return $link->refresh();
+        return $this->links->findOrFail($link->id);
     }
 
+    /**
+     * Update a link owned by a user.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function updateForUser(int|string $id, User $user, array $input): Link
+    {
+        return $this->update($this->links->findForUserOrFail($id, $user->id), $input);
+    }
+
+    /**
+     * Return a link owned by a user or null.
+     */
+    public function findForUser(int|string $id, User $user): ?Link
+    {
+        return $this->links->findForUser($id, $user->id);
+    }
+
+    /**
+     * Update a link by primary key for admin workflows.
+     *
+     * @param array<string, mixed> $input
+     */
+    public function updateById(int|string $id, array $input): Link
+    {
+        return $this->update($this->links->findOrFail($id), $input);
+    }
+
+    /**
+     * Delete a short link.
+     */
     public function delete(Link $link): bool
     {
-        return (bool) $link->delete();
+        return $this->links->delete($link->id);
     }
 
+    /**
+     * Delete a link owned by a user and return its display name.
+     */
+    public function deleteForUser(int|string $id, User $user): string
+    {
+        return $this->deleteAndReturnName($this->links->findForUserOrFail($id, $user->id));
+    }
+
+    /**
+     * Delete a link owned by a user and return the deleted link.
+     */
+    public function deleteForApiUser(int|string $id, User $user): ?Link
+    {
+        $link = $this->findForUser($id, $user);
+
+        if (!$link) {
+            return null;
+        }
+
+        $this->delete($link);
+
+        return $link;
+    }
+
+    /**
+     * Delete a link by primary key for admin workflows and return its display name.
+     */
+    public function deleteById(int|string $id): string
+    {
+        return $this->deleteAndReturnName($this->links->findOrFail($id));
+    }
+
+    /**
+     * Return the latest links for a user.
+     */
     public function latestForUser(int $userId, int $limit): Collection
     {
         return $this->links->latestForUser($userId, $limit);
     }
 
+    /**
+     * Paginate the latest links for a user.
+     */
+    public function paginateLatestForUser(int $userId): LengthAwarePaginator
+    {
+        return $this->links->paginateLatestForUser($userId);
+    }
+
+    /**
+     * Build the display name shown for a short link.
+     */
     public function displayName(Link $link): string
     {
+        $domainName = $this->links->domainName($link);
+
         return str_replace(
             ['http://', 'https://'],
             '',
-            isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias)
+            $domainName ? $domainName.'/'.$link->alias : route('link.redirect', $link->alias)
         );
     }
 
     /**
+     * Delete a link model and return the name that should be shown to users.
+     */
+    private function deleteAndReturnName(Link $link): string
+    {
+        $name = $this->displayName($link);
+
+        $this->delete($link);
+
+        return $name;
+    }
+
+    /**
+     * Map create input into link repository attributes.
+     *
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
@@ -98,6 +238,8 @@ class LinkService
     }
 
     /**
+     * Map update input into link repository attributes.
+     *
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
@@ -113,6 +255,8 @@ class LinkService
     }
 
     /**
+     * Map shared link input fields into repository attributes.
+     *
      * @param array<string, mixed> $input
      * @return array<string, mixed>
      */
@@ -171,10 +315,11 @@ class LinkService
     }
 
     /**
-     * @param mixed $rules
+     * Normalize geo or platform targeting rules.
+     *
      * @return array<int, array<string, mixed>>|null
      */
-    private function targetRules(mixed $rules): ?array
+    private function targetRules(?array $rules): ?array
     {
         if (!is_array($rules)) {
             return null;

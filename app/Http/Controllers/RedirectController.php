@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\RedirectController\ValidateLinkPasswordRequest;
-use App\Services\RedirectDecision;
+use App\Enums\RedirectDecision;
+use App\Http\Requests\Redirect\ValidateLinkPasswordRequest;
 use App\Services\RedirectService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class RedirectController extends Controller
 {
@@ -20,22 +22,22 @@ class RedirectController extends Controller
      * Resolve a short-link alias and return the appropriate redirect response.
      *
      * @param Request $request
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @param int|string $id
+     * @return RedirectResponse|View
      * @throws \MaxMind\Db\Reader\InvalidDatabaseException
      */
-    public function index(Request $request, mixed $id): mixed
+    public function index(Request $request, int|string $id): View|RedirectResponse
     {
-        $decision = $this->redirectService->resolve($request, $id);
+        $result = $this->redirectService->resolve($request, (string) $id);
 
-        return match ($decision->type) {
-            RedirectDecision::TYPE_PREVIEW => view('redirect.preview', ['link' => $decision->link]),
-            RedirectDecision::TYPE_EXPIRED => view('redirect.expired', ['link' => $decision->link]),
-            RedirectDecision::TYPE_PASSWORD => view('redirect.password', ['link' => $decision->link]),
-            RedirectDecision::TYPE_DISABLED => view('redirect.disabled', ['link' => $decision->link]),
-            RedirectDecision::TYPE_BANNED => view('redirect.banned', ['link' => $decision->link]),
-            RedirectDecision::TYPE_NOT_FOUND => $decision->target ? $this->redirectNoCache($decision->target) : abort(404),
-            default => $this->redirectNoCache($decision->target),
+        return match ($result->decision) {
+            RedirectDecision::Preview => view('redirect.preview', ['link' => $result->link]),
+            RedirectDecision::Expired => view('redirect.expired', ['link' => $result->link]),
+            RedirectDecision::Password => view('redirect.password', ['link' => $result->link]),
+            RedirectDecision::Disabled => view('redirect.disabled', ['link' => $result->link]),
+            RedirectDecision::Banned => view('redirect.banned', ['link' => $result->link]),
+            RedirectDecision::NotFound => $result->target ? $this->redirectNoCache($result->target) : abort(404),
+            RedirectDecision::Redirect => $this->redirectNoCache($result->target),
         };
     }
 
@@ -43,11 +45,10 @@ class RedirectController extends Controller
      * Validate a password-protected link before redirecting to its target.
      *
      * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function validatePassword(ValidateLinkPasswordRequest $request, mixed $id): mixed
+    public function validatePassword(ValidateLinkPasswordRequest $request): RedirectResponse
     {
         return $this->redirectNoCache($request->link()->url);
     }
@@ -55,7 +56,7 @@ class RedirectController extends Controller
     /**
      * Create a redirect response with headers that prevent caching.
      */
-    private function redirectNoCache(?string $target): mixed
+    private function redirectNoCache(?string $target): RedirectResponse
     {
         return redirect()->to($target, 301)->header('Cache-Control', 'no-store, no-cache, must-revalidate');
     }

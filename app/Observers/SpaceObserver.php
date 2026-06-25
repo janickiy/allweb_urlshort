@@ -9,7 +9,7 @@ class SpaceObserver
     /**
      * Handle the User "deleted" event.
      *
-     * @param  \App\Models\Space  $space
+     * @param  Space  $space
      * @return void
      */
     public function deleting(Space $space): void

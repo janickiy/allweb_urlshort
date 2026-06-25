@@ -3,42 +3,26 @@
 namespace App\Rules;
 
 use App\Models\Domain;
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateDomainNameRule implements Rule
+class ValidateDomainNameRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the normalized domain host is unused.
      */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
+    public function passes(string $attribute, string $value): bool
     {
         $host = parse_url($value, PHP_URL_HOST) ?: preg_replace('/^https?:\/\//', '', $value);
 
-        if (Domain::whereIn('name', [$host, 'http://'.$host, 'https://'.$host])->exists()) {
+        if (!is_string($host) || $host === '') {
             return false;
         }
 
-        return true;
+        return !Domain::whereIn('name', [$host, 'http://'.$host, 'https://'.$host])->exists();
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

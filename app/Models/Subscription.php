@@ -26,10 +26,10 @@ class Subscription extends CashierSubscription
      * Filter subscriptions by a partial Stripe subscription ID match.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeSearch(Builder $query, mixed $value): Builder
+    public function scopeSearch(Builder $query, string $value): Builder
     {
         return $query->where('stripe_id', 'like', '%' . $value . '%');
     }
@@ -38,10 +38,10 @@ class Subscription extends CashierSubscription
      * Filter subscriptions by Stripe status.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopeStatus(Builder $query, mixed $value): Builder {
+    public function scopeStatus(Builder $query, string $value): Builder {
         return $query->where('stripe_status', '=', $value);
     }
 
@@ -49,10 +49,10 @@ class Subscription extends CashierSubscription
      * Filter subscriptions by plan name.
      *
      * @param Builder $query
-     * @param $value
+     * @param string $value
      * @return Builder
      */
-    public function scopePlan(Builder $query, mixed $value): Builder {
+    public function scopePlan(Builder $query, string $value): Builder {
         return $query->where('name', '=', $value);
     }
 
@@ -60,10 +60,10 @@ class Subscription extends CashierSubscription
      * Filter subscriptions by owner user ID.
      *
      * @param Builder $query
-     * @param $value
+     * @param int|string $value
      * @return Builder
      */
-    public function scopeUserId(Builder $query, mixed $value): Builder
+    public function scopeUserId(Builder $query, int|string $value): Builder
     {
         return $query->where('user_id', '=', $value);
     }

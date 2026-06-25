@@ -27,9 +27,9 @@ class DatabaseController extends \RachidLaasri\LaravelInstaller\Controllers\Data
     /**
      * Run installer migrations and seed the first administrator account.
      *
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function database(): mixed
+    public function database(): \Illuminate\Http\RedirectResponse
     {
         $response = $this->databaseManager->migrateAndSeed();
 

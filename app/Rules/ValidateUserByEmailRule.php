@@ -3,40 +3,20 @@
 namespace App\Rules;
 
 use App\Models\User;
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractStringRule;
 
-class ValidateUserByEmailRule implements Rule
+class ValidateUserByEmailRule extends AbstractStringRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if a user exists for the email.
      */
-    public function __construct()
+    public function passes(string $attribute, string $value): bool
     {
-        //
+        return User::where('email', '=', $value)->exists();
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        if (User::where('email', '=', $value)->exists()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

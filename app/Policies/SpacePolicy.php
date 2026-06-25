@@ -14,7 +14,7 @@ class SpacePolicy
     /**
      * Determine whether the user can view any spaces.
      *
-     * @param  \App\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function viewAny(User $user): mixed
@@ -25,8 +25,8 @@ class SpacePolicy
     /**
      * Determine whether the user can view the space.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Space  $space
+     * @param  User  $user
+     * @param  Space  $space
      * @return mixed
      */
     public function view(User $user, Space $space): mixed
@@ -37,7 +37,7 @@ class SpacePolicy
     /**
      * Determine whether the user can create spaces.
      *
-     * @param  \App\Models\User  $user
+     * @param  User  $user
      * @return mixed
      */
     public function create(User $user, mixed $limit): bool
@@ -58,8 +58,8 @@ class SpacePolicy
     /**
      * Determine whether the user can update the space.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Space  $space
+     * @param  User  $user
+     * @param  Space  $space
      * @return mixed
      */
     public function update(User $user, Space $space): mixed
@@ -70,8 +70,8 @@ class SpacePolicy
     /**
      * Determine whether the user can delete the space.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Space  $space
+     * @param  User  $user
+     * @param  Space  $space
      * @return mixed
      */
     public function delete(User $user, Space $space): mixed
@@ -82,8 +82,8 @@ class SpacePolicy
     /**
      * Determine whether the user can restore the space.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Space  $space
+     * @param  User  $user
+     * @param  Space  $space
      * @return mixed
      */
     public function restore(User $user, Space $space): mixed
@@ -94,8 +94,8 @@ class SpacePolicy
     /**
      * Determine whether the user can permanently delete the space.
      *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Space  $space
+     * @param  User  $user
+     * @param  Space  $space
      * @return mixed
      */
     public function forceDelete(User $user, Space $space): mixed

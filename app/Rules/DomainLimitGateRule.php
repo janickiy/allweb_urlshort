@@ -2,37 +2,25 @@
 
 namespace App\Rules;
 
-use App\Traits\UserFeaturesTrait;
-use Illuminate\Contracts\Validation\Rule;
+use App\Models\Domain;
+use App\Rules\Base\AbstractLimitGateRule;
 
-class DomainLimitGateRule implements Rule
+class DomainLimitGateRule extends AbstractLimitGateRule
 {
-    use UserFeaturesTrait;
-
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Return the model class checked by the rule.
      */
-    public function __construct()
+    protected static function modelClass(): string
     {
-        //
+        return Domain::class;
     }
 
     /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * Return the feature-map key checked by the rule.
      */
-    public function passes(mixed $attribute, mixed $value): bool
+    protected static function featureKey(): string
     {
-        $user = request()->user();
-
-        if ($user->can('create', ['App\Models\Domain', $this->getFeatures($user)['option_domains']])) {
-            return true;
-        }
+        return 'option_domains';
     }
 
     /**

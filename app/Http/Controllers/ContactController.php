@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ContactController\ContactMailRequest;
-use App\Mail\ContactMail;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use App\Http\Requests\Contact\ContactMailRequest;
+use App\Services\ContactService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ContactController extends Controller
 {
+    /**
+     * Inject the service that sends public contact messages.
+     */
+    public function __construct(private readonly ContactService $contacts)
+    {
+    }
 
     /**
      * Display the public contact form.
      *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(): mixed
+    public function index(): View
     {
         return view('contact.index');
     }
@@ -24,13 +30,13 @@ class ContactController extends Controller
      * Send the contact form message to the configured contact email.
      *
      * @param ContactMailRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function sendMail(ContactMailRequest $request): mixed
+    public function sendMail(ContactMailRequest $request): RedirectResponse
     {
         try {
-            Mail::to(config('settings.contact_email'))->send(new ContactMail());
-        } catch(\Exception $e) {
+            $this->contacts->send();
+        } catch (\Exception $e) {
             return redirect()->route('contact')->with('error', $e->getMessage());
         }
 

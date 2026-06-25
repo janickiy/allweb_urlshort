@@ -7,6 +7,7 @@ use Closure;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Symfony\Component\HttpFoundation\Response;
 
 class SettingsMiddleware
 {
@@ -15,9 +16,9 @@ class SettingsMiddleware
      *
      * @param \Illuminate\Http\Request $request
      * @param \Closure $next
-     * @return mixed
+     * @return Response
      */
-    public function handle(Request $request, Closure $next): mixed
+    public function handle(Request $request, Closure $next): Response
     {
         try {
             // Set the app's default locale

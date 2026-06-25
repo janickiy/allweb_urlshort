@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Repositories\PlanRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class PricingController extends Controller
 {
@@ -17,7 +18,7 @@ class PricingController extends Controller
     /**
      * Display the public pricing page with visible plans.
      */
-    public function index(): mixed
+    public function index(): View
     {
         $user = Auth::user();
         $plans = $this->plans->visible();

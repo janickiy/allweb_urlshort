@@ -16,7 +16,7 @@ class CreatePagesTable extends Migration
 		Schema::create('pages', function(Blueprint $table)
 		{
 			$table->integer('id', true);
-			$table->string('title', 255)->index('title');
+			$table->string('title', 255)->index('pages_title_index');
 			$table->string('slug', 255);
 			$table->tinyInteger('footer');
 			$table->text('content');

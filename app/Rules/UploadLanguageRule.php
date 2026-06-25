@@ -2,45 +2,39 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use App\Rules\Base\AbstractUploadedFileRule;
+use Illuminate\Http\UploadedFile;
 
-class UploadLanguageRule implements Rule
+class UploadLanguageRule extends AbstractUploadedFileRule
 {
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * Determine if the uploaded language JSON file has required metadata.
      */
-    public function __construct()
+    public function passes(string $attribute, UploadedFile $value): bool
     {
-        //
-    }
+        $path = $value->getRealPath();
 
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
-     */
-    public function passes(mixed $attribute, mixed $value): bool
-    {
-        // Read the file's contents
-        $uploadedFile = file_get_contents($value);
-        $file = json_decode($uploadedFile);
-
-        // Validate the file
-        if (isset($file->lang_code) == false || isset($file->lang_name) == false || isset($file->lang_dir) == false) {
+        if (!is_string($path)) {
             return false;
         }
 
-        return true;
+        $uploadedFile = file_get_contents($path);
+
+        if ($uploadedFile === false) {
+            return false;
+        }
+
+        $file = json_decode($uploadedFile);
+
+        if (!is_object($file)) {
+            return false;
+        }
+
+        return isset($file->lang_code, $file->lang_name, $file->lang_dir);
     }
 
     /**
-     * Get the validation error message.
-     *
-     * @return string
+     * Return the validation error message.
      */
     public function message(): string
     {

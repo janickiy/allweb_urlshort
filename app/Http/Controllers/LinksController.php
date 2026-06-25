@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LinksController\{CreateLinkRequest, UpdateLinkRequest};
+use App\Http\Requests\Links\{CreateLinkRequest, UpdateLinkRequest};
 use App\Repositories\DomainRepository;
 use App\Repositories\LinkRepository;
 use App\Repositories\SpaceRepository;
@@ -10,6 +10,8 @@ use App\Services\LinkService;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class LinksController extends Controller
 {
@@ -30,9 +32,9 @@ class LinksController extends Controller
      * Display the authenticated user link list with filters.
      *
      * @param Request $request
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function index(Request $request): mixed
+    public function index(Request $request): View
     {
         $user = Auth::user();
 
@@ -61,9 +63,9 @@ class LinksController extends Controller
      * Display the edit form for a link owned by the user.
      *
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return View
      */
-    public function linksEdit(mixed $id): mixed
+    public function linksEdit(int|string $id): View
     {
         $user = Auth::user();
 
@@ -81,21 +83,11 @@ class LinksController extends Controller
      * Create one or more links for the authenticated user.
      *
      * @param CreateLinkRequest $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function createLink(CreateLinkRequest $request): mixed
+    public function createLink(CreateLinkRequest $request): RedirectResponse
     {
-        $user = Auth::user();
-
-        if ($request->multi_link) {
-            $created = $this->linkService->createMany($request->all(), $user);
-
-            return redirect()->back()->with('toast', $this->linkService->latestForUser($user->id, count($created)));
-        }
-
-        $this->linkService->create($request->all(), $user);
-
-        return redirect()->back()->with('toast', $this->linkService->latestForUser($user->id, 1));
+        return redirect()->back()->with('toast', $this->linkService->createForUser($request->validated(), Auth::user()));
     }
 
     /**
@@ -103,15 +95,11 @@ class LinksController extends Controller
      *
      * @param UpdateLinkRequest $request
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function updateLink(UpdateLinkRequest $request, mixed $id): mixed
+    public function updateLink(UpdateLinkRequest $request, int|string $id): RedirectResponse
     {
-        $user = Auth::user();
-
-        $link = $this->links->findForUserOrFail($id, $user->id);
-
-        $this->linkService->update($link, $request->all());
+        $this->linkService->updateForUser($id, Auth::user(), $request->validated());
 
         return redirect()->route('links.edit', $id)->with('success', __('Settings saved.'));
     }
@@ -119,19 +107,13 @@ class LinksController extends Controller
     /**
      * Delete a link owned by the authenticated user.
      *
-     * @param Request $request
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      * @throws \Exception
      */
-    public function deleteLink(Request $request, mixed $id): mixed
+    public function deleteLink(int|string $id): RedirectResponse
     {
-        $user = Auth::user();
-
-        $link = $this->links->findForUserOrFail($id, $user->id);
-        $name = $this->linkService->displayName($link);
-
-        $this->linkService->delete($link);
+        $name = $this->linkService->deleteForUser($id, Auth::user());
 
         return redirect()->route('links')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
