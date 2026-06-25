@@ -2,36 +2,33 @@
 
 namespace App\Http\Controllers\Installer;
 
+use App\Http\Controllers\Controller;
 use App\Services\UserRegistrationService;
-use RachidLaasri\LaravelInstaller\Helpers\DatabaseManager;
+use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
+use Illuminate\Http\RedirectResponse;
 
-class DatabaseController extends \RachidLaasri\LaravelInstaller\Controllers\DatabaseController
+class DatabaseController extends Controller
 {
     /**
-     * @var DatabaseManager
-     */
-    private $databaseManager;
-
-    /**
      * Inject installer database manager and registration services.
-     *
-     * @param DatabaseManager $databaseManager
      */
     public function __construct(
-        DatabaseManager $databaseManager,
+        private readonly ConsoleKernel $console,
         private readonly UserRegistrationService $registrations,
     ) {
-        $this->databaseManager = $databaseManager;
     }
 
     /**
      * Run installer migrations and seed the first administrator account.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function database(): \Illuminate\Http\RedirectResponse
+    public function database(): RedirectResponse
     {
-        $response = $this->databaseManager->migrateAndSeed();
+        $this->console->call('migrate', [
+            '--seed' => true,
+            '--force' => true,
+        ]);
+
+        $response = trim($this->console->output()) ?: __('Database migration and seeding completed.');
 
         $this->registrations->createInstallerAdmin(request()->only('name', 'email', 'password'));
 

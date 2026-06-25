@@ -15,7 +15,11 @@
 
     <!-- Styles -->
 
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet" id="app-css">
+    @hasSection('base_css')
+        @yield('base_css')
+    @else
+        <link href="{{ asset('css/app.css') }}" rel="stylesheet" id="app-css">
+    @endif
 
     <!-- #GOOGLE FONT -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,300,400,700">
@@ -28,7 +32,11 @@
 
 
 <!-- Scripts -->
-<script src="{{ asset('js/app.js') }}" defer></script>
+@hasSection('base_js')
+    @yield('base_js')
+@else
+    <script src="{{ asset('js/app.js') }}" defer></script>
+@endif
 
 
 @yield('js')

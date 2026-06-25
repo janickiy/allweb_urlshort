@@ -30,14 +30,25 @@
     ];
 @endphp
 
+<li class="nav-header">{{ __('MAIN') }}</li>
+
 @foreach ($menu as $key => $value)
     @php
         $hasChildren = isset($value[3]);
         $isActive = request()->segment(2) == $key;
+        $href = $hasChildren ? '#' : (Route::has($value[2]) ? route($value[2]) : $value[2]);
     @endphp
 
+    @if ($key === 'languages')
+        <li class="nav-header">{{ __('MANAGEMENT') }}</li>
+    @endif
+
     <li class="nav-item @if($hasChildren && $isActive) menu-open @endif">
-        <a class="nav-link @if($isActive && !$hasChildren) active @endif" href="{{ $hasChildren ? '#' : (Route::has($value[2]) ? route($value[2]) : $value[2]) }}">
+        <a
+            class="nav-link @if($isActive && !$hasChildren) active @elseif($isActive && $hasChildren) active @endif"
+            href="{{ $href }}"
+            @if($hasChildren) role="button" aria-expanded="{{ $isActive ? 'true' : 'false' }}" @endif
+        >
             <span class="nav-icon sidebar-icon">@include('icons.' . $value[0], ['class' => 'fill-current'])</span>
             <p>
                 {{ __($value[1]) }}
@@ -52,7 +63,7 @@
                 @foreach ($value[3] as $subKey => $subValue)
                     <li class="nav-item">
                         <a href="{{ (Route::has($subValue[1]) ? route($subValue[1]) : $subValue[1]) }}" class="nav-link @if (request()->segment(3) == $subKey) active @endif">
-                            <span class="nav-icon"></span>
+                            <span class="nav-icon sidebar-sub-icon"></span>
                             <p>{{ __($subValue[0]) }}</p>
                         </a>
                     </li>

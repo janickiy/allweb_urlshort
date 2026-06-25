@@ -787,10 +787,14 @@ class AdminService
         return \Stripe\Plan::create($attributes);
     }
 
+
     /**
      * Update a Stripe product through the Stripe SDK.
      *
-     * @param array<string, mixed> $attributes
+     * @param string $productId
+     * @param array $attributes
+     * @return object|\Stripe\Product
+     * @throws \Stripe\Exception\ApiErrorException
      */
     protected function updateStripeProduct(string $productId, array $attributes): object
     {
