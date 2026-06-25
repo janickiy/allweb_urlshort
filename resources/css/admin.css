@@ -124,9 +124,107 @@
   display: flex;
 }
 
+.app-main .input-group-prepend {
+  display: flex;
+}
+
 .app-main .input-group > .input-group-append > .btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+.app-main .input-group > .input-group-prepend > .input-group-text {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.app-main .input-group > .input-group-prepend + .form-control,
+.app-main .input-group > .input-group-prepend + .custom-select,
+.app-main .input-group > .input-group-prepend + .form-select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.app-main .input-group > .custom-select,
+.app-main .input-group > .form-select {
+  flex: 1 1 auto;
+  width: 1%;
+  min-width: 0;
+}
+
+.app-main .form-row {
+  --bs-gutter-x: 1rem;
+  --bs-gutter-y: 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: calc(-.5 * var(--bs-gutter-x));
+  margin-left: calc(-.5 * var(--bs-gutter-x));
+}
+
+.app-main .form-row > * {
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+}
+
+.admin-filter-form {
+  min-width: min(100%, 18rem);
+}
+
+.admin-list-card .card-header,
+.admin-form-card .card-header {
+  min-height: 3.5rem;
+}
+
+.admin-form-card textarea {
+  min-height: 10rem;
+}
+
+.admin-link-edit-form .form-label {
+  margin-bottom: .35rem;
+  font-weight: 500;
+}
+
+.admin-link-edit-form .input-group {
+  align-items: stretch;
+}
+
+.admin-link-edit-form .input-group-text {
+  min-width: 2.625rem;
+  justify-content: center;
+}
+
+.admin-link-edit-form .input-group > .input-group-prepend,
+.admin-link-edit-form .input-group > .input-group-append {
+  flex: 0 0 auto;
+}
+
+.admin-link-edit-form .input-group > .input-group-prepend + .input-group-prepend > .input-group-text {
+  border-left: 0;
+  border-radius: 0;
+}
+
+.admin-link-edit-form .input-group > .input-group-prepend + .input-group-prepend + .form-control {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.admin-link-edit-form .input-group > .form-control + .input-group-append > .input-group-text,
+.admin-link-edit-form .input-group > .form-control + .input-group-append > .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.admin-link-edit-form .input-delete,
+.admin-link-edit-form .input-add {
+  min-height: calc(1.5em + .75rem + 2px);
+}
+
+.admin-link-target-section .input-content > .row:not(.d-none) {
+  margin-bottom: .5rem !important;
+}
+
+.admin-link-target-section .input-content .mb-3 {
+  margin-bottom: 0 !important;
 }
 
 .admin-upload-preview {

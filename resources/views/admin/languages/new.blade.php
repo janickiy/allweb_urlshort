@@ -1,34 +1,29 @@
-@section('site_title', formatTitle([__('New'), __('Language'), config('settings.title')]))
+<form action="{{ route('admin.languages.new') }}" method="post" enctype="multipart/form-data">
+    @csrf
 
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['url' => route('admin.languages'), 'title' => __('Languages')],
-    ['title' => __('New')],
-]])
+    <div class="card card-primary card-outline shadow-sm mb-0 admin-form-card">
+        <div class="card-header">
+            <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                @include('icons.language', ['class' => 'fill-current icon-text'])
+                {{ __('Language') }}
+            </h3>
+        </div>
 
-<h2 class="mb-3 d-inline-block">{{ __('New') }}</h2>
+        <div class="card-body">
+            <label for="i_language" class="form-label">{{ __('Language') }}</label>
+            <input type="file" name="language" id="i_language" class="form-control{{ $errors->has('language') ? ' is-invalid' : '' }}" accept=".json">
+            @if ($errors->has('language'))
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $errors->first('language') }}</strong>
+                </span>
+            @endif
+        </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-header"><div class="font-weight-medium py-1">{{ __('Language') }}</div></div>
-    <div class="card-body">
-        <form action="{{ route('admin.languages.new') }}" method="post" enctype="multipart/form-data">
-
-            @csrf
-
-            <div class="form-group">
-                <label for="i_language">{{ __('Language') }}</label>
-                <div class="custom-file">
-                    <input type="file" name="language" id="i_language" class="custom-file-input{{ $errors->has('language') ? ' is-invalid' : '' }}" accept=".json">
-                    @if ($errors->has('language'))
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $errors->first('language') }}</strong>
-                        </span>
-                    @endif
-                    <label class="custom-file-label" for="i_language" data-browse="{{ __('Browse') }}">{{ __('Choose file') }}</label>
-                </div>
-            </div>
-
-            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-        </form>
+        <div class="card-footer bg-body d-flex justify-content-end">
+            <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
+                {{ __('Save') }}
+            </button>
+        </div>
     </div>
-</div>
+</form>

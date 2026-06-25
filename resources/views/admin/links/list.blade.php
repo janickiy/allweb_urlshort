@@ -1,22 +1,14 @@
-@section('site_title', formatTitle([__('Links'), config('settings.title')]))
-
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['title' => __('Links')],
-]])
-
-<div class="d-flex">
-    <div class="flex-grow-1">
-        <h2 class="mb-0 d-inline-block">{{ __('Links') }}</h2>
-    </div>
-</div>
-
-<div class="card border-0 shadow-sm mt-3">
-    <div class="card-header align-items-center">
-        <div class="row">
-            <div class="col-12 col-md"><div class="font-weight-medium py-1">{{ __('Links') }}</div></div>
+<div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
+    <div class="card-header">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md">
+                <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                    @include('icons.link', ['class' => 'fill-current icon-text'])
+                    {{ __('Links') }}
+                </h3>
+            </div>
             <div class="col-12 col-md-auto">
-                <form method="GET" action="{{ route('admin.links') }}" class="d-md-flex">
+                <form method="GET" action="{{ route('admin.links') }}" class="d-md-flex admin-filter-form">
                     @include('shared.filter_tags')
                     <div class="input-group input-group-sm">
                         <input class="form-control" name="search" placeholder="{{ __('Search') }}" value="{{ app('request')->input('search') }}">
@@ -36,35 +28,35 @@
 
                                 <div class="dropdown-divider"></div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_type" class="small">{{ __('Type') }}</label>
-                                    <select name="type" id="i_type" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_type" class="form-label small">{{ __('Type') }}</label>
+                                    <select name="type" id="i_type" class="form-select form-select-sm">
                                         @foreach([0 => __('All'), 1 => __('Active'), 2 => __('Expired')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('type') == $key && request()->input('type') !== null) selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_by" class="small">{{ __('Search by') }}</label>
-                                    <select name="by" id="i_by" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_by" class="form-label small">{{ __('Search by') }}</label>
+                                    <select name="by" id="i_by" class="form-select form-select-sm">
                                         @foreach(['title' => __('Title'), 'alias' => __('Alias'), 'url' => __('URL')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('by') == $key || !request()->input('by') && $key == 'name') selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_sort" class="small">{{ __('Sort') }}</label>
-                                    <select name="sort" id="i_sort" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_sort" class="form-label small">{{ __('Sort') }}</label>
+                                    <select name="sort" id="i_sort" class="form-select form-select-sm">
                                         @foreach(['desc' => __('Old'), 'asc' => __('New'), 'max' => __('Best performing'), 'min' => __('Least performing')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('sort') == $key) selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4 mb-2">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-block">{{ __('Search') }}</button>
+                                <div class="px-4 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">{{ __('Search') }}</button>
                                 </div>
                             </div>
                         </div>

@@ -1,42 +1,57 @@
-@section('site_title', formatTitle([__('Edit'), __('Link'), config('settings.title')]))
+@if(! isset($admin))
+    @section('site_title', formatTitle([__('Edit'), __('Link'), config('settings.title')]))
 
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => isset($admin) ? route('admin.dashboard') : route('dashboard'), 'title' => isset($admin) ? __('Admin') : __('Home')],
-    ['url' => isset($admin) ? route('admin.links') : route('links'), 'title' => __('Links')],
-    ['title' => __('Edit')],
-]])
+    @include('shared.breadcrumbs', ['breadcrumbs' => [
+        ['url' => route('dashboard'), 'title' => __('Home')],
+        ['url' => route('links'), 'title' => __('Links')],
+        ['title' => __('Edit')],
+    ]])
 
-<div class="d-flex">
-    <h2 class="mb-0 flex-grow-1 text-break">{{ __('Edit') }}</h2>
+    <div class="d-flex">
+        <h2 class="mb-0 flex-grow-1 text-break">{{ __('Edit') }}</h2>
 
-    <div class="d-flex align-items-center flex-grow-0">
-        @include('shared.buttons.copy_link')
-        @include('shared.dropdowns.link', ['options' => ['dropdown' => ['button' => true, 'edit' => true, 'share' => true, 'stats' => true, 'open' => true, 'delete' => true]]])
+        <div class="d-flex align-items-center flex-grow-0">
+            @include('shared.buttons.copy_link')
+            @include('shared.dropdowns.link', ['options' => ['dropdown' => ['button' => true, 'edit' => true, 'share' => true, 'stats' => true, 'open' => true, 'delete' => true]]])
+        </div>
     </div>
-</div>
+@endif
 
-<div class="card border-0 shadow-sm mt-3">
-    <div class="card-header align-items-center">
-        <div class="row">
-            <div class="col">
-                <div class="font-weight-medium py-1">{{ __('Link') }}</div>
+<div class="{{ isset($admin) ? 'card card-primary card-outline shadow-sm mb-0 admin-form-card admin-link-edit-card' : 'card border-0 shadow-sm mt-3' }}">
+    <div class="card-header">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md">
+                @if(isset($admin))
+                    <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                        @include('icons.link', ['class' => 'fill-current icon-text'])
+                        {{ __('Link') }}
+                    </h3>
+                @else
+                    <div class="font-weight-medium py-1">{{ __('Link') }}</div>
+                @endif
             </div>
+            @if(isset($admin))
+                <div class="col-12 col-md-auto d-flex flex-wrap gap-2">
+                    @include('shared.buttons.copy_link')
+                    @include('shared.dropdowns.link', ['options' => ['dropdown' => ['button' => true, 'edit' => true, 'share' => true, 'stats' => true, 'open' => true, 'delete' => true]]])
+                </div>
+            @endif
         </div>
     </div>
     <div class="card-body">
         @include('shared.message')
 
-        <form action="{{ isset($admin) ? route('admin.links.edit', $link->id) : route('links.edit', $link->id) }}" method="post" enctype="multipart/form-data" autocomplete="off">
+        <form action="{{ isset($admin) ? route('admin.links.edit', $link->id) : route('links.edit', $link->id) }}" method="post" enctype="multipart/form-data" autocomplete="off" class="{{ isset($admin) ? 'admin-link-edit-form' : '' }}">
             @csrf
 
             @if(isset($admin))
                 <input type="hidden" name="user_id" value="{{ isset($link->user) ? $link->user->id : '0' }}">
             @endif
 
-            <div class="row">
-                <div class="col-12 col-lg-6">
-                    <label for="i_url">{{ __('Link') }}</label>
-                    <div class="form-group">
+            <div class="row g-3 align-items-start">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <label class="form-label" for="i_url">{{ __('Link') }}</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -56,9 +71,9 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <label for="i_alias">{{ __('Alias') }}</label>
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <label class="form-label" for="i_alias">{{ __('Alias') }}</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <div class="input-group-text">@include('icons.alias', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -76,11 +91,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_space_new">{{ __('Space') }}</label>
+                                <label class="form-label" for="i_space_new">{{ __('Space') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']])
@@ -94,7 +109,7 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text">@include('icons.space', ['class' => 'icon-label fill-current text-muted'])</div>
                             </div>
-                            <select name="space" id="i_space" class="custom-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']]) disabled @endcan>
+                            <select name="space" id="i_space" class="form-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']]) disabled @endcan>
                                 <option value="">{{ __('None') }}</option>
                                 @foreach($spaces as $space)
                                     <option value="{{ $space->id }}" @if($link->space_id == $space->id || $space->id == old('space')) selected @endif>{{ $space->name }}</option>
@@ -109,11 +124,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_password">{{ __('Password') }}</label>
+                                <label class="form-label" for="i_password">{{ __('Password') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('password', ['App\Models\Link', $userFeatures['option_password']])
@@ -137,11 +152,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_expiration_date">{{ __('Expiration date') }}</label>
+                                <label class="form-label" for="i_expiration_date">{{ __('Expiration date') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']])
@@ -161,7 +176,7 @@
                                 <div class="input-group-text">@include('icons.expire', ['class' => 'icon-label fill-current text-muted'])</div>
                             </div>
                         </div>
-                        <div class="row no-gutters">
+                        <div class="row g-0">
                             <div class="col">
                                 @if ($errors->has('expiration_date'))
                                     <span class="invalid-feedback d-block" role="alert">
@@ -180,11 +195,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_expiration_url">{{ __('Expiration link') }}</label>
+                                <label class="form-label" for="i_expiration_url">{{ __('Expiration link') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('expiration', ['App\Models\Link', $userFeatures['option_expiration']])
@@ -208,11 +223,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_public">{{ __('Stats') }}</label>
+                                <label class="form-label" for="i_public">{{ __('Stats') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('stats', ['App\Models\Link', $userFeatures['option_stats']])
@@ -226,7 +241,7 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text">@include('icons.stats', ['class' => 'icon-label fill-current text-muted'])</div>
                             </div>
-                            <select name="public" id="i_public" class="custom-select{{ $errors->has('public') ? ' is-invalid' : '' }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_stats']]) disabled @endcan>
+                            <select name="public" id="i_public" class="form-select{{ $errors->has('public') ? ' is-invalid' : '' }}" @cannot('expiration', ['App\Models\Link', $userFeatures['option_stats']]) disabled @endcan>
                                 @foreach([0 => __('Private'), 1 => __('Public')] as $key => $value)
                                     <option value="{{ $key }}" @if ((old('public') !== null && old('public') == $key) || $link->public == $key) selected @endif>{{ $value }}</option>
                                 @endforeach
@@ -240,11 +255,11 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-lg-6">
-                    <div class="form-group">
-                        <div class="row">
+                <div class="col-12 col-xl-6">
+                    <div class="mb-3">
+                        <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label for="i_disabled">{{ __('Disabled') }}</label>
+                                <label class="form-label" for="i_disabled">{{ __('Disabled') }}</label>
                             </div>
                             <div class="col-auto">
                                 @cannot('disabled', ['App\Models\Link', $userFeatures['option_disabled']])
@@ -258,7 +273,7 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text">@include('icons.block', ['class' => 'icon-label fill-current text-muted'])</div>
                             </div>
-                            <select name="disabled" id="i_disabled" class="custom-select{{ $errors->has('disabled') ? ' is-invalid' : '' }}" @cannot('disabled', ['App\Models\Link', $userFeatures['option_disabled']]) disabled @endcan>
+                            <select name="disabled" id="i_disabled" class="form-select{{ $errors->has('disabled') ? ' is-invalid' : '' }}" @cannot('disabled', ['App\Models\Link', $userFeatures['option_disabled']]) disabled @endcan>
                                 @foreach([0 => __('No'), 1 => __('Yes')] as $key => $value)
                                     <option value="{{ $key }}" @if ((old('disabled') !== null && old('disabled') == $key) || $link->disabled == $key) selected @endif>{{ $value }}</option>
                                 @endforeach
@@ -275,19 +290,19 @@
 
             <div class="hr-text"><span class="font-weight-medium text-muted">{{ __('Geotargeting') }}</span></div>
 
-            <div id="geo-container">
+            <div id="geo-container" class="{{ isset($admin) ? 'admin-link-target-section' : '' }}">
                 <input name="geo[empty][key]" type="hidden" disabled>
                 <input name="geo[empty][value]" type="hidden" disabled>
 
                 <div class="input-content">
                     <div class="row mb-3 mb-md-0 d-none input-template">
                         <div class="col-12 col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.geographic', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="geo_key[]" data-input="key" class="custom-select" disabled>
+                                    <select name="geo_key[]" data-input="key" class="form-select" disabled>
                                         <option value="" selected>{{ __('Country') }}</option>
                                         @foreach(config('countries') as $key => $value)
                                             <option value="{{ $key }}">{{ $value }}</option>
@@ -297,9 +312,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="form-row">
+                            <div class="row g-2">
                                 <div class="col">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -309,7 +324,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-auto form-group d-flex align-items-start">
+                                <div class="col-auto mb-3 d-flex align-items-start">
                                     <button type="button" class="btn btn-outline-danger d-flex align-items-center input-delete">@include('icons.delete', ['class' => 'icon-button fill-current'])&#8203;</button>
                                 </div>
                             </div>
@@ -329,12 +344,12 @@
                     @foreach($geoList as $id => $geo)
                         <div class="row mb-3 mb-md-0">
                             <div class="col-12 col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">@include('icons.geographic', ['class' => 'icon-label fill-current text-muted'])</div>
                                         </div>
-                                        <select name="geo[{{ $id }}][key]" data-input="key" class="custom-select{{ $errors->has('geo.'.$id.'.key') ? ' is-invalid' : '' }}">
+                                        <select name="geo[{{ $id }}][key]" data-input="key" class="form-select{{ $errors->has('geo.'.$id.'.key') ? ' is-invalid' : '' }}">
                                             <option value="">{{ __('Country') }}</option>
                                             @foreach(config('countries') as $key => $value)
                                                 <option value="{{ $key }}" @if($geo['key'] == $key) selected @endif>{{ $value }}</option>
@@ -349,9 +364,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="form-row">
+                                <div class="row g-2">
                                     <div class="col">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -366,7 +381,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-auto form-group d-flex align-items-start">
+                                    <div class="col-auto mb-3 d-flex align-items-start">
                                         <button type="button" class="btn btn-outline-danger d-flex align-items-center input-delete">@include('icons.delete', ['class' => 'icon-button fill-current'])&#8203;</button>
                                     </div>
                                 </div>
@@ -385,19 +400,19 @@
 
             <div class="hr-text"><span class="font-weight-medium text-muted">{{ __('Platform targeting') }}</span></div>
 
-            <div id="platform-container">
+            <div id="platform-container" class="{{ isset($admin) ? 'admin-link-target-section' : '' }}">
                 <input name="platform[empty][key]" type="hidden" disabled>
                 <input name="platform[empty][value]" type="hidden" disabled>
 
                 <div class="input-content">
                     <div class="row mb-3 mb-md-0 d-none input-template">
                         <div class="col-12 col-md-6">
-                            <div class="form-group">
+                            <div class="mb-3">
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text">@include('icons.platforms', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="platform_key[]" data-input="key" class="custom-select" disabled>
+                                    <select name="platform_key[]" data-input="key" class="form-select" disabled>
                                         <option value="" selected>{{ __('Platform') }}</option>
                                         @foreach(config('platforms') as $platform)
                                             <option value="{{ $platform }}">{{ $platform }}</option>
@@ -407,9 +422,9 @@
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
-                            <div class="form-row">
+                            <div class="row g-2">
                                 <div class="col">
-                                    <div class="form-group">
+                                    <div class="mb-3">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -419,7 +434,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-auto form-group d-flex align-items-start">
+                                <div class="col-auto mb-3 d-flex align-items-start">
                                     <button type="button" class="btn btn-outline-danger d-flex align-items-center input-delete">@include('icons.delete', ['class' => 'icon-button fill-current'])&#8203;</button>
                                 </div>
                             </div>
@@ -439,12 +454,12 @@
                     @foreach($platformList as $id => $platform)
                         <div class="row mb-3 mb-md-0">
                             <div class="col-12 col-md-6">
-                                <div class="form-group">
+                                <div class="mb-3">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">@include('icons.platforms', ['class' => 'icon-label fill-current text-muted'])</div>
                                         </div>
-                                        <select name="platform[{{ $id }}][key]" data-input="key" class="custom-select{{ $errors->has('platform.'.$id.'.key') ? ' is-invalid' : '' }}">
+                                        <select name="platform[{{ $id }}][key]" data-input="key" class="form-select{{ $errors->has('platform.'.$id.'.key') ? ' is-invalid' : '' }}">
                                             <option value="">{{ __('Platform') }}</option>
                                             @foreach(config('platforms') as $value)
                                                 <option value="{{ $value }}" @if($platform['key'] == $value) selected @endif>{{ $value }}</option>
@@ -459,9 +474,9 @@
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
-                                <div class="form-row">
+                                <div class="row g-2">
                                     <div class="col">
-                                        <div class="form-group">
+                                        <div class="mb-3">
                                             <div class="input-group">
                                                 <div class="input-group-prepend">
                                                     <div class="input-group-text">@include('icons.link', ['class' => 'icon-label fill-current text-muted'])</div>
@@ -476,7 +491,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-auto form-group d-flex align-items-start">
+                                    <div class="col-auto mb-3 d-flex align-items-start">
                                         <button type="button" class="btn btn-outline-danger d-flex align-items-center input-delete">@include('icons.delete', ['class' => 'icon-button fill-current'])&#8203;</button>
                                     </div>
                                 </div>
@@ -493,13 +508,15 @@
                 @endcan
             </div>
 
-            <div class="row mt-3">
-                <div class="col">
-                    <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                </div>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteLinkModal" data-action="{{ isset($admin) ? route('admin.links.delete', $link->id) : route('links.delete', $link->id) }}" data-text="{{ __('Are you sure you want to delete :name?', ['name' => (str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias))))]) }}">{{ __('Delete') }}</button>
-                </div>
+            <div class="d-flex flex-wrap justify-content-between gap-2 mt-4 pt-3 border-top">
+                <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                    @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
+                    {{ __('Save') }}
+                </button>
+                <button type="button" class="btn btn-outline-danger d-inline-flex align-items-center gap-2" data-toggle="modal" data-target="#deleteLinkModal" data-action="{{ isset($admin) ? route('admin.links.delete', $link->id) : route('links.delete', $link->id) }}" data-text="{{ __('Are you sure you want to delete :name?', ['name' => (str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias))))]) }}">
+                    @include('icons.delete', ['class' => 'fill-current icon-button-sm'])
+                    {{ __('Delete') }}
+                </button>
             </div>
         </form>
     </div>
@@ -507,18 +524,31 @@
 
 @if(isset($admin))
     @if(isset($link->user))
-        <div class="card border-0 shadow-sm mt-3">
+        <div class="card card-secondary card-outline shadow-sm mt-3">
             <div class="card-header">
-                <div class="row"><div class="col"><div class="font-weight-medium py-1">{{ __('User') }}</div></div><div class="col-auto"><a href="{{ route('admin.users.edit', $link->user->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a></div></div>
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md">
+                        <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                            @include('icons.user', ['class' => 'fill-current icon-text'])
+                            {{ __('User') }}
+                        </h3>
+                    </div>
+                    <div class="col-12 col-md-auto">
+                        <a href="{{ route('admin.users.edit', $link->user->id) }}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2">
+                            @include('icons.edit', ['class' => 'fill-current icon-button-sm'])
+                            {{ __('Edit') }}
+                        </a>
+                    </div>
+                </div>
             </div>
             <div class="card-body mb-n3">
                 <div class="row">
-                    <div class="col-12 col-lg-6 mb-3">
+                    <div class="col-12 col-xl-6 mb-3">
                         <div class="text-muted">{{ __('Name') }}</div>
                         <div>{{ $link->user->name }}</div>
                     </div>
 
-                    <div class="col-12 col-lg-6 mb-3">
+                    <div class="col-12 col-xl-6 mb-3">
                         <div class="text-muted">{{ __('Email') }}</div>
                         <div>{{ $link->user->email }}</div>
                     </div>

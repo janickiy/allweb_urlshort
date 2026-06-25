@@ -1,21 +1,19 @@
-@section('site_title', formatTitle([__('Edit'), __('Plan'), config('settings.title')]))
-
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['url' => route('admin.plans'), 'title' => __('Plans')],
-    ['title' => __('Edit')],
-]])
-
-<h2 class="mb-3 d-inline-block">{{ __('Edit') }}</h2>
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header align-items-center">
-        <div class="row">
-            <div class="col">
-                <div class="font-weight-medium py-1">{{ __('Plan') }}</div>
+<div class="card card-primary card-outline shadow-sm mb-0 admin-form-card">
+    <div class="card-header">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md">
+                <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                    @include('icons.package', ['class' => 'fill-current icon-text'])
+                    {{ __('Plan') }}
+                </h3>
             </div>
-            <div class="col-auto">
-                @if($plan->amount_month && $plan->amount_year)<a href="{{ route('checkout.index', ['id' => $plan->id, 'period' => 'monthly']) }}" class="btn btn-outline-primary btn-sm @if($plan->trashed()) disabled @endif">{{ __('View') }}</a>@endif
+            <div class="col-12 col-md-auto">
+                @if($plan->amount_month && $plan->amount_year)
+                    <a href="{{ route('checkout.index', ['id' => $plan->id, 'period' => 'monthly']) }}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2 @if($plan->trashed()) disabled @endif">
+                        @include('icons.external', ['class' => 'fill-current icon-button-sm'])
+                        {{ __('View') }}
+                    </a>
+                @endif
             </div>
         </div>
     </div>
@@ -31,8 +29,8 @@
         <form action="{{ route('admin.plans.edit', $plan->id) }}" method="post" enctype="multipart/form-data">
             @csrf
 
-            <div class="form-group">
-                <label for="i_name">{{ __('Name') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_name">{{ __('Name') }}</label>
                 <input type="text" name="name" id="i_name" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" value="{{ $plan->name }}">
                 @if ($errors->has('name'))
                     <span class="invalid-feedback" role="alert">
@@ -41,8 +39,8 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_description">{{ __('Description') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_description">{{ __('Description') }}</label>
                 <input type="text" name="description" id="i_description" class="form-control{{ $errors->has('description') ? ' is-invalid' : '' }}" value="{{ $plan->description }}">
                 @if ($errors->has('description'))
                     <span class="invalid-feedback" role="alert">
@@ -52,8 +50,8 @@
             </div>
 
             @if($plan->amount_month && $plan->amount_year)
-                <div class="form-group">
-                    <label for="i_trial_days">{{ __('Trial days') }}</label>
+                <div class="mb-3">
+                    <label class="form-label" for="i_trial_days">{{ __('Trial days') }}</label>
                     <input type="number" name="trial_days" id="i_trial_days" class="form-control{{ $errors->has('trial_days') ? ' is-invalid' : '' }}" value="{{ $plan->trial_days }}">
                     @if ($errors->has('trial_days'))
                         <span class="invalid-feedback" role="alert">
@@ -62,9 +60,9 @@
                     @endif
                 </div>
 
-                <div class="form-group">
-                    <label for="i_currency">{{ __('Currency') }}</label>
-                    <select name="currency" id="i_currency" class="custom-select{{ $errors->has('currency') ? ' is-invalid' : '' }}" disabled>
+                <div class="mb-3">
+                    <label class="form-label" for="i_currency">{{ __('Currency') }}</label>
+                    <select name="currency" id="i_currency" class="form-select{{ $errors->has('currency') ? ' is-invalid' : '' }}" disabled>
                         @foreach(config('currencies.stripe.all') as $key => $value)
                             <option value="{{ $key }}" @if($plan->currency == $key) selected @endif>{{ $key }} - {{ $value }}</option>
                         @endforeach
@@ -76,10 +74,10 @@
                     @endif
                 </div>
 
-                <div class="form-row">
+                <div class="row g-3">
                     <div class="col-12 col-lg-6">
-                        <div class="form-group">
-                            <label for="i_amount_month">{{ __('Monthly amount') }}</label>
+                        <div class="mb-3">
+                            <label class="form-label" for="i_amount_month">{{ __('Monthly amount') }}</label>
                             <input type="number" name="amount_month" id="i_amount_month" class="form-control{{ $errors->has('amount_month') ? ' is-invalid' : '' }}" value="{{ $plan->amount_month }}" disabled>
                             @if ($errors->has('amount_month'))
                                 <span class="invalid-feedback" role="alert">
@@ -89,8 +87,8 @@
                             </div>
                     </div>
                     <div class="col-12 col-lg-6">
-                        <div class="form-group">
-                            <label for="i_amount_year">{{ __('Yearly amount') }}</label>
+                        <div class="mb-3">
+                            <label class="form-label" for="i_amount_year">{{ __('Yearly amount') }}</label>
                             <input type="number" name="amount_year" id="i_amount_year" class="form-control{{ $errors->has('amount_year') ? ' is-invalid' : '' }}" value="{{ $plan->amount_year }}" disabled>
                             @if ($errors->has('amount_year'))
                                 <span class="invalid-feedback" role="alert">
@@ -101,9 +99,9 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="i_visibility">{{ __('Visibility') }}</label>
-                    <select name="visibility" id="i_visibility" class="custom-select{{ $errors->has('public') ? ' is-invalid' : '' }}">
+                <div class="mb-3">
+                    <label class="form-label" for="i_visibility">{{ __('Visibility') }}</label>
+                    <select name="visibility" id="i_visibility" class="form-select{{ $errors->has('public') ? ' is-invalid' : '' }}">
                         @foreach([1 => __('Public'), 0 => __('Private')] as $key => $value)
                             <option value="{{ $key }}" @if($plan->visibility == $key) selected @endif>{{ $value }}</option>
                         @endforeach
@@ -116,8 +114,8 @@
                 </div>
             @endif
 
-            <div class="form-group">
-                <label for="i_color">{{ __('Color') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_color">{{ __('Color') }}</label>
                 <input type="text" name="color" id="i_color" class="form-control{{ $errors->has('color') ? ' is-invalid' : '' }}" value="{{ $plan->color }}">
                 @if ($errors->has('color'))
                     <span class="invalid-feedback" role="alert">
@@ -128,8 +126,8 @@
 
             <div class="hr-text"><span class="font-weight-medium text-muted">{{ __('Features') }}</span></div>
 
-            <div class="form-group">
-                <label for="i_option_links">{{ __('Links') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_option_links">{{ __('Links') }}</label>
                 <input type="number" name="option_links" id="i_option_links" class="form-control{{ $errors->has('option_links') ? ' is-invalid' : '' }}" value="{{ $plan->option_links }}">
                 @if ($errors->has('option_links'))
                     <span class="invalid-feedback" role="alert">
@@ -138,8 +136,8 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_spaces">{{ __('Spaces') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_option_spaces">{{ __('Spaces') }}</label>
                 <input type="number" name="option_spaces" id="i_option_spaces" class="form-control{{ $errors->has('option_spaces') ? ' is-invalid' : '' }}" value="{{ $plan->option_spaces }}">
                 @if ($errors->has('option_spaces'))
                     <span class="invalid-feedback" role="alert">
@@ -148,8 +146,8 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_domains">{{ __('Domains') }}</label>
+            <div class="mb-3">
+                <label class="form-label" for="i_option_domains">{{ __('Domains') }}</label>
                 <input type="number" name="option_domains" id="i_option_domains" class="form-control{{ $errors->has('option_domains') ? ' is-invalid' : '' }}" value="{{ $plan->option_domains }}">
                 @if ($errors->has('option_domains'))
                     <span class="invalid-feedback" role="alert">
@@ -158,9 +156,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_stats">{{ __('Advanced stats') }}</label>
-                <select name="option_stats" id="i_option_stats" class="custom-select{{ $errors->has('option_stats') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_stats">{{ __('Advanced stats') }}</label>
+                <select name="option_stats" id="i_option_stats" class="form-select{{ $errors->has('option_stats') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_stats == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -172,9 +170,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_geo">{{ __('Geotargeting') }}</label>
-                <select name="option_geo" id="i_option_geo" class="custom-select{{ $errors->has('option_geo') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_geo">{{ __('Geotargeting') }}</label>
+                <select name="option_geo" id="i_option_geo" class="form-select{{ $errors->has('option_geo') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_geo == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -186,9 +184,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_platform">{{ __('Platform targeting') }}</label>
-                <select name="option_platform" id="i_option_platform" class="custom-select{{ $errors->has('option_platform') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_platform">{{ __('Platform targeting') }}</label>
+                <select name="option_platform" id="i_option_platform" class="form-select{{ $errors->has('option_platform') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_platform == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -200,9 +198,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_password">{{ __('Link password') }}</label>
-                <select name="option_password" id="i_option_password" class="custom-select{{ $errors->has('option_password') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_password">{{ __('Link password') }}</label>
+                <select name="option_password" id="i_option_password" class="form-select{{ $errors->has('option_password') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_password == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -214,9 +212,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_expiration">{{ __('Link expiration') }}</label>
-                <select name="option_expiration" id="i_option_expiration" class="custom-select{{ $errors->has('option_expiration') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_expiration">{{ __('Link expiration') }}</label>
+                <select name="option_expiration" id="i_option_expiration" class="form-select{{ $errors->has('option_expiration') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_expiration == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -228,9 +226,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_disabled">{{ __('Link deactivation') }}</label>
-                <select name="option_disabled" id="i_option_disabled" class="custom-select{{ $errors->has('option_disabled') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_disabled">{{ __('Link deactivation') }}</label>
+                <select name="option_disabled" id="i_option_disabled" class="form-select{{ $errors->has('option_disabled') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_disabled == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -242,9 +240,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_utm">{{ __('UTM Builder') }}</label>
-                <select name="option_utm" id="i_option_utm" class="custom-select{{ $errors->has('option_utm') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_utm">{{ __('UTM Builder') }}</label>
+                <select name="option_utm" id="i_option_utm" class="form-select{{ $errors->has('option_utm') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_utm == $key) selected @endif>{{ $value }}</option>
                     @endforeach
@@ -256,9 +254,9 @@
                 @endif
             </div>
 
-            <div class="form-group">
-                <label for="i_option_api">{{ __('API access') }}</label>
-                <select name="option_api" id="i_option_api" class="custom-select{{ $errors->has('option_api') ? ' is-invalid' : '' }}">
+            <div class="mb-3">
+                <label class="form-label" for="i_option_api">{{ __('API access') }}</label>
+                <select name="option_api" id="i_option_api" class="form-select{{ $errors->has('option_api') ? ' is-invalid' : '' }}">
                     @foreach([1 => __('On'), 0 => __('Off')] as $key => $value)
                         <option value="{{ $key }}" @if($plan->option_api == $key) selected @endif>{{ $value }}</option>
                     @endforeach

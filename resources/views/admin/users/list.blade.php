@@ -1,18 +1,14 @@
-@section('site_title', formatTitle([__('Users'), config('settings.title')]))
-
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['title' => __('Users')],
-]])
-
-<h2 class="mb-3 d-inline-block">{{ __('Users') }}</h2>
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header align-items-center">
-        <div class="row">
-            <div class="col"><div class="font-weight-medium py-1">{{ __('Users') }}</div></div>
-            <div class="col-auto">
-                <form method="GET" action="{{ route('admin.users') }}">
+<div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
+    <div class="card-header">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md">
+                <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                    @include('icons.users', ['class' => 'fill-current icon-text'])
+                    {{ __('Users') }}
+                </h3>
+            </div>
+            <div class="col-12 col-md-auto">
+                <form method="GET" action="{{ route('admin.users') }}" class="admin-filter-form">
                     <div class="input-group input-group-sm">
                         <input class="form-control" name="search" placeholder="{{ __('Search') }}" value="{{ app('request')->input('search') }}">
                         <div class="input-group-append">
@@ -31,9 +27,9 @@
 
                                 <div class="dropdown-divider"></div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_role" class="small">{{ __('Role') }}</label>
-                                    <select name="role" id="i_role" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_role" class="form-label small">{{ __('Role') }}</label>
+                                    <select name="role" id="i_role" class="form-select form-select-sm">
                                         <option value="">{{ __('All') }}</option>
                                         @foreach([0 => __('User'), 1 => __('Admin')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('role') == $key && request()->input('role') !== null) selected @endif>{{ $value }}</option>
@@ -41,26 +37,26 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_by" class="small">{{ __('Search by') }}</label>
-                                    <select name="by" id="i_by" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_by" class="form-label small">{{ __('Search by') }}</label>
+                                    <select name="by" id="i_by" class="form-select form-select-sm">
                                         @foreach(['name' => __('Name'), 'email' => __('Email')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('by') == $key || !request()->input('by') && $key == 'name') selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_sort" class="small">{{ __('Sort') }}</label>
-                                    <select name="sort" id="i_sort" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_sort" class="form-label small">{{ __('Sort') }}</label>
+                                    <select name="sort" id="i_sort" class="form-select form-select-sm">
                                         @foreach(['desc' => __('Descending'), 'asc' => __('Ascending')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('sort') == $key) selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4 mb-2">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-block">{{ __('Search') }}</button>
+                                <div class="px-4 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">{{ __('Search') }}</button>
                                 </div>
                             </div>
                         </div>

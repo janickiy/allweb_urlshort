@@ -1,27 +1,20 @@
-@section('site_title', formatTitle([__('Subscriptions'), config('settings.title')]))
-
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['title' => __('Subscriptions')],
-]])
-
-<div class="d-flex">
-    <div class="flex-grow-1">
-        <h2 class="mb-3 d-inline-block">{{ __('Subscriptions') }}</h2>
-    </div>
-    <div>
-        @if(config('settings.stripe'))
-            <a href="{{ route('admin.subscriptions.new') }}" class="btn btn-primary mb-3">{{ __('New') }}</a>
-        @endif
-    </div>
-</div>
-
-<div class="card border-0 shadow-sm">
-    <div class="card-header align-items-center">
-        <div class="row">
-            <div class="col-12 col-md"><div class="font-weight-medium py-1">{{ __('Subscriptions') }}</div></div>
-            <div class="col-12 col-md-auto">
-                <form method="GET" action="{{ route('admin.subscriptions') }}" class="d-md-flex">
+<div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
+    <div class="card-header">
+        <div class="row g-2 align-items-center">
+            <div class="col-12 col-md">
+                <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                    @include('icons.subscription', ['class' => 'fill-current icon-text'])
+                    {{ __('Subscriptions') }}
+                </h3>
+            </div>
+            <div class="col-12 col-md-auto d-flex flex-wrap gap-2">
+                @if(config('settings.stripe'))
+                    <a href="{{ route('admin.subscriptions.new') }}" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
+                        @include('icons.add', ['class' => 'fill-current icon-button-sm'])
+                        {{ __('New') }}
+                    </a>
+                @endif
+                <form method="GET" action="{{ route('admin.subscriptions') }}" class="d-md-flex admin-filter-form">
                     @include('shared.filter_tags')
                     <div class="input-group input-group-sm">
                         <input class="form-control" name="search" placeholder="{{ __('Search') }}" value="{{ app('request')->input('search') }}">
@@ -41,9 +34,9 @@
 
                                 <div class="dropdown-divider"></div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_plan" class="small">{{ __('Plans') }}</label>
-                                    <select id="i_plan" name="plan" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_plan" class="form-label small">{{ __('Plans') }}</label>
+                                    <select id="i_plan" name="plan" class="form-select form-select-sm">
                                         <option value="">{{ __('All') }}</option>
                                         @foreach($plans as $plan)
                                             <option value="{{ $plan->name }}" @if(request()->input('plan') == $plan->name) selected @endif>{{ $plan->name }}</option>
@@ -51,9 +44,9 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_status" class="small">{{ __('Status') }}</label>
-                                    <select id="i_status" name="status" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_status" class="form-label small">{{ __('Status') }}</label>
+                                    <select id="i_status" name="status" class="form-select form-select-sm">
                                         <option value="">{{ __('All') }}</option>
                                         @foreach(formatStripeStatus() as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('status') == $key) selected @endif>{{ $value['title'] }}</option>
@@ -61,17 +54,17 @@
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4">
-                                    <label for="i_sort" class="small">{{ __('Sort') }}</label>
-                                    <select name="sort" id="i_sort" class="custom-select custom-select-sm">
+                                <div class="mb-3 px-4">
+                                    <label for="i_sort" class="form-label small">{{ __('Sort') }}</label>
+                                    <select name="sort" id="i_sort" class="form-select form-select-sm">
                                         @foreach(['desc' => __('Descending'), 'asc' => __('Ascending')] as $key => $value)
                                             <option value="{{ $key }}" @if(request()->input('sort') == $key) selected @endif>{{ $value }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group px-4 mb-2">
-                                    <button type="submit" class="btn btn-primary btn-sm btn-block">{{ __('Search') }}</button>
+                                <div class="px-4 mb-2">
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">{{ __('Search') }}</button>
                                 </div>
                             </div>
                         </div>
