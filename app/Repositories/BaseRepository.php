@@ -86,14 +86,6 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * Delete every record for the repository model.
-     */
-    public function deleteAll(): void
-    {
-        $this->model->query()->delete();
-    }
-
-    /**
      * Truncate the repository model table.
      */
     public function truncate(): void

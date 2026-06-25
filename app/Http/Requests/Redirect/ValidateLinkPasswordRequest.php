@@ -25,7 +25,7 @@ class ValidateLinkPasswordRequest extends FormRequest
         ];
     }
 
-    public function link(): Link
+    public function link()
     {
         return $this->link ??= Link::findOrFail($this->route('id'));
     }

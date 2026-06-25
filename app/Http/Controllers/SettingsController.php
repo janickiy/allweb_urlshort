@@ -209,8 +209,12 @@ class SettingsController extends Controller
         return back()->with('success', __('Settings saved.'));
     }
 
+
     /**
      * Attach a new payment method to the authenticated user.
+     *
+     * @param Request $request
+     * @return RedirectResponse
      */
     public function createPaymentMethod(Request $request): RedirectResponse
     {
@@ -231,6 +235,10 @@ class SettingsController extends Controller
 
     /**
      * Update an existing payment method for the authenticated user.
+     *
+     * @param Request $request
+     * @param int|string $id
+     * @return RedirectResponse
      */
     public function updatePaymentMethod(Request $request, int|string $id): RedirectResponse
     {
@@ -247,6 +255,9 @@ class SettingsController extends Controller
 
     /**
      * Delete an existing payment method for the authenticated user.
+     *
+     * @param int|string $id
+     * @return RedirectResponse
      */
     public function deletePaymentMethod(int|string $id): RedirectResponse
     {
@@ -263,6 +274,9 @@ class SettingsController extends Controller
 
     /**
      * Update the authenticated user billing details.
+     *
+     * @param UpdateBillingRequest $request
+     * @return RedirectResponse
      */
     public function updateBilling(UpdateBillingRequest $request): RedirectResponse
     {
@@ -277,6 +291,9 @@ class SettingsController extends Controller
 
     /**
      * Cancel an active subscription for the authenticated user.
+     *
+     * @param string $subscription
+     * @return RedirectResponse
      */
     public function cancelSubscription(string $subscription): RedirectResponse
     {

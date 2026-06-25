@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,8 @@ use Illuminate\Support\Carbon;
  */
 class Link extends Model
 {
+    use StaticTableName;
+
     protected $dates = ['ends_at', 'created_at', 'updated_at'];
 
     protected $casts = [

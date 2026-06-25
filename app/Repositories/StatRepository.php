@@ -83,6 +83,13 @@ class StatRepository extends BaseRepository
 
     /**
      * Return grouped statistics for a link by a selected column.
+     *
+     * @param int $linkId
+     * @param string $column
+     * @param array|null $values
+     * @param bool $paginate
+     * @param int $perPage
+     * @return LengthAwarePaginator|Collection
      */
     public function groupForLink(int $linkId, string $column, ?array $values = null, bool $paginate = true, int $perPage = 10): LengthAwarePaginator|Collection
     {
@@ -92,8 +99,13 @@ class StatRepository extends BaseRepository
         return $paginate ? $query->paginate($perPage) : $query->get();
     }
 
+
     /**
      * Build the aggregate query used for grouped link statistics.
+     *
+     * @param int $linkId
+     * @param string $column
+     * @return Builder
      */
     private function groupQuery(int $linkId, string $column): Builder
     {

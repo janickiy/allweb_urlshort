@@ -7,8 +7,13 @@ use Illuminate\Http\UploadedFile;
 
 class UploadLanguageRule extends AbstractUploadedFileRule
 {
+
     /**
      * Determine if the uploaded language JSON file has required metadata.
+     *
+     * @param string $attribute
+     * @param UploadedFile $value
+     * @return bool
      */
     public function passes(string $attribute, UploadedFile $value): bool
     {

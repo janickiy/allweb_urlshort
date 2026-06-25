@@ -18,8 +18,9 @@ class SettingsService
     /**
      * Persist selected setting keys from the provided input.
      *
-     * @param array<int, string> $keys
-     * @param array<string, mixed> $input
+     * @param array $keys
+     * @param array $input
+     * @return void
      */
     public function updateKeys(array $keys, array $input): void
     {
@@ -91,7 +92,10 @@ class SettingsService
     /**
      * Persist appearance settings and replace uploaded brand assets.
      *
-     * @param array<string, mixed> $input
+     * @param array $input
+     * @param UploadedFile|null $logo
+     * @param UploadedFile|null $favicon
+     * @return void
      */
     public function updateAppearance(array $input, ?UploadedFile $logo = null, ?UploadedFile $favicon = null): void
     {
@@ -146,6 +150,10 @@ class SettingsService
 
     /**
      * Replace one brand asset on disk and return the stored file name.
+     *
+     * @param string $key
+     * @param UploadedFile $file
+     * @return string
      */
     private function replaceBrandAsset(string $key, UploadedFile $file): string
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,7 @@ class UpdatePlanRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'name' => ['unique:plans,name,'.$request->route('id')],
+            'name' => ['unique:' . Plan::getTableName() . ',name,' . $request->route('id')],
             'description' => ['required'],
             'trial_days' => ['sometimes', 'integer'],
             'visibility' => ['sometimes', 'integer', 'between:0,1'],

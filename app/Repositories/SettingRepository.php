@@ -25,15 +25,4 @@ class SettingRepository extends BaseRepository
             ->update($dto->toArray());
     }
 
-    /**
-     * Update multiple setting values by setting name.
-     *
-     * @param array<string, DataTransferObject> $settings
-     */
-    public function updateManyByName(array $settings): void
-    {
-        foreach ($settings as $name => $dto) {
-            $this->updateByName($name, $dto);
-        }
-    }
 }

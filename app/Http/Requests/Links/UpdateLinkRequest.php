@@ -27,6 +27,7 @@ class UpdateLinkRequest extends FormRequest
      * @var
      */
     private $userId;
+
     /**
      * Determine if the user is authorized to make this request.
      *

@@ -24,4 +24,14 @@ class UrlMetadataServiceTest extends TestCase
         $this->assertSame('Example title', $metadata['title']);
         $this->assertSame('Example description', $metadata['description']);
     }
+
+    public function test_it_formats_meta_tags_from_raw_html(): void
+    {
+        $metadata = (new UrlMetadataService())->formatMetaTags(
+            '<html><head><title>Encoded &amp; title</title><meta property="og:title" content="Open graph"></head></html>'
+        );
+
+        $this->assertSame('Encoded & title', $metadata['title']);
+        $this->assertSame('Open graph', $metadata['og:title']);
+    }
 }

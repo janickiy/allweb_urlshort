@@ -28,6 +28,10 @@ class RedirectService
 
     /**
      * Resolve a short-link alias into a redirect decision.
+     *
+     * @param Request $request
+     * @param string $alias
+     * @return RedirectResult
      */
     public function resolve(Request $request, string $alias): RedirectResult
     {
@@ -89,6 +93,10 @@ class RedirectService
 
     /**
      * Find the link matching the requested alias and host.
+     *
+     * @param Request $request
+     * @param string $alias
+     * @return Link|null
      */
     private function findLink(Request $request, string $alias): ?Link
     {
@@ -137,6 +145,11 @@ class RedirectService
 
     /**
      * Record a click statistic for a link.
+     *
+     * @param Request $request
+     * @param Link $link
+     * @param UserAgent $userAgent
+     * @return \Illuminate\Database\Eloquent\Model
      */
     private function recordStat(Request $request, Link $link, UserAgent $userAgent)
     {

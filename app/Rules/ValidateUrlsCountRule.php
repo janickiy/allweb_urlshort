@@ -15,6 +15,10 @@ class ValidateUrlsCountRule extends AbstractStringRule
 
     /**
      * Determine if the newline-separated URL list is within the configured limit.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

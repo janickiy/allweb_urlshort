@@ -9,6 +9,11 @@ class FieldNotPresentRule implements ValidationRule
 {
     /**
      * Fail validation whenever a forbidden field is present.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @param Closure $fail
+     * @return void
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {

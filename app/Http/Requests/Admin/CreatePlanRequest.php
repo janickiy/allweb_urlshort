@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreatePlanRequest extends FormRequest
@@ -24,7 +25,7 @@ class CreatePlanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:64', 'unique:plans,name'],
+            'name' => ['required', 'max:64', 'unique:' . Plan::getTableName() . ',name'],
             'description' => ['required'],
             'trial_days' => ['required', 'integer'],
             'currency' => ['required'],

@@ -28,7 +28,7 @@ class StatsController extends Controller
     /**
      * Display geographic statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function geographic(int|string $id): View
@@ -39,7 +39,7 @@ class StatsController extends Controller
     /**
      * Display browser statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function browsers(int|string $id): View
@@ -50,7 +50,7 @@ class StatsController extends Controller
     /**
      * Display platform statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function platforms(int|string $id): View
@@ -61,7 +61,7 @@ class StatsController extends Controller
     /**
      * Display device statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function devices(int|string $id): View
@@ -72,7 +72,7 @@ class StatsController extends Controller
     /**
      * Display referrer source statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function sources(int|string $id): View
@@ -83,7 +83,7 @@ class StatsController extends Controller
     /**
      * Display social referrer statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function social(int|string $id): View
@@ -94,7 +94,7 @@ class StatsController extends Controller
     /**
      * Display language statistics for a link.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function languages(int|string $id): View

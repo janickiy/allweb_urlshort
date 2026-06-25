@@ -44,7 +44,7 @@ class UpdateSpaceRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'name' => ['required', 'unique:spaces,name,'.$request->route('id').',id,user_id,'.$this->userId],
+            'name' => ['required', 'unique:' . Space::getTableName() . ',name,' . $request->route('id') . ',id,user_id,' . $this->userId],
             'color' => ['required']
         ];
     }

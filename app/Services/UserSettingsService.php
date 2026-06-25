@@ -19,7 +19,10 @@ class UserSettingsService
     /**
      * Update profile fields for a user.
      *
-     * @param array<string, mixed> $input
+     * @param User $user
+     * @param array $input
+     * @param bool $admin
+     * @return bool'
      */
     public function updateProfile(User $user, array $input, bool $admin = false): bool
     {
@@ -38,6 +41,11 @@ class UserSettingsService
 
     /**
      * Update the password for a user.
+     *
+     * @param User $user
+     * @param string $password
+     * @return bool
+     * @throws \Illuminate\Auth\AuthenticationException
      */
     public function updatePassword(User $user, string $password): bool
     {

@@ -8,6 +8,10 @@ class ValidatePlatformKeyRule extends AbstractStringRule
 {
     /**
      * Determine if the platform key exists in configuration.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

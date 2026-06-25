@@ -39,11 +39,6 @@ interface RepositoryInterface
     public function delete(int|string $id): bool;
 
     /**
-     * Delete every record for the repository model.
-     */
-    public function deleteAll(): void;
-
-    /**
      * Truncate the repository model table.
      */
     public function truncate(): void;

@@ -95,7 +95,7 @@ class DomainsController extends Controller
     /**
      * Delete a custom domain owned by the authenticated user.
      *
-     * @param $id
+     * @param int|string $id
      * @return RedirectResponse
      * @throws \Exception
      */

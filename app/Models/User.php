@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,7 +21,7 @@ use Illuminate\Contracts\Translation\HasLocalePreference;
  */
 class User extends Authenticatable implements MustVerifyEmail, HasLocalePreference
 {
-    use HasFactory, Notifiable, Billable, SoftDeletes;
+    use HasFactory, Notifiable, Billable, SoftDeletes, StaticTableName;
 
     /**
      * The attributes that are mass assignable.

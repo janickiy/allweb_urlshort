@@ -23,7 +23,7 @@ class CheckoutController extends CashierPaymentController
     /**
      * Display the checkout form for the selected paid plan and billing period.
      *
-     * @param $id
+     * @param int|string $id
      * @param $period
      * @return RedirectResponse|View
      */
@@ -104,8 +104,8 @@ class CheckoutController extends CashierPaymentController
     /**
      * Create or continue a subscription checkout for the selected plan.
      *
-     * @param $id
-     * @param $period
+     * @param int|string $id
+     * @param string $period
      * @return RedirectResponse
      */
     public function subscribe(int|string $id, string $period): RedirectResponse

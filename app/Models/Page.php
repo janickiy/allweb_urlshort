@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,6 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Page extends Model
 {
+
+    use StaticTableName;
 
     /**
      * The attributes that are mass assignable.

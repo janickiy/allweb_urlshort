@@ -16,8 +16,12 @@ class ValidateSpaceOwnershipRule extends AbstractNullableIdRule
 
     /**
      * Determine if the space belongs to the user.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @return bool
      */
-    public function passes(string $attribute, int|string|null $value): bool
+    public function passes(string $attribute, mixed $value): bool
     {
         if (empty($value)) {
             return true;

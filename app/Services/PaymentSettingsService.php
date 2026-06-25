@@ -23,10 +23,12 @@ class PaymentSettingsService
     ) {
     }
 
-    /**
-     * Build data required to edit a user subscription.
+    /**Build data required to edit a user subscription.
      *
-     * @return array<string, mixed>
+     *
+     * @param User $user
+     * @param int|string $id
+     * @return array
      */
     public function subscriptionEditData(User $user, int|string $id): array
     {
@@ -71,10 +73,13 @@ class PaymentSettingsService
         ];
     }
 
+
     /**
      * Build data required to edit a saved payment method.
      *
-     * @return array<string, mixed>
+     * @param User $user
+     * @param string $id
+     * @return array
      */
     public function editPaymentMethodData(User $user, string $id): array
     {
@@ -95,21 +100,32 @@ class PaymentSettingsService
     {
         $this->setApiKey();
 
-        return Customer::retrieve($user->stripe_id);
+        return $this->retrieveCustomer($user->stripe_id);
     }
 
     /**
      * Return a user invoice by identifier.
+     *
+     * @param User $user
+     * @param string $id
+     * @return CashierInvoice
+     * @throws \Laravel\Cashier\Exceptions\InvalidInvoice
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function invoice(User $user, string $id): CashierInvoice
     {
         $this->setApiKey();
 
-        return new CashierInvoice($user, StripeInvoice::retrieve($id));
+        return new CashierInvoice($user, $this->retrieveInvoice($id));
     }
 
     /**
      * Attach a payment method to a user and optionally make it default.
+     *
+     * @param User $user
+     * @param string $paymentMethodId
+     * @param bool $makeDefault
+     * @return object|\Laravel\Cashier\PaymentMethod
      */
     public function addPaymentMethod(User $user, string $paymentMethodId, bool $makeDefault): object
     {
@@ -124,6 +140,11 @@ class PaymentSettingsService
 
     /**
      * Update the default payment method for a user.
+     *
+     * @param User $user
+     * @param string $id
+     * @param bool $makeDefault
+     * @return void
      */
     public function updatePaymentMethod(User $user, string $id, bool $makeDefault): void
     {
@@ -136,6 +157,11 @@ class PaymentSettingsService
 
     /**
      * Detach a saved payment method from a user.
+     *
+     * @param User $user
+     * @param string $id
+     * @return object|PaymentMethod
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function deletePaymentMethod(User $user, string $id): object
     {
@@ -156,7 +182,7 @@ class PaymentSettingsService
             }
         }
 
-        $paymentMethod->detach();
+        $this->detachPaymentMethod($paymentMethod);
 
         return $paymentMethod;
     }
@@ -164,13 +190,16 @@ class PaymentSettingsService
     /**
      * Update billing details for a user.
      *
-     * @param array<string, mixed> $input
+     * @param User $user
+     * @param array $input
+     * @return void
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function updateBilling(User $user, array $input): void
     {
         $this->setApiKey();
 
-        Customer::update($user->stripe_id, [
+        $this->updateStripeCustomer($user->stripe_id, [
             'address' => [
                 'city' => $input['city'] ?? null,
                 'country' => $input['country'] ?? null,
@@ -183,8 +212,13 @@ class PaymentSettingsService
         ]);
     }
 
+
     /**
      * Cancel an active subscription for a user.
+     *
+     * @param User $user
+     * @param string $name
+     * @return void
      */
     public function cancelSubscription(User $user, string $name): void
     {
@@ -202,8 +236,13 @@ class PaymentSettingsService
         $subscription->cancel();
     }
 
+
     /**
      * Resume a canceled subscription for a user.
+     *
+     * @param User $user
+     * @param string $name
+     * @return void
      */
     public function resumeSubscription(User $user, string $name): void
     {
@@ -224,13 +263,17 @@ class PaymentSettingsService
 
     /**
      * Return a payment method owned by a user or throw.
+     *
+     * @param User $user
+     * @param string $id
+     * @return PaymentMethod
      */
     private function ownedPaymentMethod(User $user, string $id): PaymentMethod
     {
         $this->setApiKey();
 
         try {
-            $paymentMethod = PaymentMethod::retrieve($id);
+            $paymentMethod = $this->retrievePaymentMethod($id);
         } catch (\Exception) {
             abort(404);
         }
@@ -248,5 +291,47 @@ class PaymentSettingsService
     private function setApiKey(): void
     {
         Stripe::setApiKey(config('cashier.secret'));
+    }
+
+    /**
+     * Retrieve a Stripe customer through the Stripe SDK.
+     */
+    protected function retrieveCustomer(string $customerId): Customer
+    {
+        return Customer::retrieve($customerId);
+    }
+
+    /**
+     * Retrieve a Stripe invoice through the Stripe SDK.
+     */
+    protected function retrieveInvoice(string $invoiceId): StripeInvoice
+    {
+        return StripeInvoice::retrieve($invoiceId);
+    }
+
+    /**
+     * Retrieve a Stripe payment method through the Stripe SDK.
+     */
+    protected function retrievePaymentMethod(string $paymentMethodId): PaymentMethod
+    {
+        return PaymentMethod::retrieve($paymentMethodId);
+    }
+
+    /**
+     * Detach a Stripe payment method through the Stripe SDK.
+     */
+    protected function detachPaymentMethod(PaymentMethod $paymentMethod): object
+    {
+        return $paymentMethod->detach();
+    }
+
+    /**
+     * Update a Stripe customer through the Stripe SDK.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    protected function updateStripeCustomer(string $customerId, array $attributes): Customer
+    {
+        return Customer::update($customerId, $attributes);
     }
 }

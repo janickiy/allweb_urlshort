@@ -537,19 +537,19 @@ class AdminService
     public function createPlan(array $input): string
     {
         \Stripe\Stripe::setApiKey(config('cashier.secret'));
-        $stripeProduct = \Stripe\Product::create([
+        $stripeProduct = $this->createStripeProduct([
             'name' => $input['name'],
             'type' => 'service',
         ]);
 
-        $monthlyPlan = \Stripe\Plan::create([
+        $monthlyPlan = $this->createStripePlan([
             'product' => $stripeProduct->id,
             'amount' => $input['amount_month'],
             'interval' => 'month',
             'currency' => $input['currency'],
         ]);
 
-        $yearlyPlan = \Stripe\Plan::create([
+        $yearlyPlan = $this->createStripePlan([
             'product' => $stripeProduct->id,
             'amount' => $input['amount_year'],
             'interval' => 'year',
@@ -574,7 +574,10 @@ class AdminService
     /**
      * Update a plan and synchronize Stripe metadata when needed.
      *
-     * @param array<string, mixed> $input
+     * @param int|string $id
+     * @param array $input
+     * @return void
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function updatePlan(int|string $id, array $input): void
     {
@@ -588,7 +591,7 @@ class AdminService
 
         if ($plan->amount_month && $plan->amount_year) {
             \Stripe\Stripe::setApiKey(config('cashier.secret'));
-            \Stripe\Product::update($plan->product, ['name' => $input['name']]);
+            $this->updateStripeProduct($plan->product, ['name' => $input['name']]);
 
             $this->subscriptions->renamePlan($plan->name, SubscriptionData::fromArray(['name' => $input['name']]));
             $attributes['trial_days'] = $input['trial_days'];
@@ -620,10 +623,14 @@ class AdminService
         $this->plans->restore($id);
     }
 
+
     /**
      * Update a user from the admin panel.
      *
-     * @param array<string, mixed> $input
+     * @param int|string $id
+     * @param array $input
+     * @param int $currentUserId
+     * @return void
      */
     public function updateUser(int|string $id, array $input, int $currentUserId): void
     {
@@ -638,6 +645,10 @@ class AdminService
 
     /**
      * Permanently delete a user from the admin panel.
+     *
+     * @param int|string $id
+     * @param int $currentUserId
+     * @return string
      */
     public function deleteUser(int|string $id, int $currentUserId): string
     {
@@ -655,6 +666,10 @@ class AdminService
 
     /**
      * Soft-delete a user from the admin panel.
+     *
+     * @param int|string $id
+     * @param int $currentUserId
+     * @return void
      */
     public function disableUser(int|string $id, int $currentUserId): void
     {
@@ -750,5 +765,35 @@ class AdminService
             'option_utm' => $input['option_utm'] ?? 0,
             'option_api' => $input['option_api'],
         ];
+    }
+
+    /**
+     * Create a Stripe product through the Stripe SDK.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    protected function createStripeProduct(array $attributes): object
+    {
+        return \Stripe\Product::create($attributes);
+    }
+
+    /**
+     * Create a Stripe plan through the Stripe SDK.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    protected function createStripePlan(array $attributes): object
+    {
+        return \Stripe\Plan::create($attributes);
+    }
+
+    /**
+     * Update a Stripe product through the Stripe SDK.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    protected function updateStripeProduct(string $productId, array $attributes): object
+    {
+        return \Stripe\Product::update($productId, $attributes);
     }
 }

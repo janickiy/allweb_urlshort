@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Spaces;
 
+use App\Models\Space;
 use App\Rules\SpaceLimitGateRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -27,7 +28,7 @@ class CreateSpaceRequest extends FormRequest
     public function rules(Request $request): array
     {
         return [
-            'name' => ['required', 'max:32', 'unique:spaces,name,null,id,user_id,'.$request->user()->id, new SpaceLimitGateRule()],
+            'name' => ['required', 'max:32', 'unique:' . Space::getTableName() . ',name,null,id,user_id,' . $request->user()->id, new SpaceLimitGateRule()],
             'color' => ['required']
         ];
     }

@@ -16,6 +16,10 @@ class ValidateAliasRule extends AbstractStringRule
 
     /**
      * Determine if the alias is unique within its domain scope.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

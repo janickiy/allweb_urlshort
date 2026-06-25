@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CreatePageRequest extends FormRequest
@@ -25,7 +26,7 @@ class CreatePageRequest extends FormRequest
     {
         return [
             'title' => ['required', 'max:64'],
-            'slug' => ['required', 'max:64', 'alpha_dash', 'unique:pages,slug'],
+            'slug' => ['required', 'max:64', 'alpha_dash', 'unique:' . Page::getTableName() . ',slug'],
             'content' => ['required']
         ];
     }

@@ -19,7 +19,11 @@ class SubscriptionRepository extends BaseRepository
     }
 
     /**
-     * Find a user subscription by primary key or throw when it does not exist.
+     * Find a user subscription by primary key or throw when it does not exist
+     *
+     * @param int|string $id
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function findForUserOrFail(int|string $id, int $userId)
     {
@@ -40,7 +44,11 @@ class SubscriptionRepository extends BaseRepository
     }
 
     /**
-     * Find a user subscription by plan name or return null.
+     * Find a user subscription by plan name or return null
+     *
+     * @param int $userId
+     * @param string $name
+     * @return Subscription|null
      */
     public function findForUserByName(int $userId, string $name): ?Subscription
     {
@@ -81,8 +89,11 @@ class SubscriptionRepository extends BaseRepository
 
     /**
      * Find an emulated subscription or throw when it does not exist.
+     *
+     * @param int|string $id
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function emulatedOrFail(int|string $id): Subscription
+    public function emulatedOrFail(int|string $id)
     {
         return $this->query()
             ->where('id', $id)
@@ -92,6 +103,10 @@ class SubscriptionRepository extends BaseRepository
 
     /**
      * Rename the plan name on matching subscriptions.
+     *
+     * @param string $oldName
+     * @param DataTransferObject $dto
+     * @return int
      */
     public function renamePlan(string $oldName, DataTransferObject $dto): int
     {
@@ -103,7 +118,9 @@ class SubscriptionRepository extends BaseRepository
     /**
      * Paginate subscriptions for the admin panel with filters.
      *
-     * @param array<string, mixed> $filters
+     * @param array $filters
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForAdmin(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {

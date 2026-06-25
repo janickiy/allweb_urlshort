@@ -8,6 +8,10 @@ class ValidateUrlsRule extends AbstractStringRule
 {
     /**
      * Determine if every newline-separated value is a URL under the max length.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

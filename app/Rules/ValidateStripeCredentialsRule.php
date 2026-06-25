@@ -13,6 +13,10 @@ class ValidateStripeCredentialsRule extends AbstractStringRule
 
     /**
      * Determine if the Stripe secret key authenticates successfully.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

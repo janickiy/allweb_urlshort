@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Models\Page;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class UpdatePageRequest extends FormRequest
     {
         return [
             'title' => ['required', 'max:64'],
-            'slug' => ['required', 'max:64', 'alpha_dash', 'unique:pages,slug,'.$request->route('id')],
+            'slug' => ['required', 'max:64', 'alpha_dash', 'unique:' . Page::getTableName() . ',slug,' . $request->route('id')],
             'content' => ['required']
         ];
     }

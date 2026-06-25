@@ -70,7 +70,9 @@ class LinkService
     /**
      * Create multiple short links from a newline-separated URL list.
      *
-     * @return array<int, array<string, mixed>>
+     * @param array $input
+     * @param User $user
+     * @return array
      */
     public function createMany(array $input, User $user): array
     {
@@ -101,8 +103,12 @@ class LinkService
 
     /**
      * Update an existing short link from input data.
+     *
+     * @param Link $link
+     * @param array $input
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(Link $link, array $input): Link
+    public function update(Link $link, array $input)
     {
         $this->links->updateFromDto($link->id, LinkData::fromArray(
             $this->attributesForUpdate($input, $link)
@@ -114,9 +120,12 @@ class LinkService
     /**
      * Update a link owned by a user.
      *
-     * @param array<string, mixed> $input
+     * @param int|string $id
+     * @param User $user
+     * @param array $input
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function updateForUser(int|string $id, User $user, array $input): Link
+    public function updateForUser(int|string $id, User $user, array $input)
     {
         return $this->update($this->links->findForUserOrFail($id, $user->id), $input);
     }
@@ -134,7 +143,7 @@ class LinkService
      *
      * @param array<string, mixed> $input
      */
-    public function updateById(int|string $id, array $input): Link
+    public function updateById(int|string $id, array $input)
     {
         return $this->update($this->links->findOrFail($id), $input);
     }
@@ -181,6 +190,10 @@ class LinkService
 
     /**
      * Return the latest links for a user.
+     *
+     * @param int $userId
+     * @param int $limit
+     * @return Collection
      */
     public function latestForUser(int $userId, int $limit): Collection
     {
@@ -189,6 +202,9 @@ class LinkService
 
     /**
      * Paginate the latest links for a user.
+     *
+     * @param int $userId
+     * @return LengthAwarePaginator
      */
     public function paginateLatestForUser(int $userId): LengthAwarePaginator
     {
@@ -222,10 +238,11 @@ class LinkService
     }
 
     /**
-     * Map create input into link repository attributes.
+     * Map create input into link repository attribute
      *
-     * @param array<string, mixed> $input
-     * @return array<string, mixed>
+     * @param array $input
+     * @param int $userId
+     * @return array
      */
     private function attributesForCreate(array $input, int $userId): array
     {
@@ -257,8 +274,9 @@ class LinkService
     /**
      * Map shared link input fields into repository attributes.
      *
-     * @param array<string, mixed> $input
-     * @return array<string, mixed>
+     * @param array $input
+     * @param Link|null $link
+     * @return array
      */
     private function sharedAttributes(array $input, ?Link $link = null): array
     {

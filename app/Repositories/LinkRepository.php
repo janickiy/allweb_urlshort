@@ -149,7 +149,9 @@ class LinkRepository extends BaseRepository
     /**
      * Paginate links for the admin panel with filters.
      *
-     * @param array<string, mixed> $filters
+     * @param array $filters
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForAdmin(array $filters = [], int $perPage = 10): LengthAwarePaginator
     {
@@ -188,7 +190,11 @@ class LinkRepository extends BaseRepository
     }
 
     /**
-     * Count links that belong to a user space.
+     * Count links that belong to a user space
+     *
+     * @param int $userId
+     * @param int $spaceId
+     * @return int
      */
     public function countForSpace(int $userId, int $spaceId): int
     {
@@ -200,6 +206,10 @@ class LinkRepository extends BaseRepository
 
     /**
      * Count links that belong to a user domain.
+     *
+     * @param int $userId
+     * @param int $domainId
+     * @return int
      */
     public function countForDomain(int $userId, int $domainId): int
     {
@@ -211,6 +221,10 @@ class LinkRepository extends BaseRepository
 
     /**
      * Find a link by alias and domain scope.
+     *
+     * @param string $alias
+     * @param int|null $domainId
+     * @return Link|null
      */
     public function findByAliasForDomain(string $alias, ?int $domainId): ?Link
     {
@@ -240,6 +254,11 @@ class LinkRepository extends BaseRepository
 
     /**
      * Check whether an alias already exists in a domain scope.
+     *
+     * @param string $alias
+     * @param int|null $domainId
+     * @param int|string|null $exceptId
+     * @return bool
      */
     public function aliasExists(string $alias, ?int $domainId, int|string|null $exceptId = null): bool
     {

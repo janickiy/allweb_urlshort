@@ -62,7 +62,7 @@ class LinksController extends Controller
     /**
      * Display the edit form for a link owned by the user.
      *
-     * @param $id
+     * @param int|string $id
      * @return View
      */
     public function linksEdit(int|string $id): View
@@ -94,7 +94,7 @@ class LinksController extends Controller
      * Update a link owned by the authenticated user.
      *
      * @param UpdateLinkRequest $request
-     * @param $id
+     * @param int|string $id
      * @return RedirectResponse
      */
     public function updateLink(UpdateLinkRequest $request, int|string $id): RedirectResponse
@@ -107,7 +107,7 @@ class LinksController extends Controller
     /**
      * Delete a link owned by the authenticated user.
      *
-     * @param $id
+     * @param int|string $id
      * @return RedirectResponse
      * @throws \Exception
      */

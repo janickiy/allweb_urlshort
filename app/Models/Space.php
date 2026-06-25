@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Space extends Model
 {
+    use StaticTableName;
+
     /**
      * Filter spaces by a partial name match.
      *

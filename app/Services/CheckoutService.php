@@ -12,6 +12,7 @@ use Laravel\Cashier\Cashier;
 use Laravel\Cashier\Payment;
 use Illuminate\Support\Facades\Session;
 use Stripe\Customer;
+use Stripe\PaymentIntent;
 use Stripe\Stripe;
 
 class CheckoutService
@@ -28,13 +29,17 @@ class CheckoutService
     /**
      * Return the paid plan selected for checkout.
      */
-    public function paidPlan(int|string $id): Plan
+    public function paidPlan(int|string $id)
     {
         return $this->plans->paidByIdOrFail($id);
     }
 
     /**
      * Return the latest incomplete payment identifier for a subscription.
+     *
+     * @param User $user
+     * @param Plan $plan
+     * @return string|null
      */
     public function incompletePaymentId(User $user, Plan $plan): ?string
     {
@@ -48,7 +53,10 @@ class CheckoutService
     /**
      * Prepare the checkout index state for the selected plan.
      *
-     * @return array<string, mixed>
+     * @param User $user
+     * @param int|string $id
+     * @param string $period
+     * @return array
      */
     public function prepareCheckout(User $user, int|string $id, string $period): array
     {
@@ -81,7 +89,9 @@ class CheckoutService
     /**
      * Prepare the payment collection state before checkout.
      *
-     * @return array<string, mixed>
+     * @param User $user
+     * @param array|null $redirect
+     * @return array
      */
     public function prepareCollect(User $user, ?array $redirect): array
     {
@@ -108,13 +118,14 @@ class CheckoutService
 
     /**
      * Return a Cashier payment object for confirmation.
+     *
+     * @param int|string $id
+     * @return Payment
      */
     public function confirmationPayment(int|string $id): Payment
     {
         try {
-            return new Payment(
-                Cashier::stripe()->paymentIntents->retrieve($id)
-            );
+            return new Payment($this->retrievePaymentIntent($id));
         } catch (\Exception) {
             abort(404);
         }
@@ -154,6 +165,12 @@ class CheckoutService
 
     /**
      * Start or resume a Stripe subscription checkout for a user.
+     *
+     * @param User $user
+     * @param Plan $plan
+     * @param string $period
+     * @return string|null
+     * @throws \Exception
      */
     public function subscribe(User $user, Plan $plan, string $period): ?string
     {
@@ -181,7 +198,10 @@ class CheckoutService
     /**
      * Run the subscription flow for a selected plan and return the controller state.
      *
-     * @return array<string, mixed>
+     * @param User $user
+     * @param int|string $id
+     * @param string $period
+     * @return array
      */
     public function subscribeForCheckout(User $user, int|string $id, string $period): array
     {
@@ -208,7 +228,10 @@ class CheckoutService
     /**
      * Update billing and payment details for checkout.
      *
-     * @param array<string, mixed> $input
+     * @param User $user
+     * @param array $input
+     * @return void
+     * @throws \Stripe\Exception\ApiErrorException
      */
     public function updatePaymentDetails(User $user, array $input): void
     {
@@ -223,13 +246,16 @@ class CheckoutService
     /**
      * Update the Stripe customer attached to a user.
      *
-     * @param array<string, mixed> $input
+     * @param User $user
+     * @param array $input
+     * @return void
+     * @throws \Stripe\Exception\ApiErrorException
      */
     private function updateCustomer(User $user, array $input): void
     {
         $this->setApiKey();
 
-        Customer::update($user->stripe_id, [
+        $this->updateStripeCustomer($user->stripe_id, [
             'address' => [
                 'city' => $input['city'] ?? null,
                 'country' => $input['country'] ?? null,
@@ -249,7 +275,7 @@ class CheckoutService
     {
         $this->setApiKey();
 
-        return Customer::retrieve($user->stripe_id);
+        return $this->retrieveCustomer($user->stripe_id);
     }
 
     /**
@@ -258,5 +284,31 @@ class CheckoutService
     private function setApiKey(): void
     {
         Stripe::setApiKey(config('cashier.secret'));
+    }
+
+    /**
+     * Retrieve a Stripe customer through the Stripe SDK.
+     */
+    protected function retrieveCustomer(string $customerId): Customer
+    {
+        return Customer::retrieve($customerId);
+    }
+
+    /**
+     * Retrieve a Stripe payment intent through Cashier.
+     */
+    protected function retrievePaymentIntent(int|string $id): PaymentIntent
+    {
+        return Cashier::stripe()->paymentIntents->retrieve($id);
+    }
+
+    /**
+     * Update a Stripe customer through the Stripe SDK.
+     *
+     * @param array<string, mixed> $attributes
+     */
+    protected function updateStripeCustomer(string $customerId, array $attributes): Customer
+    {
+        return Customer::update($customerId, $attributes);
     }
 }

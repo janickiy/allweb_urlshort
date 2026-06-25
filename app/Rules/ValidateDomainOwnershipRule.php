@@ -16,6 +16,10 @@ class ValidateDomainOwnershipRule extends AbstractNullableIdRule
 
     /**
      * Determine if the domain belongs to the user.
+     *
+     * @param string $attribute
+     * @param int|string|null $value
+     * @return bool
      */
     public function passes(string $attribute, int|string|null $value): bool
     {

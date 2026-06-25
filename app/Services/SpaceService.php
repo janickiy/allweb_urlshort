@@ -42,11 +42,14 @@ class SpaceService
     }
 
     /**
-     * Update a space owned by a user.
+     * Update a space owned by a user
      *
-     * @param array<string, mixed> $input
+     * @param int|string $id
+     * @param User $user
+     * @param array $input
+     * @return Space
      */
-    public function updateForUser(int|string $id, User $user, array $input): Space
+    public function updateForUser(int|string $id, User $user, array $input)
     {
         return $this->update($this->spaces->findForUserOrFail($id, $user->id), $input);
     }
@@ -56,7 +59,7 @@ class SpaceService
      *
      * @param array<string, mixed> $input
      */
-    public function updateById(int|string $id, array $input): Space
+    public function updateById(int|string $id, array $input)
     {
         return $this->update($this->spaces->findOrFail($id), $input);
     }
@@ -70,7 +73,11 @@ class SpaceService
     }
 
     /**
-     * Delete a space owned by a user and return its display name.
+     * Delete a space owned by a user and return its display nam
+     *
+     * @param int|string $id
+     * @param User $user
+     * @return string
      */
     public function deleteForUser(int|string $id, User $user): string
     {
@@ -79,14 +86,22 @@ class SpaceService
 
     /**
      * Delete a space by primary key for admin workflows and return its display name.
+     *
+     * @param int|string $id
+     * @return string
      */
     public function deleteById(int|string $id): string
     {
         return $this->deleteAndReturnName($this->spaces->findOrFail($id));
     }
 
+
     /**
      * Normalize a color value with a default fallback.
+     *
+     * @param int|string|null $color
+     * @param int $default
+     * @return int
      */
     private function color(int|string|null $color, int $default): int
     {

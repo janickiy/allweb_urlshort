@@ -31,8 +31,12 @@ class DomainService
 
     /**
      * Update a domain with normalized input.
+     *
+     * @param Domain $domain
+     * @param array $input
+     * @return \Illuminate\Database\Eloquent\Model
      */
-    public function update(Domain $domain, array $input): Domain
+    public function update(Domain $domain, array $input)
     {
         $this->domains->updateFromDto($domain->id, DomainData::fromArray([
             'index_page' => $input['index_page'] ?? null,
@@ -47,7 +51,14 @@ class DomainService
      *
      * @param array<string, mixed> $input
      */
-    public function updateForUser(int|string $id, User $user, array $input): Domain
+
+    /**
+     * @param int|string $id
+     * @param User $user
+     * @param array $input
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    public function updateForUser(int|string $id, User $user, array $input)
     {
         return $this->update($this->domains->findForUserOrFail($id, $user->id), $input);
     }

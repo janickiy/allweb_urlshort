@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Settings;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 
@@ -37,7 +38,7 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$this->userId],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . User::getTableName() . ',email,' . $this->userId],
             'role'  => ['sometimes', 'integer', 'between:0,1'],
             'timezone' => ['required']
         ];

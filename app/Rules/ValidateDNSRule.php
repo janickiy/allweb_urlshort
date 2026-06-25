@@ -8,6 +8,10 @@ class ValidateDNSRule extends AbstractStringRule
 {
     /**
      * Determine if the DNS A record points to this server.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {

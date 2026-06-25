@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\StaticTableName;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Laravel\Cashier\Subscription as CashierSubscription;
@@ -14,6 +15,8 @@ use Laravel\Cashier\Subscription as CashierSubscription;
  */
 class Subscription extends CashierSubscription
 {
+    use StaticTableName;
+
     /**
      * Get the plan matched to this subscription name, including trashed plans.
      */

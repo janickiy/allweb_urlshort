@@ -97,6 +97,13 @@ class PlanRepository extends BaseRepository
 
     /**
      * Paginate plans for the admin panel with filters.
+     *
+     * @param string|null $search
+     * @param mixed $visibility
+     * @param mixed $status
+     * @param string $sort
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForAdmin(?string $search, mixed $visibility, mixed $status, string $sort = 'desc', int $perPage = 10): LengthAwarePaginator
     {

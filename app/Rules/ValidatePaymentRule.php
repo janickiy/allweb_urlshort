@@ -8,8 +8,12 @@ class ValidatePaymentRule extends AbstractScalarRule
 {
     /**
      * Determine if payment settings may be saved.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     * @return bool
      */
-    public function passes(string $attribute, int|float|string|bool|null $value): bool
+    public function passes(string $attribute, mixed $value): bool
     {
         return true;
     }

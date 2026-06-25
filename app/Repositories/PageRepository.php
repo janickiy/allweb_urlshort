@@ -37,6 +37,11 @@ class PageRepository extends BaseRepository
 
     /**
      * Paginate pages for the admin panel with search and sorting.
+     *
+     * @param string|null $search
+     * @param string $sort
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForAdmin(?string $search, string $sort = 'desc', int $perPage = 10): LengthAwarePaginator
     {

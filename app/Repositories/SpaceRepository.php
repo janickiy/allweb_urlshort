@@ -35,8 +35,15 @@ class SpaceRepository extends BaseRepository
             ->get();
     }
 
+
     /**
      * Paginate spaces for a user with optional search and sorting.
+     *
+     * @param int $userId
+     * @param string|null $search
+     * @param string $sort
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForUser(int $userId, ?string $search, string $sort = 'desc', int $perPage = 10): LengthAwarePaginator
     {
@@ -50,6 +57,10 @@ class SpaceRepository extends BaseRepository
 
     /**
      * Find a user space by primary key or throw when it does not exist.
+     *
+     * @param int|string $id
+     * @param int $userId
+     * @return \Illuminate\Database\Eloquent\Model
      */
     public function findForUserOrFail(int|string $id, int $userId)
     {
@@ -77,6 +88,12 @@ class SpaceRepository extends BaseRepository
 
     /**
      * Paginate spaces for the admin panel with filters.
+     *
+     * @param int|null $userId
+     * @param string|null $search
+     * @param string $sort
+     * @param int $perPage
+     * @return LengthAwarePaginator
      */
     public function paginateForAdmin(?int $userId, ?string $search, string $sort = 'desc', int $perPage = 10): LengthAwarePaginator
     {

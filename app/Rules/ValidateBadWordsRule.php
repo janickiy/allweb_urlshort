@@ -8,6 +8,10 @@ class ValidateBadWordsRule extends AbstractStringRule
 {
     /**
      * Determine if the value avoids configured banned words.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return bool
      */
     public function passes(string $attribute, string $value): bool
     {
