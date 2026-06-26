@@ -31,19 +31,30 @@
                                 <span></span>
                             </a>
                         </li>
-                        <li class="nav-item d-none d-md-block">
-                            <a href="{{ route('home') }}" class="nav-link">{{ __('Website') }}</a>
-                        </li>
-                        <li class="nav-item d-none d-md-block">
-                            <a href="{{ route('dashboard') }}" class="nav-link">{{ __('User panel') }}</a>
-                        </li>
                     </ul>
 
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto align-items-center admin-top-menu">
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link d-inline-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                @include('icons.language', ['class' => 'fill-current icon-text'])
+                                <span>{{ strtoupper(app()->getLocale()) }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                @foreach(config('app.locales', []) as $code => $name)
+                                    <li>
+                                        <form action="{{ route('locale') }}" method="post">
+                                            @csrf
+                                            <input type="hidden" name="locale" value="{{ $code }}">
+                                            <button type="submit" class="dropdown-item @if(app()->getLocale() === $code) active @endif">{{ $name }}</button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </li>
                         <li class="nav-item dropdown user-menu">
-                            <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{ gravatar(Auth::user()->email, 40) }}" class="user-image rounded-circle shadow-sm" alt="{{ Auth::user()->name }}">
-                                <span class="d-none d-md-inline ms-2">{{ Auth::user()->name }}</span>
+                            <a href="#" class="nav-link d-inline-flex align-items-center gap-2" data-bs-toggle="dropdown" aria-expanded="false">
+                                @include('icons.user', ['class' => 'fill-current icon-text'])
+                                <span>{{ Auth::user()->name }}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                                 <li class="user-header text-bg-primary">
@@ -61,15 +72,26 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link d-inline-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();" aria-label="{{ __('Logout') }}">
+                                @include('icons.logout', ['class' => 'fill-current icon-text'])
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
 
             <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-                <div class="sidebar-brand">
+                <div class="sidebar-brand admin-sidebar-brand">
                     <a href="{{ route('admin.dashboard') }}" class="brand-link">
-                        <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}" class="brand-image opacity-75 shadow-sm" alt="{{ config('settings.title') }}">
-                        <span class="brand-text fw-light">{{ config('settings.title') ?: config('info.software.name') }}</span>
+                        <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}" class="brand-image admin-brand-image shadow-sm" alt="{{ config('settings.title') }}">
+                        <span class="brand-text admin-brand-text">
+                            <span class="admin-brand-title">{{ config('settings.title') ?: config('info.software.name') }}</span>
+                            <span class="admin-brand-subtitle">{{ __('ADMIN PANEL') }}</span>
+                            <span class="admin-brand-rule">
+                                <span></span><span></span><span></span><span></span>
+                            </span>
+                        </span>
                     </a>
                 </div>
 
@@ -91,7 +113,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-end mb-0">
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('Admin') }}</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('Control Panel') }}</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">{{ $adminTitle }}</li>
                                 </ol>
                             </div>
@@ -107,10 +129,8 @@
             </main>
 
             <footer class="app-footer">
-                <div class="float-end d-none d-sm-inline">
-                    {{ __('Version') }} {{ config('info.software.version') }}
-                </div>
-                <strong>{{ config('info.software.name') }}</strong>
+                <strong>&copy; {{ now()->year }} {{ config('settings.title') ?: config('info.software.name') }}.</strong>
+                <a href="{{ config('info.software.url') }}" target="_blank" rel="noopener">{{ config('info.software.name') }}</a>
             </footer>
         </div>
 

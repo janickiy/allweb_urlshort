@@ -1,62 +1,58 @@
-@section('site_title', formatTitle([__('Edit'), __('Language'), config('settings.title')]))
+@include('shared.message')
 
-@include('shared.breadcrumbs', ['breadcrumbs' => [
-    ['url' => route('admin.dashboard'), 'title' => __('Admin')],
-    ['url' => route('admin.languages'), 'title' => __('Languages')],
-    ['title' => __('Edit')],
-]])
+<form action="{{ route('admin.languages.update', $language->code) }}" method="post" enctype="multipart/form-data">
+    @csrf
 
-<h2 class="mb-3 d-inline-block">{{ __('Edit') }}</h2>
-
-<div class="card border-0 shadow-sm mb-3">
-    <div class="card-header align-items-center">
-        <div class="font-weight-medium py-1">{{ __('Language') }}</div>
-    </div>
-    <div class="card-body">
-
-        @include('shared.message')
-
-        <div class="form-row">
-            <div class="form-group col-12 col-lg-6">
-                <div class="text-muted">{{ __('Name') }}</div>
-                <div>{{ $language->name }}</div>
-            </div>
-            <div class="form-group col-12 col-lg-6">
-                <div class="text-muted">{{ __('Code') }}</div>
-                <div>{{ $language->code }}</div>
+    <div class="card card-primary card-outline shadow-sm mb-0 admin-form-card admin-language-edit-card">
+        <div class="card-header">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md">
+                    <h3 class="card-title d-flex align-items-center gap-2 mb-0">
+                        @include('icons.language', ['class' => 'fill-current icon-text'])
+                        {{ __('Language') }}
+                    </h3>
+                </div>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col">
-                <form action="{{ route('admin.languages.edit', $language->code) }}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <div class="form-group">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" name="default" id="i_default" @if($language->default) checked disabled @endif>
-                            <label class="custom-control-label" for="i_default">{{ __('Default') }}</label>
-                        </div>
-                    </div>
+        <div class="card-body">
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="text-muted small mb-1">{{ __('Name') }}</div>
+                    <div class="fw-medium">{{ $language->name }}</div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="text-muted small mb-1">{{ __('Code') }}</div>
+                    <div class="fw-medium">{{ $language->code }}</div>
+                </div>
+            </div>
 
-                    <div class="row mt-3">
-                        <div class="col">
-                            <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
-                        </div>
-                        <div class="col-auto">
-                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" @if($language->default) disabled @endif>{{ __('Delete') }}</button>
-                        </div>
-                    </div>
-                </form>
+            <div class="border-top pt-3">
+                <label class="form-label">{{ __('Settings') }}</label>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" name="default" id="i_default" value="1" @if($language->default) checked disabled @endif>
+                    <label class="form-check-label" for="i_default">{{ __('Default') }}</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer bg-body">
+            <div class="d-flex flex-wrap justify-content-between gap-2">
+                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" @if($language->default) disabled @endif>{{ __('Delete') }}</button>
+                <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                    @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
+                    {{ __('Save') }}
+                </button>
             </div>
         </div>
     </div>
-</div>
+</form>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteLanguageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
             <div class="modal-header">
-                <h6 class="modal-title" id="exampleModalLabel">{{ __('Delete') }}</h6>
+                <h6 class="modal-title" id="deleteLanguageModalLabel">{{ __('Delete') }}</h6>
                 <button type="button" class="close d-flex align-items-center justify-content-center" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
                 </button>

@@ -93,6 +93,14 @@ class DomainRepository extends BaseRepository
     }
 
     /**
+     * Count all stored domains.
+     */
+    public function count(): int
+    {
+        return $this->query()->count();
+    }
+
+    /**
      * Count domains that belong to a user.
      *
      * @param int $userId

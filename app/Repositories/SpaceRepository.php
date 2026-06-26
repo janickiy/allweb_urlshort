@@ -79,6 +79,14 @@ class SpaceRepository extends BaseRepository
     }
 
     /**
+     * Count all stored spaces.
+     */
+    public function count(): int
+    {
+        return $this->query()->count();
+    }
+
+    /**
      * Count spaces that belong to a user.
      */
     public function countForUser(int $userId): int

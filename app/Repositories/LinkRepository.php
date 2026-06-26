@@ -133,9 +133,47 @@ class LinkRepository extends BaseRepository
     public function latest(int $limit): Collection
     {
         return $this->query()
+            ->with(['space', 'domain'])
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Return the links with the highest click counters.
+     */
+    public function topByClicks(int $limit): Collection
+    {
+        return $this->query()
+            ->with(['space', 'domain'])
+            ->orderBy('clicks', 'desc')
+            ->orderBy('id', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Count all stored links.
+     */
+    public function count(): int
+    {
+        return $this->query()->count();
+    }
+
+    /**
+     * Count links that are currently published.
+     */
+    public function publishedCount(): int
+    {
+        return $this->query()->where('disabled', 0)->count();
+    }
+
+    /**
+     * Count links that are blocked or disabled.
+     */
+    public function blockedCount(): int
+    {
+        return $this->query()->where('disabled', 1)->count();
     }
 
     /**

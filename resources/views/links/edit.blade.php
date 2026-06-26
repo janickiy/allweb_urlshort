@@ -332,13 +332,49 @@
                     </div>
 
                     @php
-                        if (old('geo')) {
-                            $geoList = old('geo');
-                        } elseif($link->geo_target) {
-                            $geoList = json_decode(json_encode($link->geo_target), true);
-                        } else {
-                            $geoList = [];
-                        }
+                        $normalizeTargetList = static function (mixed $target): array {
+                            if (! $target) {
+                                return [];
+                            }
+
+                            if (is_string($target)) {
+                                $decoded = json_decode($target, true);
+                                $target = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+                            }
+
+                            if (is_object($target)) {
+                                $target = json_decode(json_encode($target), true);
+                            }
+
+                            if (! is_array($target)) {
+                                return [];
+                            }
+
+                            return array_values(array_filter(array_map(static function (mixed $value, int|string $key): ?array {
+                                if (is_object($value)) {
+                                    $value = json_decode(json_encode($value), true);
+                                }
+
+                                if (is_array($value)) {
+                                    $ruleKey = $value['key'] ?? null;
+                                    $ruleValue = $value['value'] ?? null;
+                                } else {
+                                    $ruleKey = is_string($key) ? $key : null;
+                                    $ruleValue = $value;
+                                }
+
+                                if ($ruleKey === null || $ruleKey === '' || $ruleValue === null || $ruleValue === '') {
+                                    return null;
+                                }
+
+                                return [
+                                    'key' => (string) $ruleKey,
+                                    'value' => (string) $ruleValue,
+                                ];
+                            }, $target, array_keys($target))));
+                        };
+
+                        $geoList = old('geo') ? $normalizeTargetList(old('geo')) : $normalizeTargetList($link->geo_target);
                     @endphp
 
                     @foreach($geoList as $id => $geo)
@@ -442,13 +478,7 @@
                     </div>
 
                     @php
-                        if (old('platform')) {
-                            $platformList = old('platform');
-                        } elseif($link->platform_target) {
-                            $platformList = json_decode(json_encode($link->platform_target), true);
-                        } else {
-                            $platformList = [];
-                        }
+                        $platformList = old('platform') ? $normalizeTargetList(old('platform')) : $normalizeTargetList($link->platform_target);
                     @endphp
 
                     @foreach($platformList as $id => $platform)

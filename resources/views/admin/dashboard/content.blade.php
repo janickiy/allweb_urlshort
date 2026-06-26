@@ -3,220 +3,231 @@
 @section('site_title', formatTitle([__('Dashboard'), config('settings.title')]))
 
 @section('admin_content')
-<div class="bg-base-1">
-    @include('admin.dashboard.header')
-    <div class="bg-base-1">
-        <div class="container py-3 my-3">
-            <h4 class="mb-0">{{ __('Overview') }}</h4>
+    @php
+        $totalLinks = (int) ($stats['links'] ?? 0);
+        $publishedLinks = (int) ($stats['published_links'] ?? 0);
+        $blockedLinks = (int) ($stats['blocked_links'] ?? 0);
+        $pendingReview = (int) ($stats['pending_review'] ?? 0);
+        $publishedPercent = $totalLinks > 0 ? round(($publishedLinks / $totalLinks) * 100) : 0;
+        $blockedPercent = $totalLinks > 0 ? round(($blockedLinks / $totalLinks) * 100) : 0;
 
-            <div class="row mb-5">
-                @php
-                    $cards = [
-                        'users' =>
-                        [
-                            'title' => 'Users',
-                            'value' => $stats['users'],
-                            'description' => 'Manage users',
-                            'route' => 'admin.users',
-                            'icon' => 'icons.background.users'
-                        ],
-                        [
-                            'title' => 'Subscriptions',
-                            'value' => $stats['subscriptions'],
-                            'description' => 'Manage subscriptions',
-                            'route' => 'admin.subscriptions',
-                            'icon' => 'icons.background.subscription'
-                        ],
-                        [
-                            'title' => 'Plans',
-                            'value' => $stats['plans'],
-                            'description' => 'Manage plans',
-                            'route' => 'admin.plans',
-                            'icon' => 'icons.background.package'
-                        ],
-                        [
-                            'title' => 'Links',
-                            'value' => $stats['links'],
-                            'description' => 'Manage links',
-                            'route' => 'admin.links',
-                            'icon' => 'icons.background.link'
-                        ],
-                        [
-                            'title' => 'Spaces',
-                            'value' => $stats['spaces'],
-                            'description' => 'Manage spaces',
-                            'route' => 'admin.spaces',
-                            'icon' => 'icons.background.space'
-                        ],
-                        [
-                            'title' => 'Domains',
-                            'value' => $stats['domains'],
-                            'description' => 'Manage domains',
-                            'route' => 'admin.domains',
-                            'icon' => 'icons.background.domain'
-                        ]
-                    ];
-                @endphp
+        $summaryCards = [
+            [
+                'class' => 'primary',
+                'title' => __('Total links'),
+                'value' => $totalLinks,
+                'caption' => __('Catalog records'),
+                'route' => route('admin.links'),
+                'icon' => 'icons.link',
+            ],
+            [
+                'class' => 'success',
+                'title' => __('Categories'),
+                'value' => $stats['spaces'],
+                'caption' => __('Sections and topics'),
+                'route' => route('admin.spaces'),
+                'icon' => 'icons.space',
+            ],
+            [
+                'class' => 'warning',
+                'title' => __('Messages'),
+                'value' => $stats['messages'],
+                'caption' => __('User requests'),
+                'route' => route('admin.settings.contact'),
+                'icon' => 'icons.email',
+            ],
+            [
+                'class' => 'review',
+                'title' => __('Pending review'),
+                'value' => $pendingReview,
+                'caption' => __('New submissions'),
+                'route' => route('admin.links'),
+                'icon' => 'icons.expire',
+            ],
+        ];
 
-                @foreach($cards as $card)
-                    <div class="col-12 col-md-6 col-lg-4 mt-3">
-                        <div class="card border-0 shadow-sm h-100 overflow-hidden">
-                            <div class="card-body d-flex">
-                                <div class="flex-grow-1">
-                                    <div class="text-muted font-weight-medium mb-2">{{ __($card['title']) }}</div>
-                                    <div class="h1 mb-0 font-weight-normal text-wrap">{{ number_format($card['value'], 0, __('.'), __(',')) }}</div>
-                                </div>
+        $quickActions = [
+            ['title' => __('Add link'), 'route' => route('links'), 'icon' => 'icons.add'],
+            ['title' => __('Import links'), 'route' => route('admin.links'), 'icon' => 'icons.decrease'],
+            ['title' => __('Export links'), 'route' => route('admin.links'), 'icon' => 'icons.increase'],
+            ['title' => __('Add category'), 'route' => route('spaces.new'), 'icon' => 'icons.space'],
+        ];
+    @endphp
 
-                                <div class="icon-gradient-{{ $loop->index+1 }} text-primary d-flex align-items-top">
-                                    @include($card['icon'], ['class' => 'fill-current icon-card-stats'])
-                                </div>
+    <div class="admin-dashboard">
+        <div class="row g-3 admin-dashboard-summary">
+            @foreach($summaryCards as $card)
+                <div class="col-12 col-md-6 col-xl-3">
+                    <div class="admin-summary-card admin-summary-card-{{ $card['class'] }}">
+                        <div class="admin-summary-card-body">
+                            <div>
+                                <div class="admin-summary-value">{{ number_format($card['value'], 0, __('.'), __(',')) }}</div>
+                                <div class="admin-summary-title">{{ $card['title'] }}</div>
+                                <div class="admin-summary-caption">{{ $card['caption'] }}</div>
                             </div>
-                            <div class="card-footer bg-base-2 border-0">
-                                <a href="{{ route($card['route']) }}" class="text-muted font-weight-medium d-inline-flex align-items-baseline">{{ __($card['description']) }}@include((__('lang_dir') == 'rtl' ? 'icons.chevron_left' : 'icons.chevron_right'), ['class' => 'icon-chevron fill-current '.(__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2')])</a>
-                            </div>
+                            @include($card['icon'], ['class' => 'admin-summary-icon fill-current'])
                         </div>
+                        <a href="{{ $card['route'] }}" class="admin-summary-link">
+                            {{ __('Open section') }}
+                            @include((__('lang_dir') == 'rtl' ? 'icons.chevron_left' : 'icons.chevron_right'), ['class' => 'admin-summary-link-icon fill-current'])
+                        </a>
                     </div>
-                @endforeach
-            </div>
+                </div>
+            @endforeach
+        </div>
 
-            <h4 class="mb-0">{{ __('Recent activity') }}</h4>
-            <div class="row">
-                <div class="col-12 col-xl-6 mt-3">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header align-items-center">
-                            <div class="row">
-                                <div class="col"><div class="font-weight-medium py-1">{{ __('Latest users') }}</div></div>
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-xl-4">
+                <div class="card admin-dashboard-card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ __('Link statuses') }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="admin-status-item">
+                            <div class="admin-status-row">
+                                <span>{{ __('pending review') }}</span>
+                                <span>{{ number_format($pendingReview, 0, __('.'), __(',')) }}</span>
+                            </div>
+                            <div class="progress admin-status-progress">
+                                <div class="progress-bar bg-secondary" style="width: 0%"></div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            @if(count($users) == 0)
-                                {{ __('No data.') }}
-                            @else
-                                <div class="list-group list-group-flush my-n3">
-                                    @foreach($users as $user)
-                                        <div class="list-group-item px-0">
-                                            <div class="row align-items-center">
-                                                <div class="col text-truncate">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-12 d-flex">
-                                                            <div class="{{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}"><img src="{{ gravatar($user->email, 48) }}" class="rounded-circle icon-label"></div>
-                                                            <div class="text-truncate">
-                                                                <div class="d-flex">
-                                                                    <div class="text-truncate">
-                                                                        <a href="{{ route('admin.users.edit', $user->id) }}"@if($user->trashed()) class="text-danger" @endif>{{ $user->name }}</a>
-                                                                    </div>
-                                                                </div>
 
-                                                                <div class="text-muted text-truncate small">
-                                                                    {{ $user->email }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-auto">
-                                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                        <div class="admin-status-item">
+                            <div class="admin-status-row">
+                                <span>{{ __('published') }}</span>
+                                <span>{{ number_format($publishedLinks, 0, __('.'), __(',')) }}</span>
+                            </div>
+                            <div class="progress admin-status-progress">
+                                <div class="progress-bar bg-primary" style="width: {{ $publishedPercent }}%">{{ $publishedPercent }}%</div>
+                            </div>
+                        </div>
+
+                        <div class="admin-status-item mb-0">
+                            <div class="admin-status-row">
+                                <span>{{ __('blocked') }}</span>
+                                <span>{{ number_format($blockedLinks, 0, __('.'), __(',')) }}</span>
+                            </div>
+                            <div class="progress admin-status-progress">
+                                <div class="progress-bar bg-danger" style="width: {{ $blockedPercent }}%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-12 col-xl-6 mt-3">
-                    @if(config('settings.stripe'))
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header align-items-center">
-                                <div class="row">
-                                    <div class="col"><div class="font-weight-medium py-1">{{ __('Latest subscriptions') }}</div></div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                @if(count($subscriptions) == 0)
-                                    {{ __('No data.') }}
-                                @else
-                                    <div class="list-group list-group-flush my-n3">
-                                        @foreach($subscriptions as $subscription)
-                                            <div class="list-group-item px-0">
-                                                <div class="row align-items-center">
-                                                    <div class="col text-truncate">
-                                                        <div class="row align-items-center">
-                                                            <div class="col-12 d-flex">
-                                                                <div class="{{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}"><img src="{{ gravatar($subscription->user->email, 48) }}" class="rounded-circle icon-label"></div>
-                                                                <div class="text-truncate">
-                                                                    <div class="d-flex">
-                                                                        <div class="text-truncate">
-                                                                            <a href="{{ route('admin.users.edit', $subscription->user->id) }}">{{ $subscription->user->name }}</a>
-                                                                        </div>
-                                                                        <div>
-                                                                            <div class="badge badge-{{ formatStripeStatus()[$subscription->stripe_status]['status'] }} {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">{{ formatStripeStatus()[$subscription->stripe_status]['title'] }}</div>
-                                                                        </div>
-                                                                    </div>
+            <div class="col-12 col-xl-4">
+                <div class="card admin-dashboard-card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ __('Quick actions') }}</h3>
+                    </div>
+                    <div class="list-group list-group-flush admin-action-list">
+                        @foreach($quickActions as $action)
+                            <a href="{{ $action['route'] }}" class="list-group-item list-group-item-action admin-action-item">
+                                <span>{{ $action['title'] }}</span>
+                                @include($action['icon'], ['class' => 'admin-action-icon fill-current'])
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
 
-                                                                    <div class="text-dark text-truncate small">
-                                                                        <a href="{{ route('admin.subscriptions.edit', $subscription->id) }}" class="text-secondary">{{ $subscription->name }}</a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-auto">
-                                                        <a href="{{ route('admin.subscriptions.edit', $subscription->id) }}" class="btn btn-outline-primary btn-sm">{{ __('Edit') }}</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @else
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-header align-items-center">
-                                <div class="row">
-                                    <div class="col"><div class="font-weight-medium py-1">{{ __('Latest links') }}</div></div>
-                                </div>
-                            </div>
+            <div class="col-12 col-xl-4">
+                <div class="card admin-dashboard-card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ __('Top views') }}</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle admin-dashboard-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Site') }}</th>
+                                    <th class="text-end">{{ __('Views') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($topLinks as $link)
+                                    <tr>
+                                        <td>
+                                            <a href="{{ route('admin.links.edit', $link->id) }}" class="admin-dashboard-link">{{ $link->title ?? $link->alias }}</a>
+                                            <div class="text-muted small">{{ $link->space?->name ?? __('Uncategorized') }}</div>
+                                        </td>
+                                        <td class="text-end fw-semibold">{{ number_format((int) $link->clicks, 0, __('.'), __(',')) }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="text-center text-muted py-4">{{ __('No data.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="card-body">
-                                @if(count($links) == 0)
-                                    {{ __('No data.') }}
-                                @else
-                                    <div class="list-group list-group-flush my-n3">
-                                        @foreach($links as $link)
-                                            <div class="list-group-item px-0">
-                                                <div class="row align-items-center">
-                                                    <div class="col d-flex text-truncate">
-                                                        <div class="{{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}"><img src="https://www.google.com/s2/favicons?domain={{ parse_url($link->url)['host'] }}" rel="noreferrer" class="icon-label"></div>
+        <div class="row g-3 mt-1">
+            <div class="col-12 col-xl-8">
+                <div class="card admin-dashboard-card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h3 class="card-title">{{ __('Latest links') }}</h3>
+                        <a href="{{ route('admin.links') }}" class="btn btn-outline-primary btn-sm">{{ __('All links') }}</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table align-middle admin-dashboard-table admin-latest-links-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('Name') }}</th>
+                                    <th>{{ __('Category') }}</th>
+                                    <th>{{ __('Status') }}</th>
+                                    <th class="text-end">{{ __('Date') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($links as $link)
+                                    @php
+                                        $endsAt = $link->ends_at ? \Illuminate\Support\Carbon::parse($link->ends_at) : null;
+                                        $createdAt = $link->created_at ? \Illuminate\Support\Carbon::parse($link->created_at) : null;
+                                    @endphp
+                                    <tr>
+                                        <td>
+                                            <a href="{{ route('admin.links.edit', $link->id) }}" class="admin-dashboard-link">{{ $link->title ?? $link->alias }}</a>
+                                            <div class="text-muted small text-truncate">{{ $link->url }}</div>
+                                        </td>
+                                        <td>{{ $link->space?->name ?? __('Uncategorized') }}</td>
+                                        <td>
+                                            @if($link->disabled)
+                                                <span class="badge text-bg-danger">{{ __('blocked') }}</span>
+                                            @elseif($endsAt?->isPast())
+                                                <span class="badge text-bg-secondary">{{ __('expired') }}</span>
+                                            @else
+                                                <span class="badge text-bg-primary">{{ __('published') }}</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-end text-muted">{{ $createdAt?->format('Y-m-d H:i:s') }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">{{ __('No data.') }}</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-                                                        <div class="text-truncate">
-                                                            <a href="{{ route('stats', $link->id) }}">{{ str_replace(['http://', 'https://'], '', (isset($link->domain) ? $link->domain->name.'/'.$link->alias : route('link.redirect', $link->alias))) }}</a>
-
-                                                            <div class="text-dark text-truncate small">
-                                                                <span class="text-secondary cursor-help" data-bs-toggle="tooltip-url" title="{{ $link->url }}">{{ $link->title ?? str_replace(['http://', 'https://'], '', $link->url) }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-auto d-flex">
-                                                        @include('shared.buttons.copy_link')
-                                                        @include('shared.dropdowns.link', ['admin' => true, 'options' => ['dropdown' => ['button' => true, 'edit' => true, 'share' => true, 'stats' => true, 'open' => true, 'delete' => true]]])
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
+            <div class="col-12 col-xl-4">
+                <div class="card admin-dashboard-card">
+                    <div class="card-header d-flex align-items-center justify-content-between">
+                        <h3 class="card-title">{{ __('Latest messages') }}</h3>
+                        <a href="{{ route('admin.settings.contact') }}" class="btn btn-outline-primary btn-sm">{{ __('All') }}</a>
+                    </div>
+                    <div class="card-body admin-empty-messages">
+                        {{ __('No messages yet') }}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@include('shared.modals.share_link')
-@include('shared.modals.delete_link')
 @endsection

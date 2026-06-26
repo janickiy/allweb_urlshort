@@ -55,13 +55,18 @@ class AdminService
                 'users' => $this->users->withTrashedCount(),
                 'subscriptions' => $this->subscriptions->count(),
                 'plans' => $this->plans->withTrashedCount(),
-                'links' => $this->links->maxId(),
-                'spaces' => $this->spaces->maxId(),
-                'domains' => $this->domains->maxId(),
+                'links' => $this->links->count(),
+                'spaces' => $this->spaces->count(),
+                'domains' => $this->domains->count(),
+                'messages' => 0,
+                'pending_review' => 0,
+                'published_links' => $this->links->publishedCount(),
+                'blocked_links' => $this->links->blockedCount(),
             ],
             'users' => $this->users->recentWithTrashed(10),
             'subscriptions' => config('settings.stripe') ? $this->subscriptions->recent(10) : null,
-            'links' => config('settings.stripe') ? null : $this->links->latest(10),
+            'links' => $this->links->latest(8),
+            'topLinks' => $this->links->topByClicks(5),
         ];
     }
 
