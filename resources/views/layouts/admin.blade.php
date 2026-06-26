@@ -1,7 +1,34 @@
 @extends('layouts.wrapper')
 
 @php
-    $adminTitle = __(Illuminate\Support\Str::headline(request()->segment(3) ?: request()->segment(2) ?: 'Dashboard'));
+    $adminTitleSegment = request()->segment(3) ?: request()->segment(2) ?: 'dashboard';
+    $adminTitleKeys = [
+        'appearance' => 'ui.nav.appearance',
+        'captcha' => 'ui.nav.captcha',
+        'contact' => 'ui.nav.contact',
+        'dashboard' => 'ui.nav.dashboard',
+        'domains' => 'ui.nav.domains',
+        'edit' => 'ui.actions.edit',
+        'email' => 'ui.nav.email',
+        'general' => 'ui.nav.general',
+        'invoice' => 'ui.nav.invoice',
+        'legal' => 'ui.nav.legal',
+        'links' => 'ui.nav.links',
+        'new' => 'ui.actions.new',
+        'pages' => 'ui.nav.pages',
+        'payment' => 'ui.nav.payment',
+        'plans' => 'ui.nav.plans',
+        'registration' => 'ui.nav.registration',
+        'settings' => 'ui.nav.settings',
+        'shortener' => 'ui.nav.shortener',
+        'social' => 'ui.nav.social',
+        'subscriptions' => 'ui.nav.subscriptions',
+        'users' => 'ui.nav.users',
+        'workspaces' => 'ui.nav.workspaces',
+    ];
+    $adminTitle = isset($adminTitleKeys[$adminTitleSegment])
+        ? __($adminTitleKeys[$adminTitleSegment])
+        : __(Illuminate\Support\Str::headline($adminTitleSegment));
 @endphp
 
 @section('base_css')
