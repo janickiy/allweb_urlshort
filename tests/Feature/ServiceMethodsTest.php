@@ -386,7 +386,7 @@ class ServiceMethodsTest extends TestCase
             $service->updateUser($admin->id, ['role' => 0], $admin->id);
             $this->fail('Expected self-demotion to be denied.');
         } catch (RuntimeException $exception) {
-            $this->assertSame(__('Operation denied.'), $exception->getMessage());
+            $this->assertSame(__('ui.messages.operation_denied'), $exception->getMessage());
         }
 
         $service->updateUser($user->id, ['name' => 'Admin Updated', 'email' => $user->email, 'timezone' => 'UTC', 'role' => 1], $admin->id);
@@ -396,7 +396,7 @@ class ServiceMethodsTest extends TestCase
             $service->deleteUser($admin->id, $admin->id);
             $this->fail('Expected self-delete to be denied.');
         } catch (RuntimeException $exception) {
-            $this->assertSame(__('Operation denied.'), $exception->getMessage());
+            $this->assertSame(__('ui.messages.operation_denied'), $exception->getMessage());
         }
 
         $deleteUser = $this->user(['name' => 'Delete From Admin']);
@@ -407,7 +407,7 @@ class ServiceMethodsTest extends TestCase
             $service->disableUser($admin->id, $admin->id);
             $this->fail('Expected self-disable to be denied.');
         } catch (RuntimeException $exception) {
-            $this->assertSame(__('Operation denied.'), $exception->getMessage());
+            $this->assertSame(__('ui.messages.operation_denied'), $exception->getMessage());
         }
 
         $disableUser = $this->user(['email' => 'disable-admin-service@example.test']);

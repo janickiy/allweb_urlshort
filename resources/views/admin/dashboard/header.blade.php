@@ -15,7 +15,7 @@
                                         </div>
 
                                         <div class="d-inline-block {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">
-                                            <a href="{{ config('info.software.url') }}" class="text-dark text-decoration-none" target="_blank">{{ __('Version') }} <span class="badge badge-primary">{{ config('info.software.version') }}</span></a>
+                                            <a href="{{ config('info.software.url') }}" class="text-dark text-decoration-none" target="_blank">{{ __('ui.dashboard.version') }} <span class="badge badge-primary">{{ config('info.software.version') }}</span></a>
                                         </div>
                                     </div>
                                 </div>
@@ -27,7 +27,7 @@
                                         </div>
 
                                         <div class="d-inline-block {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">
-                                            <a href="{{ str_replace('://', '://docs.', config('info.software.url')) }}" class="text-dark text-decoration-none" target="_blank">{{ __('Documentation') }}</a>
+                                            <a href="{{ str_replace('://', '://docs.', config('info.software.url')) }}" class="text-dark text-decoration-none" target="_blank">{{ __('ui.dashboard.documentation') }}</a>
                                         </div>
                                     </div>
                                 </div>

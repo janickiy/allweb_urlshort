@@ -1,14 +1,14 @@
-@section('site_title', formatTitle([__('Edit'), __('Workspace'), config('settings.title')]))
+@section('site_title', formatTitle([__('ui.actions.edit'), __('ui.workspaces.singular'), config('settings.title')]))
 
 @if(! isset($admin))
     @include('shared.breadcrumbs', ['breadcrumbs' => [
-        ['url' => route('dashboard'), 'title' => __('Home')],
-        ['url' => route('workspaces'), 'title' => __('Workspaces')],
-        ['title' => __('Edit')],
+        ['url' => route('dashboard'), 'title' => __('ui.nav.home')],
+        ['url' => route('workspaces'), 'title' => __('ui.nav.workspaces')],
+        ['title' => __('ui.actions.edit')],
     ]])
 
     <div class="d-flex">
-        <h2 class="mb-3 text-break">{{ __('Edit') }}</h2>
+        <h2 class="mb-3 text-break">{{ __('ui.actions.edit') }}</h2>
     </div>
 @endif
 
@@ -26,10 +26,10 @@
                     @if(isset($admin))
                         <h3 class="card-title d-flex align-items-center gap-2 mb-0">
                             @include('icons.workspace', ['class' => 'fill-current icon-text'])
-                            {{ __('Workspace') }}
+                            {{ __('ui.workspaces.singular') }}
                         </h3>
                     @else
-                        <div class="font-weight-medium py-1">{{ __('Workspace') }}</div>
+                        <div class="font-weight-medium py-1">{{ __('ui.workspaces.singular') }}</div>
                     @endif
                 </div>
 
@@ -37,11 +37,11 @@
                     @if(isset($admin))
                         <a href="{{ route('admin.links', ['workspace_id' => $workspace->id]) }}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2">
                             @include('icons.link', ['class' => 'fill-current icon-button-sm'])
-                            {{ __('Links') }}
+                            {{ __('ui.workspaces.links') }}
                             <span class="badge text-bg-primary">{{ number_format($stats['links'], 0, __('.'), __(',')) }}</span>
                         </a>
                     @else
-                        <a href="{{ route('links', ['workspace' => $workspace->id]) }}" class="btn btn-outline-primary btn-sm">{{ __('View') }}</a>
+                        <a href="{{ route('links', ['workspace' => $workspace->id]) }}" class="btn btn-outline-primary btn-sm">{{ __('ui.actions.view') }}</a>
                     @endif
                 </div>
             </div>
@@ -53,7 +53,7 @@
             <div class="row g-3">
                 <div class="{{ isset($admin) ? 'col-12 col-lg-6' : 'col-12' }}">
                     <div class="mb-3">
-                        <label class="{{ isset($admin) ? 'form-label' : '' }}" for="i_name">{{ __('Name') }}</label>
+                        <label class="{{ isset($admin) ? 'form-label' : '' }}" for="i_name">{{ __('ui.workspaces.name') }}</label>
                         <input type="text" name="name" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" id="i_name" value="{{ $workspace->name }}">
                         @if ($errors->has('name'))
                             <span class="invalid-feedback" role="alert">
@@ -65,7 +65,7 @@
 
                 <div class="{{ isset($admin) ? 'col-12 col-lg-6' : 'col-12' }}">
                     <div class="mb-3">
-                        <label class="{{ isset($admin) ? 'form-label' : '' }}" for="{{ isset($admin) ? 'i_color' : 'i_color1' }}">{{ __('Color') }}</label>
+                        <label class="{{ isset($admin) ? 'form-label' : '' }}" for="{{ isset($admin) ? 'i_color' : 'i_color1' }}">{{ __('ui.workspaces.color') }}</label>
                         @if(isset($admin))
                             @php
                                 $workspaceColors = formatWorkspace();
@@ -159,10 +159,10 @@
             @if(! isset($admin))
                 <div class="row mt-3">
                     <div class="col">
-                        <button type="submit" name="submit" class="btn btn-primary">{{ __('Save') }}</button>
+                        <button type="submit" name="submit" class="btn btn-primary">{{ __('ui.actions.save') }}</button>
                     </div>
                     <div class="col-auto">
-                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">{{ __('Delete') }}</button>
+                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteModal">{{ __('ui.actions.delete') }}</button>
                     </div>
                 </div>
             @endif
@@ -173,11 +173,11 @@
                 <div class="d-flex flex-wrap justify-content-between gap-2">
                     <button type="button" class="btn btn-outline-danger d-inline-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal">
                         @include('icons.delete', ['class' => 'fill-current icon-button-sm'])
-                        {{ __('Delete') }}
+                        {{ __('ui.actions.delete') }}
                     </button>
                     <button type="submit" name="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
                         @include('icons.checkmark', ['class' => 'fill-current icon-button-sm'])
-                        {{ __('Save') }}
+                        {{ __('ui.actions.save') }}
                     </button>
                 </div>
             </div>
@@ -192,13 +192,13 @@
                 <div class="col-12 col-md">
                     <h3 class="card-title d-flex align-items-center gap-2 mb-0">
                         @include('icons.user', ['class' => 'fill-current icon-text'])
-                        {{ __('User') }}
+                        {{ __('ui.workspaces.user') }}
                     </h3>
                 </div>
                 <div class="col-12 col-md-auto">
                     <a href="{{ route('admin.users.edit', $workspace->user->id) }}" class="btn btn-outline-primary btn-sm d-inline-flex align-items-center gap-2">
                         @include('icons.edit', ['class' => 'fill-current icon-button-sm'])
-                        {{ __('Edit') }}
+                        {{ __('ui.actions.edit') }}
                     </a>
                 </div>
             </div>
@@ -206,12 +206,12 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-12 col-lg-6">
-                    <div class="text-muted small mb-1">{{ __('Name') }}</div>
+                    <div class="text-muted small mb-1">{{ __('ui.workspaces.name') }}</div>
                     <div class="fw-medium">{{ $workspace->user->name }}</div>
                 </div>
 
                 <div class="col-12 col-lg-6">
-                    <div class="text-muted small mb-1">{{ __('Email') }}</div>
+                    <div class="text-muted small mb-1">{{ __('ui.nav.email') }}</div>
                     <div class="fw-medium">{{ $workspace->user->email }}</div>
                 </div>
             </div>
@@ -227,22 +227,22 @@
                     @if(isset($admin))
                         @include('icons.delete', ['class' => 'fill-current icon-button-sm text-danger'])
                     @endif
-                    {{ __('Delete') }}
+                    {{ __('ui.actions.delete') }}
                 </h6>
                 @if(isset($admin))
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('ui.actions.close') }}"></button>
                 @else
-                    <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="{{ __('Close') }}">
+                    <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="{{ __('ui.actions.close') }}">
                         <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
                     </button>
                 @endif
             </div>
             <div class="modal-body">
-                <p class="mb-2">{{ __('Deleting this workspace is permanent, and will remove all the links associated with it.') }}</p>
-                <p class="mb-0 text-muted">{{ __('Are you sure you want to delete :name?', ['name' => $workspace->name]) }}</p>
+                <p class="mb-2">{{ __('ui.workspaces.delete_permanent') }}</p>
+                <p class="mb-0 text-muted">{{ __('ui.workspaces.delete_confirm', ['name' => $workspace->name]) }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" @if(isset($admin)) data-bs-dismiss="modal" @else data-dismiss="modal" @endif>{{ __('Close') }}</button>
+                <button type="button" class="btn btn-secondary" @if(isset($admin)) data-bs-dismiss="modal" @else data-dismiss="modal" @endif>{{ __('ui.actions.close') }}</button>
                 <form action="{{ isset($admin) ? route('admin.workspaces.delete', $workspace->id) : route('workspaces.delete', $workspace->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
 
@@ -250,7 +250,7 @@
                         @if(isset($admin))
                             @include('icons.delete', ['class' => 'fill-current icon-button-sm'])
                         @endif
-                        {{ __('Delete') }}
+                        {{ __('ui.actions.delete') }}
                     </button>
                 </form>
             </div>

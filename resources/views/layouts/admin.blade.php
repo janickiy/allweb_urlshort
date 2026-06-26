@@ -21,11 +21,11 @@
 @section('body')
     <body class="layout-fixed sidebar-expand-lg sidebar-mini bg-body-tertiary adminlte-page">
         <div class="app-wrapper">
-            <nav class="app-header navbar navbar-expand bg-body border-bottom" aria-label="{{ __('Admin navigation') }}">
+            <nav class="app-header navbar navbar-expand bg-body border-bottom" aria-label="{{ __('ui.admin.navigation') }}">
                 <div class="container-fluid">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link admin-sidebar-toggle" data-lte-toggle="sidebar" href="#" role="button" aria-label="{{ __('Menu') }}">
+                            <a class="nav-link admin-sidebar-toggle" data-lte-toggle="sidebar" href="#" role="button" aria-label="{{ __('ui.admin.menu') }}">
                                 <span></span>
                                 <span></span>
                                 <span></span>
@@ -65,15 +65,15 @@
                                     </p>
                                 </li>
                                 <li class="user-footer">
-                                    <a href="{{ route('settings') }}" class="btn btn-default btn-flat">{{ __('Profile') }}</a>
+                                    <a href="{{ route('settings') }}" class="btn btn-default btn-flat">{{ __('ui.admin.profile') }}</a>
                                     <a class="btn btn-default btn-flat float-end" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        {{ __('ui.admin.logout') }}
                                     </a>
                                 </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link d-inline-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();" aria-label="{{ __('Logout') }}">
+                            <a class="nav-link d-inline-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('admin-logout-form').submit();" aria-label="{{ __('ui.admin.logout') }}">
                                 @include('icons.logout', ['class' => 'fill-current icon-text'])
                             </a>
                         </li>
@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="sidebar-wrapper">
-                    <nav class="mt-2" aria-label="{{ __('Admin menu') }}">
+                    <nav class="mt-2" aria-label="{{ __('ui.admin.navigation_menu') }}">
                         <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu" data-accordion="false">
                             @include('admin.sidebar')
                         </ul>
@@ -113,7 +113,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <ol class="breadcrumb float-sm-end mb-0">
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('Control Panel') }}</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">{{ __('ui.admin.control_panel') }}</a></li>
                                     <li class="breadcrumb-item active" aria-current="page">{{ $adminTitle }}</li>
                                 </ol>
                             </div>

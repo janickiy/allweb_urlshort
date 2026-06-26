@@ -101,7 +101,7 @@ class LinksController extends Controller
     {
         $this->linkService->updateForUser($id, Auth::user(), $request->validated());
 
-        return redirect()->route('links.edit', $id)->with('success', __('Settings saved.'));
+        return redirect()->route('links.edit', $id)->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -115,6 +115,6 @@ class LinksController extends Controller
     {
         $name = $this->linkService->deleteForUser($id, Auth::user());
 
-        return redirect()->route('links')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('links')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 }

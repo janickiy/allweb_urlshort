@@ -75,7 +75,7 @@ class DomainsController extends Controller
     {
         $domain = $this->domainService->create($request->validated(), Auth::user());
 
-        return redirect()->route('domains')->with('success', __(':name has been created.', ['name' => $domain->name]));
+        return redirect()->route('domains')->with('success', __('ui.messages.created', ['name' => $domain->name]));
     }
 
     /**
@@ -89,7 +89,7 @@ class DomainsController extends Controller
     {
         $this->domainService->updateForUser($id, Auth::user(), $request->validated());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -103,6 +103,6 @@ class DomainsController extends Controller
     {
         $name = $this->domainService->deleteForUser($id, Auth::user());
 
-        return redirect()->route('domains')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('domains')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 }

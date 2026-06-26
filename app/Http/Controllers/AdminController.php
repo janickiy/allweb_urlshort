@@ -364,7 +364,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateGeneral($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -377,7 +377,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateRegistration($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -390,7 +390,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateContact($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -403,7 +403,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateCaptcha($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -416,7 +416,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateShortener($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -429,7 +429,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateLegal($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -446,7 +446,7 @@ class AdminController extends Controller
             $request->file('favicon')
         );
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -459,7 +459,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateEmail($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -472,7 +472,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateSocial($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -485,7 +485,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updatePayment($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -498,7 +498,7 @@ class AdminController extends Controller
     {
         $this->settingsService->updateInvoice($request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -515,7 +515,7 @@ class AdminController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('admin.subscriptions')->with('success', __(':name has been created.', ['name' => $name]));
+        return redirect()->route('admin.subscriptions')->with('success', __('ui.messages.created', ['name' => $name]));
     }
 
     /**
@@ -528,7 +528,7 @@ class AdminController extends Controller
     {
         $name = $this->adminService->deleteEmulatedSubscription($id);
 
-        return redirect()->route('admin.subscriptions')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.subscriptions')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
     /**
@@ -541,7 +541,7 @@ class AdminController extends Controller
     {
         $name = $this->adminService->createPage($request->all());
 
-        return redirect()->route('admin.pages')->with('success', __(':name has been created.', ['name' => $name]));
+        return redirect()->route('admin.pages')->with('success', __('ui.messages.created', ['name' => $name]));
     }
 
 
@@ -556,7 +556,7 @@ class AdminController extends Controller
     {
         $this->adminService->updatePage($id, $request->all());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -569,7 +569,7 @@ class AdminController extends Controller
     {
         $name = $this->adminService->deletePage($id);
 
-        return redirect()->route('admin.pages')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.pages')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
     /**
@@ -587,7 +587,7 @@ class AdminController extends Controller
             return redirect()->route('admin.plans.new')->with('error', $e->getMessage());
         }
 
-        return redirect()->route('admin.plans')->with('success', __(':name has been created.', ['name' => $name]));
+        return redirect()->route('admin.plans')->with('success', __('ui.messages.created', ['name' => $name]));
     }
 
     /**
@@ -605,7 +605,7 @@ class AdminController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -622,7 +622,7 @@ class AdminController extends Controller
             return redirect()->route('admin.plans')->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -635,7 +635,7 @@ class AdminController extends Controller
     {
         $this->adminService->restorePlan($id);
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -650,10 +650,10 @@ class AdminController extends Controller
         try {
             $this->adminService->updateUser($id, $request->validated(), Auth::id());
         } catch (\Exception $e) {
-            return back()->with('error', __('Operation denied.'));
+            return back()->with('error', __('ui.messages.operation_denied'));
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -667,10 +667,10 @@ class AdminController extends Controller
         try {
             $name = $this->adminService->deleteUser($id, Auth::id());
         } catch (\Exception $e) {
-            return back()->with('error', __('Operation denied.'));
+            return back()->with('error', __('ui.messages.operation_denied'));
         }
 
-        return redirect()->route('admin.users')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.users')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
     /**
@@ -685,10 +685,10 @@ class AdminController extends Controller
         try {
             $this->adminService->disableUser($id, Auth::id());
         } catch (\Exception $e) {
-            return back()->with('error', __('Operation denied.'));
+            return back()->with('error', __('ui.messages.operation_denied'));
         }
 
-        return redirect()->route('admin.users.edit', $id)->with('success', __('Settings saved.'));
+        return redirect()->route('admin.users.edit', $id)->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -701,7 +701,7 @@ class AdminController extends Controller
     {
         $this->adminService->restoreUser($id);
 
-        return redirect()->route('admin.users.edit', $id)->with('success', __('Settings saved.'));
+        return redirect()->route('admin.users.edit', $id)->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -715,7 +715,7 @@ class AdminController extends Controller
     {
         $this->linkService->updateById($id, $request->all());
 
-        return redirect()->route('admin.links.edit', $id)->with('success', __('Settings saved.'));
+        return redirect()->route('admin.links.edit', $id)->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -729,7 +729,7 @@ class AdminController extends Controller
     {
         $name = $this->linkService->deleteById($id);
 
-        return redirect()->route('admin.links')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.links')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
     /**
@@ -743,7 +743,7 @@ class AdminController extends Controller
     {
         $this->workspaceService->updateById($id, $request->validated());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -757,7 +757,7 @@ class AdminController extends Controller
     {
         $name = $this->workspaceService->deleteById($id);
 
-        return redirect()->route('admin.workspaces')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.workspaces')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
     /**
@@ -771,7 +771,7 @@ class AdminController extends Controller
     {
         $this->domainService->updateById($id, $request->validated());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -785,7 +785,7 @@ class AdminController extends Controller
     {
         $name = $this->domainService->deleteById($id);
 
-        return redirect()->route('admin.domains')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.domains')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 
 

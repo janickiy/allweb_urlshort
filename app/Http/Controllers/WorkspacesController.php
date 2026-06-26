@@ -73,7 +73,7 @@ class WorkspacesController extends Controller
     {
         $workspace = $this->workspaceService->create($request->validated(), Auth::user());
 
-        return redirect()->route('workspaces')->with('success', __(':name has been created.', ['name' => $workspace->name]));
+        return redirect()->route('workspaces')->with('success', __('ui.messages.created', ['name' => $workspace->name]));
     }
 
     /**
@@ -87,7 +87,7 @@ class WorkspacesController extends Controller
     {
         $this->workspaceService->updateForUser($id, Auth::user(), $request->validated());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -101,6 +101,6 @@ class WorkspacesController extends Controller
     {
         $name = $this->workspaceService->deleteForUser($id, Auth::user());
 
-        return redirect()->route('workspaces')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('workspaces')->with('success', __('ui.messages.deleted', ['name' => $name]));
     }
 }

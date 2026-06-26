@@ -7,6 +7,7 @@ use App\Models\Subscription;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubscriptionRepository extends BaseRepository
 {
@@ -64,6 +65,9 @@ class SubscriptionRepository extends BaseRepository
     public function recent(int $limit): Collection
     {
         return $this->query()
+            ->with(['user' => function (BelongsTo $query): void {
+                $query->withTrashed();
+            }])
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get();

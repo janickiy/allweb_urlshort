@@ -53,13 +53,12 @@ class AdminService
                 'links' => $this->links->count(),
                 'workspaces' => $this->workspaces->count(),
                 'domains' => $this->domains->count(),
-                'messages' => 0,
                 'pending_review' => 0,
                 'published_links' => $this->links->publishedCount(),
                 'blocked_links' => $this->links->blockedCount(),
             ],
             'users' => $this->users->recentWithTrashed(10),
-            'subscriptions' => config('settings.stripe') ? $this->subscriptions->recent(10) : null,
+            'subscriptions' => $this->subscriptions->recent(10),
             'links' => $this->links->latest(8),
             'topLinks' => $this->links->topByClicks(5),
         ];
@@ -510,7 +509,7 @@ class AdminService
         $user = $this->users->withTrashedFindOrFail($id);
 
         if ($currentUserId == $user->id && ($input['role'] ?? null) == 0) {
-            throw new RuntimeException(__('Operation denied.'));
+            throw new RuntimeException(__('ui.messages.operation_denied'));
         }
 
         $this->userSettings->updateProfile($user, $input, true);
@@ -528,7 +527,7 @@ class AdminService
         $user = $this->users->withTrashedFindOrFail($id);
 
         if ($currentUserId == $user->id && $user->role == 1) {
-            throw new RuntimeException(__('Operation denied.'));
+            throw new RuntimeException(__('ui.messages.operation_denied'));
         }
 
         $name = $user->name;
@@ -549,7 +548,7 @@ class AdminService
         $user = $this->users->findOrFail($id);
 
         if ($currentUserId == $user->id && $user->role == 1) {
-            throw new RuntimeException(__('Operation denied.'));
+            throw new RuntimeException(__('ui.messages.operation_denied'));
         }
 
         $this->users->softDelete($user);

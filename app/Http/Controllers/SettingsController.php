@@ -196,7 +196,7 @@ class SettingsController extends Controller
     {
         $this->users->updateProfile(Auth::user(), $request->validated());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -206,7 +206,7 @@ class SettingsController extends Controller
     {
         $this->users->updatePassword(Auth::user(), $request->input('password'));
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
 
@@ -230,7 +230,7 @@ class SettingsController extends Controller
 
         return redirect()
             ->route('settings.payments.methods')
-            ->with('success', __(':name has been added.', ['name' => $paymentMethod->card->last4]));
+            ->with('success', __('ui.messages.added', ['name' => $paymentMethod->card->last4]));
     }
 
     /**
@@ -250,7 +250,7 @@ class SettingsController extends Controller
             return redirect()->route('settings.payments.methods.edit', $id)->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -269,7 +269,7 @@ class SettingsController extends Controller
 
         return redirect()
             ->route('settings.payments.methods')
-            ->with('success', __(':name has been deleted.', ['name' => $paymentMethod->card->last4]));
+            ->with('success', __('ui.messages.deleted', ['name' => $paymentMethod->card->last4]));
     }
 
     /**
@@ -286,7 +286,7 @@ class SettingsController extends Controller
             return redirect()->route('settings.payments.billing')->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -303,7 +303,7 @@ class SettingsController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -317,7 +317,7 @@ class SettingsController extends Controller
             return back()->with('error', $e->getMessage());
         }
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
@@ -327,7 +327,7 @@ class SettingsController extends Controller
     {
         $this->users->regenerateApiToken(Auth::user());
 
-        return back()->with('success', __('Settings saved.'));
+        return back()->with('success', __('ui.messages.settings_saved'));
     }
 
     /**
