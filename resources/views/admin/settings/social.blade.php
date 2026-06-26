@@ -19,7 +19,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="i_social_twitter" class="form-label">{{ __('Twitter') }}</label>
+                    <label for="i_social_twitter" class="form-label">{{ __('X') }}</label>
                     <input type="text" name="social_twitter" id="i_social_twitter" class="form-control" value="{{ old('social_twitter', config('settings.social_twitter')) }}">
                 </div>
 

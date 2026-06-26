@@ -57,15 +57,34 @@ class SettingsMiddleware
                 }
             }
 
-            // Set the app's default mail settings
-            config(['mail.driver' => config('settings.email_driver')]);
-            config(['mail.host' => config('settings.email_host')]);
-            config(['mail.port' => config('settings.email_port')]);
-            config(['mail.encryption' => config('settings.email_encryption')]);
-            config(['mail.username' => config('settings.email_username')]);
-            config(['mail.password' => config('settings.email_password')]);
-            config(['mail.from.address' => config('settings.email_address')]);
-            config(['mail.from.name' => config('settings.title')]);
+            // Set the app's default mail settings.
+            $mailDriver = (string) config('settings.email_driver', 'log');
+            $mailHost = (string) config('settings.email_host', '127.0.0.1');
+            $mailPort = (int) config('settings.email_port', 2525);
+            $mailEncryption = (string) config('settings.email_encryption');
+            $mailUsername = config('settings.email_username') ?: null;
+            $mailPassword = config('settings.email_password') ?: null;
+
+            config([
+                'mail.default' => $mailDriver,
+                'mail.driver' => $mailDriver,
+                'mail.host' => $mailHost,
+                'mail.port' => $mailPort,
+                'mail.encryption' => $mailEncryption,
+                'mail.username' => $mailUsername,
+                'mail.password' => $mailPassword,
+                'mail.from.address' => config('settings.email_address'),
+                'mail.from.name' => config('settings.title'),
+                'mail.mailers.smtp.host' => $mailHost,
+                'mail.mailers.smtp.port' => $mailPort,
+                'mail.mailers.smtp.scheme' => $this->mailScheme($mailEncryption),
+                'mail.mailers.smtp.username' => $mailUsername,
+                'mail.mailers.smtp.password' => $mailPassword,
+            ]);
+
+            if (app()->bound('mail.manager')) {
+                app('mail.manager')->forgetMailers();
+            }
 
             // Set the tripe settings
             config(['cashier.key' => config('settings.stripe_key')]);
@@ -81,5 +100,13 @@ class SettingsMiddleware
         }
 
         return $next($request);
+    }
+
+    /**
+     * Convert the legacy encryption setting into the Symfony mailer scheme.
+     */
+    private function mailScheme(string $encryption): ?string
+    {
+        return strtolower((string) $encryption) === 'ssl' ? 'smtps' : null;
     }
 }

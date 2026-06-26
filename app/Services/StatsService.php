@@ -16,7 +16,7 @@ class StatsService
 
     private const SOCIAL_DOMAINS = [
         'l.facebook.com' => 'Facebook',
-        't.co' => 'Twitter',
+        't.co' => 'X',
         'l.instagram.com' => 'Instagram',
         'out.reddit.com' => 'Reddit',
         'www.youtube.com' => 'YouTube',
