@@ -2,6 +2,24 @@
 
 @section('site_title', formatTitle([__('Dashboard'), config('settings.title')]))
 
+@section('css')
+    <style>
+        @media (min-width: 768px) {
+            .dashboard-header-row {
+                position: relative;
+            }
+
+            .dashboard-primary-action {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1;
+            }
+        }
+    </style>
+@endsection
+
 @section('content')
 <div class="bg-base-1 flex-fill">
     @include('dashboard.header')

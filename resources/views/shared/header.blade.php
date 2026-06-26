@@ -37,10 +37,11 @@
 <div id="header" class="header sticky-top shadow bg-base-0 z-1025 d-lg-none">
     <div class="container-fluid">
         <nav class="navbar navbar-light px-0 py-3">
-            <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0">
+            <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                 <div class="logo">
                     <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}">
                 </div>
+                <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
             </a>
             <button class="slide-menu-toggle navbar-toggler border-0 p-0" type="button">
                 <span class="navbar-toggler-icon"></span>
@@ -49,14 +50,56 @@
     </div>
 </div>
 
+<div class="auth-user-menu d-none d-lg-flex">
+    <div class="dropdown">
+        <a href="#" class="auth-user-toggle d-flex align-items-center justify-content-center text-decoration-none bg-base-0 shadow-sm" id="auth-user-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __('Account') }}">
+            <img src="{{ gravatar(Auth::user()->email, 72) }}" class="auth-user-avatar rounded-circle" alt="{{ Auth::user()->name }}">
+        </a>
+
+        <div class="dropdown-menu dropdown-menu-right border-0 shadow" aria-labelledby="auth-user-menu">
+            <div class="px-4 py-3">
+                <div class="font-weight-medium text-dark text-truncate">{{ Auth::user()->name }}</div>
+                <div class="small text-muted text-truncate">{{ Auth::user()->email }}</div>
+            </div>
+            <div class="dropdown-divider my-0"></div>
+
+            <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('settings') }}">
+                @include('icons.settings', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
+                {{ __('Settings') }}
+            </a>
+
+            @if(Auth::user()->role == 1)
+                @if (request()->segment(1) == 'admin')
+                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('dashboard') }}">
+                        @include('icons.user', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
+                        {{ __('User') }}
+                    </a>
+                @else
+                    <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('admin.dashboard') }}">
+                        @include('icons.admin', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
+                        {{ __('Admin') }}
+                    </a>
+                @endif
+            @endif
+
+            <div class="dropdown-divider my-0"></div>
+            <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                @include('icons.logout', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
+                {{ __('Logout') }}
+            </a>
+        </div>
+    </div>
+</div>
+
 <nav class="slide-menu shadow bg-base-0 ct navbar navbar-light p-0 d-flex flex-column z-1025" id="slide-menu">
     <div class="sidebar-section flex-grow-1 d-flex flex-column w-100">
         <div>
             <div class="{{ (__('lang_dir') == 'rtl' ? 'pr-4' : 'pl-4') }} py-3 d-flex align-items-center">
-                <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0">
+                <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                     <div class="logo">
                         <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}">
                     </div>
+                    <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
                 </a>
                 <div class="close slide-menu-toggle cursor-pointer d-lg-none d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'mr-auto' : 'ml-auto') }} px-4 py-2">
                     @include('icons.close', ['class' => 'fill-current icon-close'])
@@ -99,7 +142,7 @@
             </div>
 
         </div>
-        <div class="sidebar sidebar-footer">
+        <div class="sidebar sidebar-footer d-lg-none">
             <div class="py-3 {{ (__('lang_dir') == 'rtl' ? 'pr-4 pl-0' : 'pl-4 pr-0') }} d-flex align-items-center" aria-expanded="true">
                 <a href="{{ route('settings') }}" class="d-flex align-items-center overflow-hidden text-secondary text-decoration-none flex-grow-1">
                     <img src="{{ gravatar(Auth::user()->email, 72) }}" class="flex-shrink-0 rounded-circle {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }}">

@@ -26,6 +26,8 @@
 
     @yield('css')
 
+    <link href="{{ asset('css/theme-blue.css') }}" rel="stylesheet" id="theme-accent-css">
+
 </head>
 
 @yield('body')

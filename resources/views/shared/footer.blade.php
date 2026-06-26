@@ -27,17 +27,6 @@
                         @endforeach
                     </ul>
                 </div>
-                <div class="col-12 col-lg-auto">
-                    <div class="mt-auto py-1 d-flex align-items-center">
-                        @foreach (['social_facebook' => __('Facebook'), 'social_twitter' => 'Twitter', 'social_instagram' => 'Instagram', 'social_youtube' => 'YouTube'] as $url => $title)
-                            @if(config('settings.'.$url))
-                                <a href="{{ config('settings.'.$url) }}" class="text-secondary text-decoration-none d-flex align-items-center{{ (__('lang_dir') == 'rtl' ? ' ml-3 ml-lg-0 mr-lg-3' : ' mr-3 mr-lg-0 ml-lg-3') }}" data-toggle="tooltip" title="{{ $title }}" rel="nofollow">
-                                    @include('icons.share.'.strtolower($title), ['class' => 'fill-current icon-social'])
-                                </a>
-                            @endif
-                        @endforeach
-                    </div>
-                </div>
             </div>
 
             <hr>

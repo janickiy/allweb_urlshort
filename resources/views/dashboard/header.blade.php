@@ -1,7 +1,7 @@
 <div class="bg-base-0">
     <div class="container py-5">
         <div class="d-flex">
-            <div class="row no-gutters w-100">
+            <div class="row no-gutters w-100 dashboard-header-row">
                 <div class="d-flex col-12 col-md">
                     <div class="flex-shrink-1">
                         <a href="{{ route('settings') }}" class="d-block"><img src="{{ gravatar($user->email, 128) }}" class="rounded-circle dashboard-user-image"></a>
@@ -61,7 +61,7 @@
                     </div>
                 @endif
 
-                <div class="col-12 col-md-auto d-flex flex-row-reverse align-items-center">
+                <div class="col-12 col-md-auto d-flex justify-content-center align-items-center dashboard-primary-action">
                     <a href="{{ route('links') }}" class="btn btn-primary btn-block d-flex justify-content-center align-items-center mt-4 mt-md-0">@include('icons.add', ['class' => 'icon-button fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')]){{ __('New link') }}</a>
                 </div>
             </div>

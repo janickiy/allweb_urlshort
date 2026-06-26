@@ -1,0 +1,274 @@
+:root {
+  --primary: #0ea5e9;
+  --bs-primary: #0ea5e9;
+  --bs-primary-rgb: 14, 165, 233;
+  --bs-link-color: #0284c7;
+  --bs-link-color-rgb: 2, 132, 199;
+  --bs-link-hover-color: #0369a1;
+  --bs-link-hover-color-rgb: 3, 105, 161;
+}
+
+a {
+  color: #0284c7;
+}
+
+a:hover,
+a:focus {
+  color: #0369a1;
+}
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #0ea5e9;
+  --bs-btn-border-color: #0ea5e9;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #0284c7;
+  --bs-btn-hover-border-color: #0284c7;
+  --bs-btn-focus-shadow-rgb: 14, 165, 233;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #0369a1;
+  --bs-btn-active-border-color: #0369a1;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #0ea5e9;
+  --bs-btn-disabled-border-color: #0ea5e9;
+  color: #fff;
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary.focus,
+.btn-primary:not(:disabled):not(.disabled):active,
+.btn-primary:not(:disabled):not(.disabled).active,
+.show > .btn-primary.dropdown-toggle {
+  color: #fff;
+  background-color: #0284c7;
+  border-color: #0284c7;
+}
+
+.btn-primary:focus,
+.btn-primary.focus,
+.btn-primary:not(:disabled):not(.disabled):active:focus,
+.btn-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-primary.dropdown-toggle:focus {
+  box-shadow: 0 0 0 .2rem rgba(14, 165, 233, .35);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  color: #fff;
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: #0284c7;
+  --bs-btn-border-color: #0ea5e9;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #0ea5e9;
+  --bs-btn-hover-border-color: #0ea5e9;
+  --bs-btn-focus-shadow-rgb: 14, 165, 233;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #0284c7;
+  --bs-btn-active-border-color: #0284c7;
+  --bs-btn-disabled-color: #0ea5e9;
+  --bs-btn-disabled-bg: transparent;
+  --bs-btn-disabled-border-color: #0ea5e9;
+  color: #0284c7;
+  border-color: #0ea5e9;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary.focus,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.show > .btn-outline-primary.dropdown-toggle {
+  color: #fff;
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.btn-outline-primary:focus,
+.btn-outline-primary.focus,
+.btn-outline-primary:not(:disabled):not(.disabled):active:focus,
+.btn-outline-primary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-outline-primary.dropdown-toggle:focus {
+  box-shadow: 0 0 0 .2rem rgba(14, 165, 233, .35);
+}
+
+.text-primary,
+a.text-primary,
+.text-hover:hover {
+  color: #0ea5e9 !important;
+}
+
+a.text-primary:hover,
+a.text-primary:focus {
+  color: #0369a1 !important;
+}
+
+.bg-primary,
+.progress-bar,
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: #0ea5e9 !important;
+}
+
+.border-primary,
+.card-primary.card-outline {
+  border-color: #0ea5e9 !important;
+}
+
+.badge-primary {
+  color: #0369a1;
+  background-color: rgba(14, 165, 233, .18);
+}
+
+a.badge-primary:hover,
+a.badge-primary:focus {
+  color: #075985;
+  background-color: rgba(14, 165, 233, .28);
+}
+
+.text-bg-primary {
+  color: #fff !important;
+  background-color: #0ea5e9 !important;
+}
+
+.page-item.active .page-link {
+  color: #fff;
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.page-link {
+  color: #0284c7;
+}
+
+.page-link:hover,
+.page-link:focus {
+  color: #0369a1;
+}
+
+.form-control:focus,
+.form-select:focus,
+.custom-select:focus {
+  border-color: #7dd3fc;
+  box-shadow: 0 0 0 .2rem rgba(14, 165, 233, .22);
+}
+
+.custom-control-input:checked ~ .custom-control-label::before,
+.form-check-input:checked {
+  background-color: #0ea5e9;
+  border-color: #0ea5e9;
+}
+
+.custom-control-input:focus ~ .custom-control-label::before,
+.form-check-input:focus {
+  box-shadow: 0 0 0 .2rem rgba(14, 165, 233, .25);
+}
+
+.sidebar .nav-link[aria-expanded=true],
+.sub-menu,
+.sidebar-footer {
+  background: rgba(14, 165, 233, .04);
+}
+
+.sidebar .nav-link:hover {
+  background: rgba(14, 165, 233, .07);
+}
+
+.sidebar .nav-link.active {
+  color: #0284c7;
+  background: rgba(14, 165, 233, .11);
+  border-right-color: #0ea5e9;
+}
+
+.sidebar .nav-link.active > .sidebar-icon {
+  color: #0ea5e9;
+}
+
+[dir=rtl] .sidebar .nav-link.active {
+  border-right-color: #0ea5e9;
+}
+
+.menu-underline .nav-link.active {
+  color: #0284c7;
+  border-bottom-color: #0ea5e9;
+}
+
+.menu-underline .nav-link.active svg {
+  fill: #0ea5e9;
+}
+
+.icon-gradient-3,
+.icon-gradient-4 {
+  color: #0ea5e9;
+}
+
+.adminlte-page .app-sidebar .nav-link.active,
+.adminlte-page .app-sidebar .nav-link:hover {
+  color: #fff;
+}
+
+.adminlte-page .app-sidebar .nav-link.active {
+  background: rgba(14, 165, 233, .28) !important;
+  box-shadow: inset 3px 0 0 #0ea5e9;
+}
+
+.adminlte-page .app-sidebar .nav-link:hover {
+  background: rgba(14, 165, 233, .18) !important;
+}
+
+@media (min-width: 992px) {
+  .auth-user-menu {
+    position: fixed;
+    top: 1.75rem;
+    right: 2.25rem;
+    z-index: 1030;
+  }
+
+  [dir=rtl] .auth-user-menu {
+    right: auto;
+    left: 2.25rem;
+  }
+
+  .auth-user-toggle {
+    width: 3rem;
+    height: 3rem;
+    padding: .25rem;
+    border: 1px solid rgba(14, 165, 233, .16);
+    border-radius: 999px;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+
+  .auth-user-toggle:hover,
+  .auth-user-toggle:focus {
+    border-color: rgba(14, 165, 233, .5);
+    box-shadow: 0 .5rem 1.5rem rgba(14, 165, 233, .16) !important;
+    transform: translateY(-1px);
+  }
+
+  .auth-user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    object-fit: cover;
+  }
+
+  .auth-user-menu .dropdown-menu {
+    min-width: 13rem;
+    margin-top: .75rem;
+  }
+
+  .auth-user-menu .dropdown-item {
+    color: #3b3b3b;
+  }
+
+  .auth-user-menu .dropdown-item:hover,
+  .auth-user-menu .dropdown-item:focus {
+    color: #0284c7;
+    background: rgba(14, 165, 233, .08);
+  }
+}
