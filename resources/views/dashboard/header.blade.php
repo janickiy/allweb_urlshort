@@ -32,7 +32,7 @@
                                                 </div>
 
                                                 <div class="d-inline-block {{ (__('lang_dir') == 'rtl' ? 'mr-2' : 'ml-2') }}">
-                                                    <a href="{{ route('pricing') }}" class="text-dark text-decoration-none">{{ $plan->name }} <span class="badge badge-primary">{{ __('Free') }}</span></a>
+                                                    <a href="{{ route('pricing') }}" class="text-dark text-decoration-none">{{ $plan->name }} <span class="badge badge-primary">{{ __('ui.dashboard.free') }}</span></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -57,12 +57,12 @@
 
                 @if(empty($subscriptions) && config('settings.stripe'))
                     <div class="col-12 col-md-auto d-flex flex-row-reverse align-items-center">
-                        <a href="{{ route('pricing') }}" class="btn btn-outline-primary btn-block d-flex justify-content-center align-items-center mt-4 mt-md-0 {{ (__('lang_dir') == 'rtl' ? 'ml-md-3' : 'mr-md-3') }}">@include('icons.package_up', ['class' => 'icon-button fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')]){{ __('Upgrade') }}</a>
+                        <a href="{{ route('pricing') }}" class="btn btn-outline-primary btn-block d-flex justify-content-center align-items-center mt-4 mt-md-0 {{ (__('lang_dir') == 'rtl' ? 'ml-md-3' : 'mr-md-3') }}">@include('icons.package_up', ['class' => 'icon-button fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')]){{ __('ui.actions.upgrade') }}</a>
                     </div>
                 @endif
 
                 <div class="col-12 col-md-auto d-flex justify-content-center align-items-center dashboard-primary-action">
-                    <a href="{{ route('links') }}" class="btn btn-primary btn-block d-flex justify-content-center align-items-center mt-4 mt-md-0">@include('icons.add', ['class' => 'icon-button fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')]){{ __('New link') }}</a>
+                    <a href="{{ route('links') }}" class="btn btn-primary btn-block d-flex justify-content-center align-items-center mt-4 mt-md-0">@include('icons.add', ['class' => 'icon-button fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')]){{ __('ui.actions.new_link') }}</a>
                 </div>
             </div>
         </div>

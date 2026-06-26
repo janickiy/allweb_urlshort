@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('site_title', formatTitle([__('Dashboard'), config('settings.title')]))
+@section('site_title', formatTitle([__('ui.nav.dashboard'), config('settings.title')]))
 
 @section('css')
     <style>
@@ -25,30 +25,30 @@
     @include('dashboard.header')
     <div class="bg-base-1">
         <div class="container py-3 my-3">
-            <h4 class="mb-0">{{ __('Overview') }}</h4>
+            <h4 class="mb-0">{{ __('ui.dashboard.overview') }}</h4>
 
             <div class="row mb-5">
                 @php
                     $cards = [
                         'users' =>
                         [
-                            'title' => 'Links',
+                            'title' => 'ui.nav.links',
                             'value' => $stats['links'],
-                            'description' => 'Manage links',
+                            'description' => 'ui.dashboard.manage_links',
                             'route' => 'links',
                             'icon' => 'icons.background.link'
                         ],
                         [
-                            'title' => 'Workspaces',
+                            'title' => 'ui.nav.workspaces',
                             'value' => $stats['workspaces'],
-                            'description' => 'Manage workspaces',
+                            'description' => 'ui.dashboard.manage_workspaces',
                             'route' => 'workspaces',
                             'icon' => 'icons.background.workspace'
                         ],
                         [
-                            'title' => 'Domains',
+                            'title' => 'ui.nav.domains',
                             'value' => $stats['domains'],
-                            'description' => 'Manage domains',
+                            'description' => 'ui.dashboard.manage_domains',
                             'route' => 'domains',
                             'icon' => 'icons.background.domain'
                         ]
@@ -76,19 +76,19 @@
                 @endforeach
             </div>
 
-            <h4 class="mb-0">{{ __('Recent activity') }}</h4>
+            <h4 class="mb-0">{{ __('ui.dashboard.recent_activity') }}</h4>
             <div class="row">
                 <div class="col-12 col-lg-6 mt-3">
                     <div class="card border-0 shadow-sm">
                         <div class="card-header align-items-center">
                             <div class="row">
-                                <div class="col"><div class="font-weight-medium py-1">{{ __('Latest links') }}</div></div>
+                                <div class="col"><div class="font-weight-medium py-1">{{ __('ui.dashboard.latest_links') }}</div></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             @if(count($links) == 0)
-                                {{ __('No data.') }}
+                                {{ __('ui.dashboard.no_data') }}
                             @else
                                 <div class="list-group list-group-flush my-n3">
                                     @foreach($links as $link)
@@ -122,13 +122,13 @@
                     <div class="card border-0 shadow-sm">
                         <div class="card-header align-items-center">
                             <div class="row">
-                                <div class="col"><div class="font-weight-medium py-1">{{ __('Latest clicks') }}</div></div>
+                                <div class="col"><div class="font-weight-medium py-1">{{ __('ui.dashboard.latest_clicks') }}</div></div>
                             </div>
                         </div>
 
                         <div class="card-body">
                             @if(count($clicks) == 0)
-                                {{ __('No data.') }}
+                                {{ __('ui.dashboard.no_data') }}
                             @else
                                 <div class="list-group list-group-flush my-n3">
                                     @foreach($clicks as $click)
@@ -144,7 +144,7 @@
                                                                         @if(array_key_exists($click->country, config('countries')))
                                                                             {{ __(config('countries')[$click->country]) }}
                                                                         @else
-                                                                            {{ __('Unknown') }}
+                                                                            {{ __('ui.dashboard.unknown') }}
                                                                         @endif
                                                                     </div>
                                                                 </div>
@@ -153,7 +153,7 @@
                                                                     @if($click->referrer)
                                                                         {{ $click->referrer }}
                                                                     @else
-                                                                        {{ __('Direct, Email, SMS') }}
+                                                                        {{ __('ui.dashboard.direct_email_sms') }}
                                                                     @endif
                                                                 </div>
                                                             </div>
@@ -166,7 +166,7 @@
                                                                         @if($click->browser)
                                                                             {{ $click->browser }}
                                                                         @else
-                                                                            {{ __('Unknown') }}
+                                                                            {{ __('ui.dashboard.unknown') }}
                                                                         @endif
                                                                     </div>
                                                                 </div>
@@ -175,7 +175,7 @@
                                                                     @if($click->platform)
                                                                         {{ $click->platform }}
                                                                     @else
-                                                                        {{ __('Unknown') }}
+                                                                        {{ __('ui.dashboard.unknown') }}
                                                                     @endif
                                                                 </div>
                                                             </div>

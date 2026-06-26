@@ -4,10 +4,10 @@
          * key => [icon, title, route]
          */
         $menu = [
-            'dashboard' => ['dashboard', 'Dashboard', 'dashboard'],
-            'links' => ['link', 'Links', 'links'],
-            'workspaces' => ['workspace', 'Workspaces', 'workspaces'],
-            'domains' => ['domain', 'Domains', 'domains'],
+            'dashboard' => ['dashboard', 'ui.nav.dashboard', 'dashboard'],
+            'links' => ['link', 'ui.nav.links', 'links'],
+            'workspaces' => ['workspace', 'ui.nav.workspaces', 'workspaces'],
+            'domains' => ['domain', 'ui.nav.domains', 'domains'],
         ];
     @endphp
 

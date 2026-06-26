@@ -82,7 +82,7 @@
     @endif
 
     <div class="dropdown auth-user-menu">
-        <a href="#" class="auth-user-toggle d-flex align-items-center justify-content-center text-decoration-none bg-base-0 shadow-sm" id="auth-user-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __('Account') }}">
+        <a href="#" class="auth-user-toggle d-flex align-items-center justify-content-center text-decoration-none bg-base-0 shadow-sm" id="auth-user-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __('ui.dashboard.account') }}">
             <img src="{{ gravatar(Auth::user()->email, 72) }}" class="auth-user-avatar rounded-circle" alt="{{ Auth::user()->name }}">
         </a>
 
@@ -95,19 +95,19 @@
 
             <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('settings') }}">
                 @include('icons.settings', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
-                {{ __('Settings') }}
+                {{ __('ui.nav.settings') }}
             </a>
 
             @if(Auth::user()->role == 1)
                 @if (request()->segment(1) == 'admin')
                     <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('dashboard') }}">
                         @include('icons.user', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
-                        {{ __('User') }}
+                        {{ __('ui.dashboard.user') }}
                     </a>
                 @else
                     <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('admin.dashboard') }}">
                         @include('icons.admin', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
-                        {{ __('Admin') }}
+                        {{ __('ui.admin.admin') }}
                     </a>
                 @endif
             @endif
@@ -115,7 +115,7 @@
             <div class="dropdown-divider my-0"></div>
             <a class="dropdown-item d-flex align-items-center py-2" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                 @include('icons.logout', ['class' => 'icon-text fill-current '.(__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2')])
-                {{ __('Logout') }}
+                {{ __('ui.admin.logout') }}
             </a>
         </div>
     </div>
@@ -139,13 +139,13 @@
 
         <div class="sidebar-section flex-grow-1 overflow-auto sidebar">
             <div class="d-flex align-items-center">
-                <div class="py-3 {{ (__('lang_dir') == 'rtl' ? 'pr-4 pl-0' : 'pl-4 pr-0') }} font-weight-medium text-muted text-uppercase flex-grow-1">{{ __('Menu') }}</div>
+                <div class="py-3 {{ (__('lang_dir') == 'rtl' ? 'pr-4 pl-0' : 'pl-4 pr-0') }} font-weight-medium text-muted text-uppercase flex-grow-1">{{ __('ui.admin.menu') }}</div>
 
                 @if(Auth::user()->role == 1)
                     @if (request()->segment(1) == 'admin')
-                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('dashboard') }}" data-toggle="tooltip" title="{{ __('User') }}" role="button"><span class="d-flex align-items-center">@include('icons.user', ['class' => 'icon-text fill-current'])</span></a>
+                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('dashboard') }}" data-toggle="tooltip" title="{{ __('ui.dashboard.user') }}" role="button"><span class="d-flex align-items-center">@include('icons.user', ['class' => 'icon-text fill-current'])</span></a>
                     @else
-                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('admin.dashboard') }}" data-toggle="tooltip" title="{{ __('Admin') }}" role="button"><span class="d-flex align-items-center">@include('icons.admin', ['class' => 'icon-text fill-current'])</span></a>
+                        <a class="px-4 py-2 text-decoration-none text-secondary" href="{{ route('admin.dashboard') }}" data-toggle="tooltip" title="{{ __('ui.admin.admin') }}" role="button"><span class="d-flex align-items-center">@include('icons.admin', ['class' => 'icon-text fill-current'])</span></a>
                     @endif
                 @endif
             </div>
@@ -163,11 +163,11 @@
             <div class="row no-gutters">
                 <div class="col d-flex align-items-center">
                     <div class="small text-muted">
-                         {{ __(':number of :total links created.', ['number' => $stats['links'], 'total' => ($userFeatures['option_links'] < 0 ? '∞' : $userFeatures['option_links'])]) }}
+                         {{ __('ui.dashboard.links_created_progress', ['number' => $stats['links'], 'total' => ($userFeatures['option_links'] < 0 ? '∞' : $userFeatures['option_links'])]) }}
                     </div>
                 </div>
                 <div class="col-auto d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'pr-2' : 'pl-2') }}">
-                    <a href="{{ route('pricing') }}" class="text-secondary" data-toggle="tooltip" data-html="true" title="<div class='mx-2 font-size-base {{ (__('lang_dir') == 'rtl' ? 'text-right' : 'text-left') }}'><div class='row my-2'><div class='col'>{{ __('Links') }}</div><div class='col-auto'>{{ __(':number of :total', ['number' => $stats['links'], 'total' => ($userFeatures['option_links'] < 0 ? '∞' : $userFeatures['option_links'])]) }}</div></div><div class='row my-2'><div class='col'>{{ __('Workspaces') }}</div><div class='col-auto'>{{ __(':number of :total', ['number' => $stats['workspaces'], 'total' => ($userFeatures['option_workspaces'] < 0 ? '∞' : $userFeatures['option_workspaces'])]) }}</div></div><div class='row my-2'><div class='col'>{{ __('Domains') }}</div><div class='col-auto'>{{ __(':number of :total', ['number' => $stats['domains'], 'total' => ($userFeatures['option_domains'] < 0 ? '∞' : $userFeatures['option_domains'])]) }}</div></div></div>">@include('icons.info', ['class' => 'icon-text fill-current'])</a>
+                    <a href="{{ route('pricing') }}" class="text-secondary" data-toggle="tooltip" data-html="true" title="<div class='mx-2 font-size-base {{ (__('lang_dir') == 'rtl' ? 'text-right' : 'text-left') }}'><div class='row my-2'><div class='col'>{{ __('ui.nav.links') }}</div><div class='col-auto'>{{ __('ui.dashboard.quota_value', ['number' => $stats['links'], 'total' => ($userFeatures['option_links'] < 0 ? '∞' : $userFeatures['option_links'])]) }}</div></div><div class='row my-2'><div class='col'>{{ __('ui.nav.workspaces') }}</div><div class='col-auto'>{{ __('ui.dashboard.quota_value', ['number' => $stats['workspaces'], 'total' => ($userFeatures['option_workspaces'] < 0 ? '∞' : $userFeatures['option_workspaces'])]) }}</div></div><div class='row my-2'><div class='col'>{{ __('ui.nav.domains') }}</div><div class='col-auto'>{{ __('ui.dashboard.quota_value', ['number' => $stats['domains'], 'total' => ($userFeatures['option_domains'] < 0 ? '∞' : $userFeatures['option_domains'])]) }}</div></div></div>">@include('icons.info', ['class' => 'icon-text fill-current'])</a>
                 </div>
             </div>
 
@@ -183,12 +183,12 @@
                         </div>
 
                         <div class="small font-weight-medium">
-                            {{ __('Settings') }}
+                            {{ __('ui.nav.settings') }}
                         </div>
                     </div>
                 </a>
 
-                <a class="py-2 px-4 d-flex flex-shrink-0 align-items-center text-secondary" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" data-toggle="tooltip" title="{{ __('Logout') }}">@include('icons.logout', ['class' => 'fill-current'])</a>
+                <a class="py-2 px-4 d-flex flex-shrink-0 align-items-center text-secondary" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" data-toggle="tooltip" title="{{ __('ui.admin.logout') }}">@include('icons.logout', ['class' => 'fill-current'])</a>
 
                 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
