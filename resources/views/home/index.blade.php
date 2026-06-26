@@ -91,7 +91,7 @@
                         [
                             'icon' => 'devices',
                             'title' => __('Platform targeting'),
-                            'description' => __('Automatically redirect visitors to the most appropriate destination based on their device or operating system.')
+                            'description' => __('Automatically redirect visitors to the most appropriate destination based on their device.')
                         ],
                         [
                             'icon' => 'campaign',
