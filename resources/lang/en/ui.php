@@ -7,6 +7,7 @@ return [
         'add_workspace' => 'Add workspace',
         'all' => 'All',
         'all_links' => 'All links',
+        'change_language' => 'Change language',
         'close' => 'Close',
         'delete' => 'Delete',
         'edit' => 'Edit',

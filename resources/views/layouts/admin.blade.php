@@ -35,7 +35,7 @@
 
                     <ul class="navbar-nav ms-auto align-items-center admin-top-menu">
                         <li class="nav-item dropdown">
-                            <a href="#" class="nav-link d-inline-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" class="nav-link d-inline-flex align-items-center gap-1" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ __('ui.actions.change_language') }}">
                                 @include('icons.language', ['class' => 'fill-current icon-text'])
                                 <span>{{ strtoupper(app()->getLocale()) }}</span>
                             </a>
