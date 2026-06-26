@@ -87,7 +87,7 @@
                         <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}" class="brand-image admin-brand-image shadow-sm" alt="{{ config('settings.title') }}">
                         <span class="brand-text admin-brand-text">
                             <span class="admin-brand-title">{{ config('settings.title') ?: config('info.software.name') }}</span>
-                            <span class="admin-brand-subtitle">{{ __('ADMIN PANEL') }}</span>
+                            <span class="admin-brand-subtitle">{{ __('ui.admin.panel') }}</span>
                             <span class="admin-brand-rule">
                                 <span></span><span></span><span></span><span></span>
                             </span>

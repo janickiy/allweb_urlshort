@@ -136,7 +136,7 @@ class CreateSettingsTable extends Migration
                 ],
                 [
                     'name' => 'logo',
-                    'value' => 'logo.svg'
+                    'value' => 'shortlink-pro-logo.svg'
                 ],
                 [
                     'name' => 'registration_registration',

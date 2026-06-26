@@ -179,6 +179,68 @@
   min-height: 10rem;
 }
 
+.admin-workspace-edit-card,
+.admin-workspace-user-card {
+  max-width: 72rem;
+}
+
+.admin-workspace-edit-card .card-body {
+  padding: 1.35rem 1.5rem;
+}
+
+.admin-workspace-edit-card .card-footer {
+  padding: 1rem 1.5rem;
+}
+
+.admin-workspace-edit-card .alert {
+  margin-bottom: 1rem;
+}
+
+.adminlte-page .alert-dismissible {
+  padding: .85rem 3rem .85rem 1rem;
+}
+
+.adminlte-page .alert-dismissible .btn-close {
+  top: 50%;
+  right: .9rem;
+  transform: translateY(-50%);
+}
+
+.workspace-color-dropdown .dropdown-toggle {
+  min-height: calc(1.5em + .75rem + 2px);
+  padding-right: .9rem;
+  padding-left: .9rem;
+  color: var(--bs-body-color);
+  text-align: left;
+  background-color: var(--bs-body-bg);
+  border-color: var(--bs-border-color);
+}
+
+.workspace-color-dropdown .dropdown-toggle::after {
+  margin-left: auto;
+}
+
+.workspace-color-dropdown .dropdown-menu {
+  padding: .35rem;
+  border-color: var(--bs-border-color);
+  box-shadow: 0 .5rem 1rem rgba(33, 37, 41, .12);
+}
+
+.workspace-color-dropdown .dropdown-item {
+  border-radius: .35rem;
+}
+
+.admin-workspace-delete-dialog .modal-content {
+  border-radius: .65rem;
+}
+
+.admin-workspace-delete-dialog .modal-header,
+.admin-workspace-delete-dialog .modal-body,
+.admin-workspace-delete-dialog .modal-footer {
+  padding-right: 1.25rem;
+  padding-left: 1.25rem;
+}
+
 .admin-link-edit-form .form-label {
   margin-bottom: .35rem;
   font-weight: 500;
@@ -489,13 +551,13 @@
 }
 
 .admin-brand-image {
-  width: 2.6rem;
-  height: 2.6rem;
-  max-height: 2.6rem !important;
-  padding: .35rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  max-height: 2.75rem !important;
+  padding: 0;
   object-fit: contain;
-  background: #18d0e6;
-  border-radius: .55rem;
+  background: transparent;
+  border-radius: .75rem;
 }
 
 .admin-brand-text {

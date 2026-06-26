@@ -220,24 +220,38 @@
 @endif
 
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteWorkspaceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+    <div class="modal-dialog modal-dialog-centered admin-workspace-delete-dialog">
+        <div class="modal-content border-0 shadow-lg">
             <div class="modal-header">
-                <h6 class="modal-title" id="deleteWorkspaceModalLabel">{{ __('Delete') }}</h6>
-                <button type="button" class="close d-flex align-items-center justify-content-center" @if(isset($admin)) data-bs-dismiss="modal" @else data-dismiss="modal" @endif aria-label="{{ __('Close') }}">
-                    <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
-                </button>
+                <h6 class="modal-title d-flex align-items-center gap-2" id="deleteWorkspaceModalLabel">
+                    @if(isset($admin))
+                        @include('icons.delete', ['class' => 'fill-current icon-button-sm text-danger'])
+                    @endif
+                    {{ __('Delete') }}
+                </h6>
+                @if(isset($admin))
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('Close') }}"></button>
+                @else
+                    <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="{{ __('Close') }}">
+                        <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
+                    </button>
+                @endif
             </div>
             <div class="modal-body">
-                <div class="mb-3">{{ __('Deleting this workspace is permanent, and will remove all the links associated with it.') }}</div>
-                <div>{{ __('Are you sure you want to delete :name?', ['name' => $workspace->name]) }}</div>
+                <p class="mb-2">{{ __('Deleting this workspace is permanent, and will remove all the links associated with it.') }}</p>
+                <p class="mb-0 text-muted">{{ __('Are you sure you want to delete :name?', ['name' => $workspace->name]) }}</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" @if(isset($admin)) data-bs-dismiss="modal" @else data-dismiss="modal" @endif>{{ __('Close') }}</button>
                 <form action="{{ isset($admin) ? route('admin.workspaces.delete', $workspace->id) : route('workspaces.delete', $workspace->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
 
-                    <button type="submit" class="btn btn-danger">{{ __('Delete') }}</button>
+                    <button type="submit" class="btn btn-danger d-inline-flex align-items-center gap-2">
+                        @if(isset($admin))
+                            @include('icons.delete', ['class' => 'fill-current icon-button-sm'])
+                        @endif
+                        {{ __('Delete') }}
+                    </button>
                 </form>
             </div>
         </div>

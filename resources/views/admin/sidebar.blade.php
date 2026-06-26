@@ -5,27 +5,27 @@
      * ]]
      */
     $menu = [
-        'dashboard' => ['dashboard', 'Dashboard', 'admin.dashboard'],
-        'plans' => ['package', 'Plans', 'admin.plans'],
-        'subscriptions' => ['subscription', 'Subscriptions', 'admin.subscriptions'],
-        'links' => ['link', 'Links', 'admin.links'],
-        'workspaces' => ['workspace', 'Workspaces', 'admin.workspaces'],
-        'domains' => ['domain', 'Domains', 'admin.domains'],
-        'pages' => ['page', 'Pages', 'admin.pages'],
-        'settings' => ['settings', 'Settings', null, [
-            'general' => ['General', 'admin.settings.general'],
-            'appearance' => ['Appearance', 'admin.settings.appearance'],
-            'email' => ['Email', 'admin.settings.email'],
-            'social' => ['Social', 'admin.settings.social'],
-            'payment' => ['Payment', 'admin.settings.payment'],
-            'registration' => ['Registration', 'admin.settings.registration'],
-            'legal' => ['Legal', 'admin.settings.legal'],
-            'invoice' => ['Invoice', 'admin.settings.invoice'],
-            'contact' => ['Contact', 'admin.settings.contact'],
-            'captcha' => ['Captcha', 'admin.settings.captcha'],
-            'shortener' => ['Shortener', 'admin.settings.shortener']
+        'dashboard' => ['dashboard', 'ui.nav.dashboard', 'admin.dashboard'],
+        'plans' => ['package', 'ui.nav.plans', 'admin.plans'],
+        'subscriptions' => ['subscription', 'ui.nav.subscriptions', 'admin.subscriptions'],
+        'links' => ['link', 'ui.nav.links', 'admin.links'],
+        'workspaces' => ['workspace', 'ui.nav.workspaces', 'admin.workspaces'],
+        'domains' => ['domain', 'ui.nav.domains', 'admin.domains'],
+        'pages' => ['page', 'ui.nav.pages', 'admin.pages'],
+        'settings' => ['settings', 'ui.nav.settings', null, [
+            'general' => ['ui.nav.general', 'admin.settings.general'],
+            'appearance' => ['ui.nav.appearance', 'admin.settings.appearance'],
+            'email' => ['ui.nav.email', 'admin.settings.email'],
+            'social' => ['ui.nav.social', 'admin.settings.social'],
+            'payment' => ['ui.nav.payment', 'admin.settings.payment'],
+            'registration' => ['ui.nav.registration', 'admin.settings.registration'],
+            'legal' => ['ui.nav.legal', 'admin.settings.legal'],
+            'invoice' => ['ui.nav.invoice', 'admin.settings.invoice'],
+            'contact' => ['ui.nav.contact', 'admin.settings.contact'],
+            'captcha' => ['ui.nav.captcha', 'admin.settings.captcha'],
+            'shortener' => ['ui.nav.shortener', 'admin.settings.shortener']
         ]],
-        'users' => ['users', 'Users', 'admin.users'],
+        'users' => ['users', 'ui.nav.users', 'admin.users'],
     ];
 @endphp
 
