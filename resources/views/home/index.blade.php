@@ -79,14 +79,14 @@
                             'description' => __('Gain valuable insights into your audience with detailed analytics, including clicks, locations, devices, browsers, platforms, and traffic sources.')
                         ],
                         [
-                            'icon' => 'account',
-                            'title' => __('Personal'),
-                            'description' => __('Create short, branded links that are recognizable, trustworthy, and easy to share.')
-                        ],
-                        [
                             'icon' => 'geolocation',
                             'title' => __('Geotargeting'),
                             'description' => __('Deliver visitors to the most relevant destination based on their country or region, improving user experience and campaign performance.')
+                        ],
+                        [
+                            'icon' => 'account',
+                            'title' => __('Personal'),
+                            'description' => __('Create short, branded links that are recognizable, trustworthy, and easy to share.')
                         ],
                         [
                             'icon' => 'devices',

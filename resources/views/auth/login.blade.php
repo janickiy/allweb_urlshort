@@ -14,10 +14,11 @@
                     <div class="row no-gutters">
                         <div class="col-12 col-lg-5">
                             <div class="card-body p-lg-5">
-                                <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 mb-4 d-none d-lg-block">
+                                <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 mb-4 d-none d-lg-flex align-items-center text-dark text-decoration-none">
                                     <div class="logo">
                                         <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}">
                                     </div>
+                                    <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
                                 </a>
 
                                 <form method="POST" action="{{ route('login') }}">
@@ -73,7 +74,7 @@
                                 </div>
                             @endif
                         </div>
-                        <div class="col-12 col-lg-7 bg-dark background-auth d-none d-lg-flex flex-fill bg-left-bottom bg-cover" style="background-image: url({{ asset('images/login.jpg') }})">
+                        <div class="col-12 col-lg-7 bg-dark background-auth d-none d-lg-flex flex-fill bg-cover" style="background-image: url({{ asset('images/login-shortlink-pro.png') }}); background-position: center center;">
                             <div class="card-body p-lg-5 d-flex flex-column flex-fill bg-auth position-absolute" style="top: 0; right: 0; bottom: 0; left: 0">
                                 <div class="d-flex align-items-center d-flex flex-fill">
                                     <div class="text-white-important {{ (__('lang_dir') == 'rtl' ? 'mr-5' : 'ml-5') }}">
@@ -81,7 +82,7 @@
                                             {{ __('Login') }}
                                         </div>
                                         <div class="font-size-lg font-weight-medium">
-                                            {{ __('Welcome back') }} —
+                                            {{ __('Welcome back') }} — {{ config('settings.title') ?: config('info.software.name') }}
                                         </div>
                                     </div>
                                 </div>
