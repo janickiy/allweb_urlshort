@@ -32,12 +32,9 @@
                                     </div>
                                     <div class="col-12 col-sm-auto">
                                         @if(config('settings.captcha_shorten'))
-                                            {!! NoCaptcha::displaySubmit('short-form', __('Shorten'), ['data-theme' => (Cookie::get('dark_mode') == 1 ? 'dark' : 'light'), 'data-size' => 'invisible', 'class' => 'btn btn-primary btn-lg btn-block font-size-lg mt-3 mt-sm-0']) !!}
-
-                                            {!! NoCaptcha::renderJs(__('lang_code')) !!}
-                                        @else
-                                            <button class="btn btn-primary btn-lg btn-block font-size-lg mt-3 mt-sm-0" type="submit">{{ __('Shorten') }}</button>
+                                            @include('shared.recaptcha_v3', ['formId' => 'short-form', 'action' => 'shorten'])
                                         @endif
+                                        <button class="btn btn-primary btn-lg btn-block font-size-lg mt-3 mt-sm-0" type="submit">{{ __('Shorten') }}</button>
                                     </div>
                                 </div>
                             </form>

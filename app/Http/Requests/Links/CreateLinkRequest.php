@@ -15,6 +15,7 @@ use App\Rules\ValidateAliasRule;
 use App\Rules\ValidateBadWordsRule;
 use App\Rules\ValidateDomainOwnershipRule;
 use App\Rules\LinkLimitGateRule;
+use App\Rules\ReCaptchaV3Rule;
 use App\Rules\ValidateGeoKeyRule;
 use App\Rules\ValidatePlatformKeyRule;
 use App\Rules\ValidateWorkspaceOwnershipRule;
@@ -104,7 +105,7 @@ class CreateLinkRequest extends FormRequest
                 'geo.*.value' => [new FieldNotPresentRule()],
                 'platform.*.key' => [new FieldNotPresentRule()],
                 'platform.*.value' => [new FieldNotPresentRule()],
-                'g-recaptcha-response' => [(config('settings.captcha_shorten') ? 'required' : 'sometimes'), 'captcha']
+                'g-recaptcha-response' => [(config('settings.captcha_shorten') ? 'required' : 'sometimes'), new ReCaptchaV3Rule('shorten')]
             ];
         }
 

@@ -14,7 +14,7 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label for="i_captcha_site_key" class="form-label">{{ __('reCAPTCHA site key') }}</label>
+                    <label for="i_captcha_site_key" class="form-label">{{ __('reCAPTCHA v3 site key') }}</label>
                     <input id="i_captcha_site_key" type="text" class="form-control{{ $errors->has('captcha_site_key') ? ' is-invalid' : '' }}" name="captcha_site_key" value="{{ old('captcha_site_key', config('settings.captcha_site_key')) }}">
                     @if ($errors->has('captcha_site_key'))
                         <span class="invalid-feedback" role="alert">
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="i_captcha_secret_key" class="form-label">{{ __('reCAPTCHA secret key') }}</label>
+                    <label for="i_captcha_secret_key" class="form-label">{{ __('reCAPTCHA v3 secret key') }}</label>
                     <input id="i_captcha_secret_key" type="password" class="form-control{{ $errors->has('captcha_secret_key') ? ' is-invalid' : '' }}" name="captcha_secret_key" value="{{ old('captcha_secret_key', config('settings.captcha_secret_key')) }}">
                     @if ($errors->has('captcha_secret_key'))
                         <span class="invalid-feedback" role="alert">

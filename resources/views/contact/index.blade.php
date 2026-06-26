@@ -65,14 +65,11 @@
                                 @endif
 
                                 @if(config('settings.captcha_contact'))
-                                    {!! NoCaptcha::displaySubmit('contact-form', __('Send'), ['data-theme' => (Cookie::get('dark_mode') == 1 ? 'dark' : 'light'), 'data-size' => 'invisible', 'class' => 'btn btn-block btn-primary']) !!}
-
-                                    {!! NoCaptcha::renderJs(__('lang_code')) !!}
-                                @else
-                                    <button type="submit" class="btn btn-block btn-primary">
-                                        {{ __('Send') }}
-                                    </button>
+                                    @include('shared.recaptcha_v3', ['formId' => 'contact-form', 'action' => 'contact'])
                                 @endif
+                                <button type="submit" class="btn btn-block btn-primary">
+                                    {{ __('Send') }}
+                                </button>
 
                                 @if ($errors->has('g-recaptcha-response'))
                                     <span class="invalid-feedback d-block" role="alert">

@@ -72,14 +72,11 @@
                                     </div>
 
                                     @if(config('settings.captcha_registration'))
-                                        {!! NoCaptcha::displaySubmit('registration-form', __('Register'), ['data-theme' => (Cookie::get('dark_mode') == 1 ? 'dark' : 'light'), 'data-size' => 'invisible', 'class' => 'btn btn-block btn-primary py-2']) !!}
-
-                                        {!! NoCaptcha::renderJs(__('lang_code')) !!}
-                                    @else
-                                        <button type="submit" class="btn btn-block btn-primary py-2">
-                                            {{ __('Register') }}
-                                        </button>
+                                        @include('shared.recaptcha_v3', ['formId' => 'registration-form', 'action' => 'register'])
                                     @endif
+                                    <button type="submit" class="btn btn-block btn-primary py-2">
+                                        {{ __('Register') }}
+                                    </button>
 
                                     @if ($errors->has('g-recaptcha-response'))
                                         <span class="invalid-feedback d-block" role="alert">

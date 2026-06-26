@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\ReCaptchaV3Rule;
 use App\Services\UserRegistrationService;
 use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -55,7 +56,7 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'agreement' => ['required'],
-            'g-recaptcha-response' => [(config('settings.captcha_registration') ? 'required' : 'sometimes'), 'captcha']
+            'g-recaptcha-response' => [(config('settings.captcha_registration') ? 'required' : 'sometimes'), new ReCaptchaV3Rule('register')]
         ]);
     }
 
