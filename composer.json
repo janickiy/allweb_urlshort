@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "allweb/urlshort",
+    "name": "janickiy/shortlink",
     "type": "project",
     "description": "ShortLink Pro URL shortener application.",
     "license": "proprietary",

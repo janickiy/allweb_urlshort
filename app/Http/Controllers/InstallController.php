@@ -192,6 +192,7 @@ class InstallController extends Controller
             if ($this->isSupportedLocale($locale)) {
                 Session::put('install.locale', $locale);
                 app()->setLocale($locale);
+                Cookie::queue(Cookie::forever('install_locale', $locale));
                 Cookie::queue(Cookie::forever('locale', $locale));
             }
 
@@ -216,7 +217,6 @@ class InstallController extends Controller
             'DOM Extension' => extension_loaded('dom'),
             'Fileinfo Extension' => extension_loaded('fileinfo'),
             'GD Extension' => extension_loaded('gd'),
-            'Intl Extension' => extension_loaded('intl'),
             'JSON Extension' => extension_loaded('json'),
             'Mbstring Extension' => extension_loaded('mbstring'),
             'OpenSSL Extension' => extension_loaded('openssl'),
@@ -224,7 +224,6 @@ class InstallController extends Controller
             'PDO MySQL Extension' => extension_loaded('pdo_mysql'),
             'Tokenizer Extension' => extension_loaded('tokenizer'),
             'XML Extension' => extension_loaded('xml'),
-            'Zip Extension' => extension_loaded('zip'),
         ];
     }
 

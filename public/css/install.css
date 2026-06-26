@@ -54,15 +54,25 @@ body {
 }
 
 .install-logo {
+    align-items: center;
     display: inline-flex;
+    gap: .75rem;
     text-decoration: none;
+}
+
+.install-logo span {
+    color: var(--install-text);
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1;
 }
 
 .install-logo img {
     display: block;
-    height: auto;
+    height: 2.375rem;
     max-width: 100%;
-    width: 9rem;
+    object-fit: contain;
+    width: 2.375rem;
 }
 
 .install-sidebar__intro {
@@ -292,6 +302,23 @@ body {
     font-weight: 700;
 }
 
+.install-database-grid {
+    align-items: start;
+}
+
+.install-database-grid .install-field {
+    grid-template-rows: 1.35rem 2.8rem minmax(2.8rem, auto);
+}
+
+.install-database-grid .install-field input {
+    height: 2.8rem;
+}
+
+.install-database-grid .install-field small {
+    line-height: 1.4;
+    min-height: 2.8rem;
+}
+
 .install-actions {
     align-items: center;
     display: flex;
@@ -380,7 +407,8 @@ body {
     }
 
     .install-logo img {
-        width: 7.5rem;
+        height: 2.375rem;
+        width: 2.375rem;
     }
 }
 
