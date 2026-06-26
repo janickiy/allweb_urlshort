@@ -130,7 +130,7 @@
 
             <footer class="app-footer">
                 <strong>&copy; {{ now()->year }} {{ config('settings.title') ?: config('info.software.name') }}.</strong>
-                <a href="{{ config('info.software.url') }}" target="_blank" rel="noopener">{{ config('info.software.name') }}</a>
+                <a href="{{ config('info.software.url') }}" target="_blank" rel="noopener">{{ config('info.software.author') }}</a>
             </footer>
         </div>
 

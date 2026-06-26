@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Links\{CreateLinkRequest, UpdateLinkRequest};
 use App\Repositories\DomainRepository;
 use App\Repositories\LinkRepository;
-use App\Repositories\SpaceRepository;
+use App\Repositories\WorkspaceRepository;
 use App\Services\LinkService;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Http\Request;
@@ -24,7 +24,7 @@ class LinksController extends Controller
         private readonly DomainRepository $domains,
         private readonly LinkRepository $links,
         private readonly LinkService $linkService,
-        private readonly SpaceRepository $spaces,
+        private readonly WorkspaceRepository $workspaces,
     ) {
     }
 
@@ -44,7 +44,7 @@ class LinksController extends Controller
 
         $links = $this->links->paginateForUser($user->id, $request->only([
             'search',
-            'space',
+            'workspace',
             'domain',
             'type',
             'by',
@@ -54,7 +54,7 @@ class LinksController extends Controller
         return view('links.content', [
             'view' => 'list',
             'links' => $links,
-            'spaces' => $this->spaces->forUser($user->id),
+            'workspaces' => $this->workspaces->forUser($user->id),
             'domains' => $this->domains->forUser($user->id),
         ]);
     }
@@ -74,7 +74,7 @@ class LinksController extends Controller
         return view('links.content', [
             'view' => 'edit',
             'domains' => $this->domains->forUser($user->id),
-            'spaces' => $this->spaces->forUser($user->id),
+            'workspaces' => $this->workspaces->forUser($user->id),
             'link' => $link,
         ]);
     }

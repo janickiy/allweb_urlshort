@@ -27,11 +27,11 @@ class Link extends Model
     ];
 
     /**
-     * Get the space that owns this link.
+     * Get the workspace that owns this link.
      */
-    public function space(): BelongsTo
+    public function workspace(): BelongsTo
     {
-        return $this->belongsTo(Space::class);
+        return $this->belongsTo(Workspace::class);
     }
 
     /**
@@ -105,15 +105,15 @@ class Link extends Model
     }
 
     /**
-     * Filter links by space ID.
+     * Filter links by workspace ID.
      *
      * @param Builder $query
      * @param int|string $value
      * @return Builder
      */
-    public function scopeSearchSpace(Builder $query, int|string $value): Builder
+    public function scopeSearchWorkspace(Builder $query, int|string $value): Builder
     {
-        return $query->where('space_id', '=', $value);
+        return $query->where('workspace_id', '=', $value);
     }
 
     /**
@@ -163,15 +163,15 @@ class Link extends Model
     }
 
     /**
-     * Filter links by assigned space ID.
+     * Filter links by assigned workspace ID.
      *
      * @param Builder $query
      * @param int|string $value
      * @return Builder
      */
-    public function scopeSpaceId(Builder $query, int|string $value): Builder
+    public function scopeWorkspaceId(Builder $query, int|string $value): Builder
     {
-        return $query->where('space_id', '=', $value);
+        return $query->where('workspace_id', '=', $value);
     }
 
     /**

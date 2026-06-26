@@ -105,11 +105,11 @@ class User extends Authenticatable implements MustVerifyEmail, HasLocalePreferen
     }
 
     /**
-     * Get the spaces owned by this user.
+     * Get the workspaces owned by this user.
      */
-    public function spaces(): HasMany
+    public function workspaces(): HasMany
     {
-        return $this->hasMany(Space::class)->where('user_id', $this->id);
+        return $this->hasMany(Workspace::class)->where('user_id', $this->id);
     }
 
     /**

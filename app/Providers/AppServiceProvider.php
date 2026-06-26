@@ -6,9 +6,9 @@ use App\Models\Domain;
 use App\Models\Link;
 use App\Observers\DomainObserver;
 use App\Observers\LinkObserver;
-use App\Observers\SpaceObserver;
+use App\Observers\WorkspaceObserver;
 use App\Observers\UserObserver;
-use App\Models\Space;
+use App\Models\Workspace;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Event::listen(Registered::class, SendEmailVerificationNotification::class);
 
-        Space::observe(SpaceObserver::class);
+        Workspace::observe(WorkspaceObserver::class);
         Link::observe(LinkObserver::class);
         Domain::observe(DomainObserver::class);
         User::observe(UserObserver::class);

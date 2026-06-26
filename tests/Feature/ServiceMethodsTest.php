@@ -6,16 +6,14 @@ use App\DTO\RedirectResult;
 use App\Enums\CheckoutStatus;
 use App\Enums\RedirectDecision;
 use App\Mail\ContactMail;
-use App\Models\Language;
 use App\Models\Link;
 use App\Models\Plan;
 use App\Models\User;
 use App\Repositories\DomainRepository;
-use App\Repositories\LanguageRepository;
 use App\Repositories\LinkRepository;
 use App\Repositories\PageRepository;
 use App\Repositories\PlanRepository;
-use App\Repositories\SpaceRepository;
+use App\Repositories\WorkspaceRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Repositories\UserRepository;
 use App\Services\AdminService;
@@ -30,14 +28,13 @@ use App\Services\LocaleService;
 use App\Services\PaymentSettingsService;
 use App\Services\RedirectService;
 use App\Services\SettingsService;
-use App\Services\SpaceService;
+use App\Services\WorkspaceService;
 use App\Services\StatsService;
 use App\Services\UrlMetadataService;
 use App\Services\UserRegistrationService;
 use App\Services\UserSettingsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
@@ -83,7 +80,7 @@ class ServiceMethodsTest extends TestCase
         ]);
     }
 
-    public function test_space_domain_and_link_service_methods(): void
+    public function test_workspace_domain_and_link_service_methods(): void
     {
         $user = $this->user();
 
@@ -91,21 +88,21 @@ class ServiceMethodsTest extends TestCase
             $mock->shouldReceive('parse')->andReturn(['title' => ' Parsed title '])->byDefault();
         });
 
-        $spaces = app(SpaceService::class);
-        $createdSpace = $spaces->create(['name' => 'Workspace', 'color' => 999], $user);
-        $this->assertSame(1, (int) $createdSpace->color);
+        $workspaces = app(WorkspaceService::class);
+        $createdWorkspace = $workspaces->create(['name' => 'Workspace', 'color' => 999], $user);
+        $this->assertSame(1, (int) $createdWorkspace->color);
 
-        $updatedSpace = $spaces->update($createdSpace, ['name' => 'Workspace updated', 'color' => 2]);
-        $this->assertSame('Workspace updated', $updatedSpace->name);
-        $this->assertSame($updatedSpace->id, $spaces->updateForUser($updatedSpace->id, $user, ['name' => 'Workspace user', 'color' => 3])->id);
-        $this->assertSame($updatedSpace->id, $spaces->updateById($updatedSpace->id, ['name' => 'Workspace admin', 'color' => 4])->id);
+        $updatedWorkspace = $workspaces->update($createdWorkspace, ['name' => 'Workspace updated', 'color' => 2]);
+        $this->assertSame('Workspace updated', $updatedWorkspace->name);
+        $this->assertSame($updatedWorkspace->id, $workspaces->updateForUser($updatedWorkspace->id, $user, ['name' => 'Workspace user', 'color' => 3])->id);
+        $this->assertSame($updatedWorkspace->id, $workspaces->updateById($updatedWorkspace->id, ['name' => 'Workspace admin', 'color' => 4])->id);
 
-        $spaceForUserDelete = $this->space($user, ['name' => 'Delete user space']);
-        $this->assertSame('Delete user space', $spaces->deleteForUser($spaceForUserDelete->id, $user));
-        $spaceForAdminDelete = $this->space($user, ['name' => 'Delete admin space']);
-        $this->assertSame('Delete admin space', $spaces->deleteById($spaceForAdminDelete->id));
-        $spaceForDirectDelete = $this->space($user, ['name' => 'Delete direct space']);
-        $this->assertTrue($spaces->delete($spaceForDirectDelete));
+        $workspaceForUserDelete = $this->workspace($user, ['name' => 'Delete user workspace']);
+        $this->assertSame('Delete user workspace', $workspaces->deleteForUser($workspaceForUserDelete->id, $user));
+        $workspaceForAdminDelete = $this->workspace($user, ['name' => 'Delete admin workspace']);
+        $this->assertSame('Delete admin workspace', $workspaces->deleteById($workspaceForAdminDelete->id));
+        $workspaceForDirectDelete = $this->workspace($user, ['name' => 'Delete direct workspace']);
+        $this->assertTrue($workspaces->delete($workspaceForDirectDelete));
 
         $domains = app(DomainService::class);
         $createdDomain = $domains->create([
@@ -134,7 +131,7 @@ class ServiceMethodsTest extends TestCase
         $createdLink = $links->create([
             'url' => 'https://example.com/a',
             'alias' => 'service-create',
-            'space' => $updatedSpace->id,
+            'workspace' => $updatedWorkspace->id,
             'domain' => $updatedDomain->id,
             'disabled' => true,
             'public' => true,
@@ -155,7 +152,7 @@ class ServiceMethodsTest extends TestCase
         $guest = $links->createForGuest(['url' => 'https://example.com/guest', 'alias' => 'service-guest']);
         $this->assertCount(1, $guest);
 
-        $many = $links->createMany(['urls' => "https://a.test\nhttps://b.test", 'space' => $updatedSpace->id], $user);
+        $many = $links->createMany(['urls' => "https://a.test\nhttps://b.test", 'workspace' => $updatedWorkspace->id], $user);
         $this->assertCount(2, $many);
 
         $updatedLink = $links->update($createdLink, [
@@ -308,14 +305,13 @@ class ServiceMethodsTest extends TestCase
 
     public function test_admin_service_methods(): void
     {
-        Storage::fake('languages');
         config(['settings.stripe' => 1]);
 
         $admin = $this->admin(['email' => 'service-admin@example.test']);
         $user = $this->user(['email' => 'service-user@example.test']);
-        $space = $this->space($user, ['name' => 'Admin service space']);
+        $workspace = $this->workspace($user, ['name' => 'Admin service workspace']);
         $domain = $this->domain($user, ['name' => 'http://admin-service-domain.test']);
-        $link = $this->link($user, ['alias' => 'admin-service-link', 'space_id' => $space->id, 'domain_id' => $domain->id]);
+        $link = $this->link($user, ['alias' => 'admin-service-link', 'workspace_id' => $workspace->id, 'domain_id' => $domain->id]);
         $page = $this->page(['title' => 'Admin Service Page', 'slug' => 'admin-service-page']);
         $plan = $this->paidPlan(['name' => 'Admin Service Plan']);
         $subscription = $this->subscription($user, $plan, ['stripe_status' => 'emulated']);
@@ -325,21 +321,19 @@ class ServiceMethodsTest extends TestCase
             'search' => 'service',
             'sort' => 'asc',
             'user_id' => $user->id,
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => $domain->id,
             'type' => 1,
             'by' => 'alias',
         ]);
 
         $this->assertArrayHasKey('stats', $service->dashboardData($admin));
-        $this->assertSame('admin.languages.list', $service->languagesListData($request)['view']);
-        $this->assertSame('admin.languages.edit', $service->languageEditData('en')['view']);
         $this->assertSame('admin.users.list', $service->usersListData($request)['view']);
         $this->assertSame('settings.account', $service->userEditData($user->id)['view']);
         $this->assertSame('admin.links.list', $service->linksListData($request)['view']);
         $this->assertSame('links.edit', $service->linkEditData($link->id, $admin)['view']);
-        $this->assertSame('admin.spaces.list', $service->spacesListData($request)['view']);
-        $this->assertSame('spaces.edit', $service->spaceEditData($space->id)['view']);
+        $this->assertSame('admin.workspaces.list', $service->workspacesListData($request)['view']);
+        $this->assertSame('workspaces.edit', $service->workspaceEditData($workspace->id)['view']);
         $this->assertSame('admin.domains.list', $service->domainsListData($request)['view']);
         $this->assertSame('domains.edit', $service->domainEditData($domain->id)['view']);
         $this->assertSame('admin.pages.list', $service->pagesListData($request)['view']);
@@ -358,18 +352,6 @@ class ServiceMethodsTest extends TestCase
         $this->assertSame($plan->name, $createdSubscriptionName);
         $emulated = $this->subscription($user, $plan, ['stripe_status' => 'emulated']);
         $this->assertSame($plan->name, $service->deleteEmulatedSubscription($emulated->id));
-
-        $this->assertSame('French', $service->syncLanguage((object) ['lang_code' => 'fr', 'lang_name' => 'French', 'lang_dir' => 'ltr']));
-        $languageFile = UploadedFile::fake()->createWithContent('es.json', json_encode([
-            'lang_code' => 'es',
-            'lang_name' => 'Spanish',
-            'lang_dir' => 'ltr',
-        ]));
-        $this->assertSame('Spanish', $service->importLanguage($languageFile));
-        Storage::disk('languages')->assertExists('es.json');
-        $service->updateLanguageDefault('fr', true);
-        $this->assertSame(1, (int) Language::query()->where('code', 'fr')->firstOrFail()->default);
-        $this->assertSame('English', $service->deleteLanguage('en'));
 
         $this->assertSame('Created Page', $service->createPage(['title' => 'Created Page', 'slug' => 'created-page', 'footer' => 1, 'content' => 'Body']));
         $createdPage = \App\Models\Page::query()->where('slug', 'created-page')->firstOrFail();
@@ -518,11 +500,10 @@ class ServiceMethodsTest extends TestCase
     {
         return Mockery::mock(AdminService::class, [
             app(DomainRepository::class),
-            app(LanguageRepository::class),
             app(LinkRepository::class),
             app(PageRepository::class),
             app(PlanRepository::class),
-            app(SpaceRepository::class),
+            app(WorkspaceRepository::class),
             app(SubscriptionRepository::class),
             app(UserRepository::class),
             app(UserSettingsService::class),

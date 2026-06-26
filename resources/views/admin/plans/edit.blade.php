@@ -137,11 +137,11 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label" for="i_option_spaces">{{ __('Spaces') }}</label>
-                <input type="number" name="option_spaces" id="i_option_spaces" class="form-control{{ $errors->has('option_spaces') ? ' is-invalid' : '' }}" value="{{ $plan->option_spaces }}">
-                @if ($errors->has('option_spaces'))
+                <label class="form-label" for="i_option_workspaces">{{ __('Workspaces') }}</label>
+                <input type="number" name="option_workspaces" id="i_option_workspaces" class="form-control{{ $errors->has('option_workspaces') ? ' is-invalid' : '' }}" value="{{ $plan->option_workspaces }}">
+                @if ($errors->has('option_workspaces'))
                     <span class="invalid-feedback" role="alert">
-                        <strong>{{ $errors->first('option_spaces') }}</strong>
+                        <strong>{{ $errors->first('option_workspaces') }}</strong>
                     </span>
                 @endif
             </div>

@@ -23,10 +23,10 @@
             [
                 'class' => 'success',
                 'title' => __('Categories'),
-                'value' => $stats['spaces'],
+                'value' => $stats['workspaces'],
                 'caption' => __('Sections and topics'),
-                'route' => route('admin.spaces'),
-                'icon' => 'icons.space',
+                'route' => route('admin.workspaces'),
+                'icon' => 'icons.workspace',
             ],
             [
                 'class' => 'warning',
@@ -50,7 +50,7 @@
             ['title' => __('Add link'), 'route' => route('links'), 'icon' => 'icons.add'],
             ['title' => __('Import links'), 'route' => route('admin.links'), 'icon' => 'icons.decrease'],
             ['title' => __('Export links'), 'route' => route('admin.links'), 'icon' => 'icons.increase'],
-            ['title' => __('Add category'), 'route' => route('spaces.new'), 'icon' => 'icons.space'],
+            ['title' => __('Add category'), 'route' => route('workspaces.new'), 'icon' => 'icons.workspace'],
         ];
     @endphp
 
@@ -150,7 +150,7 @@
                                     <tr>
                                         <td>
                                             <a href="{{ route('admin.links.edit', $link->id) }}" class="admin-dashboard-link">{{ $link->title ?? $link->alias }}</a>
-                                            <div class="text-muted small">{{ $link->space?->name ?? __('Uncategorized') }}</div>
+                                            <div class="text-muted small">{{ $link->workspace?->name ?? __('Uncategorized') }}</div>
                                         </td>
                                         <td class="text-end fw-semibold">{{ number_format((int) $link->clicks, 0, __('.'), __(',')) }}</td>
                                     </tr>
@@ -194,7 +194,7 @@
                                             <a href="{{ route('admin.links.edit', $link->id) }}" class="admin-dashboard-link">{{ $link->title ?? $link->alias }}</a>
                                             <div class="text-muted small text-truncate">{{ $link->url }}</div>
                                         </td>
-                                        <td>{{ $link->space?->name ?? __('Uncategorized') }}</td>
+                                        <td>{{ $link->workspace?->name ?? __('Uncategorized') }}</td>
                                         <td>
                                             @if($link->disabled)
                                                 <span class="badge text-bg-danger">{{ __('blocked') }}</span>

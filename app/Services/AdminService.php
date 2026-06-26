@@ -4,22 +4,18 @@ namespace App\Services;
 
 use App\DTO\PageData;
 use App\DTO\PlanData;
-use App\DTO\LanguageData;
 use App\DTO\SubscriptionData;
 use App\Models\User;
 use App\Repositories\DomainRepository;
-use App\Repositories\LanguageRepository;
 use App\Repositories\LinkRepository;
 use App\Repositories\PageRepository;
 use App\Repositories\PlanRepository;
-use App\Repositories\SpaceRepository;
+use App\Repositories\WorkspaceRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Repositories\UserRepository;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
 class AdminService
@@ -31,11 +27,10 @@ class AdminService
      */
     public function __construct(
         private readonly DomainRepository $domains,
-        private readonly LanguageRepository $languages,
         private readonly LinkRepository $links,
         private readonly PageRepository $pages,
         private readonly PlanRepository $plans,
-        private readonly SpaceRepository $spaces,
+        private readonly WorkspaceRepository $workspaces,
         private readonly SubscriptionRepository $subscriptions,
         private readonly UserRepository $users,
         private readonly UserSettingsService $userSettings,
@@ -56,7 +51,7 @@ class AdminService
                 'subscriptions' => $this->subscriptions->count(),
                 'plans' => $this->plans->withTrashedCount(),
                 'links' => $this->links->count(),
-                'spaces' => $this->spaces->count(),
+                'workspaces' => $this->workspaces->count(),
                 'domains' => $this->domains->count(),
                 'messages' => 0,
                 'pending_review' => 0,
@@ -67,40 +62,6 @@ class AdminService
             'subscriptions' => config('settings.stripe') ? $this->subscriptions->recent(10) : null,
             'links' => $this->links->latest(8),
             'topLinks' => $this->links->topByClicks(5),
-        ];
-    }
-
-    /**
-     * Build the data required for the admin languages list.
-     *
-     * @param Request $request
-     * @return array
-     */
-    public function languagesListData(Request $request): array
-    {
-        return [
-            'view' => 'admin.languages.list',
-            'languages' => $this->languages->paginateForAdmin($request->input('search'), $this->sort($request)),
-        ];
-    }
-
-    /**
-     * Build the data required to edit a language.
-     *
-     * @return array<string, mixed>
-     */
-
-    /**
-     * @param string $id
-     * @return array
-     */
-    public function languageEditData(string $id): array
-    {
-        return [
-            'view' => 'admin.languages.edit',
-            'id' => $id,
-            'languages' => $this->languages->all(),
-            'language' => $this->languages->findByCodeOrFail($id),
         ];
     }
 
@@ -138,7 +99,7 @@ class AdminService
             'stats' => [
                 'subscriptions' => $this->subscriptions->countForUser($user->id),
                 'links' => $this->links->countForUser($user->id),
-                'spaces' => $this->spaces->countForUser($user->id),
+                'workspaces' => $this->workspaces->countForUser($user->id),
                 'domains' => $this->domains->countForUser($user->id),
             ],
         ];
@@ -153,7 +114,7 @@ class AdminService
     {
         $filters = [
             'user_id' => $request->input('user_id'),
-            'space_id' => $request->input('space_id'),
+            'workspace_id' => $request->input('workspace_id'),
             'domain_id' => $request->input('domain_id'),
             'search' => $request->input('search'),
             'type' => $request->input('type'),
@@ -181,43 +142,43 @@ class AdminService
             'view' => 'links.edit',
             'admin' => true,
             'domains' => $this->domains->forUser($link->user_id),
-            'spaces' => $this->spaces->forUser($link->user_id),
+            'workspaces' => $this->workspaces->forUser($link->user_id),
             'link' => $link,
             'features' => $this->getFeatures($admin),
         ];
     }
 
     /**
-     * Build the data required for the admin spaces list.
+     * Build the data required for the admin workspaces list.
      *
      * @return array<string, mixed>
      */
-    public function spacesListData(Request $request): array
+    public function workspacesListData(Request $request): array
     {
         $userId = $request->input('user_id');
 
         return [
-            'view' => 'admin.spaces.list',
-            'spaces' => $this->spaces->paginateForAdmin($userId ? (int) $userId : null, $request->input('search'), $this->sort($request)),
+            'view' => 'admin.workspaces.list',
+            'workspaces' => $this->workspaces->paginateForAdmin($userId ? (int) $userId : null, $request->input('search'), $this->sort($request)),
             'filters' => $this->namesForFilters(['user_id' => $userId]),
         ];
     }
 
     /**
-     * Build the data required to edit a space from the admin panel.
+     * Build the data required to edit a workspace from the admin panel.
      *
      * @return array<string, mixed>
      */
-    public function spaceEditData(int|string $id): array
+    public function workspaceEditData(int|string $id): array
     {
-        $space = $this->spaces->findOrFail($id);
+        $workspace = $this->workspaces->findOrFail($id);
 
         return [
-            'view' => 'spaces.edit',
+            'view' => 'workspaces.edit',
             'admin' => true,
-            'space' => $space,
+            'workspace' => $workspace,
             'stats' => [
-                'links' => $this->links->countForSpace($space->user_id, $space->id),
+                'links' => $this->links->countForWorkspace($workspace->user_id, $workspace->id),
             ],
         ];
     }
@@ -404,99 +365,6 @@ class AdminService
         $this->subscriptions->delete($id);
 
         return $name;
-    }
-
-    /**
-     * Synchronize a language definition from a translation file object.
-     */
-    public function syncLanguage(object $file): string
-    {
-        $this->languages->updateOrCreateByCode($file->lang_code, LanguageData::fromArray([
-            'name' => $file->lang_name,
-            'dir' => $file->lang_dir,
-        ]));
-
-        return $file->lang_name;
-    }
-
-    /**
-     * Import an uploaded language JSON file and return its display name.
-     */
-    public function importLanguage(UploadedFile $language): string
-    {
-        $file = $this->readLanguageFile($language);
-
-        Storage::disk('languages')->put($file->lang_code . '.json', $this->languageFileContents($language));
-
-        return $this->syncLanguage($file);
-    }
-
-    /**
-     * Mark a language as default when requested.
-     */
-    public function updateLanguageDefault(int|string $id, bool $makeDefault): void
-    {
-        $language = $this->languages->findOrFail($id);
-
-        if ($language->default == 0 && $makeDefault) {
-            $this->languages->makeDefault($id);
-        }
-    }
-
-    /**
-     * Delete a non-default language and return its name.
-     */
-    public function deleteLanguage(int|string $id): string
-    {
-        if ($this->languages->count() <= 1) {
-            throw new RuntimeException(__('The default language can\'t be deleted.'));
-        }
-
-        $language = $this->languages->findOrFail($id);
-
-        if ($language->default) {
-            throw new RuntimeException(__('The default language can\'t be deleted.'));
-        }
-
-        $name = $language->name;
-        $this->languages->delete($id);
-        Storage::disk('languages')->delete($id . '.json');
-
-        return $name;
-    }
-
-    /**
-     * Decode a language JSON upload into an object.
-     */
-    private function readLanguageFile(UploadedFile $language): object
-    {
-        $file = json_decode($this->languageFileContents($language));
-
-        if (! is_object($file)) {
-            throw new RuntimeException(__('Invalid language file.'));
-        }
-
-        return $file;
-    }
-
-    /**
-     * Read the uploaded language JSON file contents.
-     */
-    private function languageFileContents(UploadedFile $language): string
-    {
-        $path = $language->getRealPath();
-
-        if (! is_string($path)) {
-            throw new RuntimeException(__('Invalid language file.'));
-        }
-
-        $contents = file_get_contents($path);
-
-        if ($contents === false) {
-            throw new RuntimeException(__('Invalid language file.'));
-        }
-
-        return $contents;
     }
 
     /**
@@ -709,8 +577,8 @@ class AdminService
             $names['user'] = $user->name;
         }
 
-        if (!empty($filters['space_id']) && $space = $this->spaces->find($filters['space_id'])) {
-            $names['space'] = $space->name;
+        if (!empty($filters['workspace_id']) && $workspace = $this->workspaces->find($filters['workspace_id'])) {
+            $names['workspace'] = $workspace->name;
         }
 
         if (!empty($filters['domain_id']) && $domain = $this->domains->find($filters['domain_id'])) {
@@ -759,7 +627,7 @@ class AdminService
             'visibility' => $input['visibility'] ?? 0,
             'color' => $input['color'],
             'option_links' => $input['option_links'],
-            'option_spaces' => $input['option_spaces'],
+            'option_workspaces' => $input['option_workspaces'],
             'option_domains' => $input['option_domains'],
             'option_password' => $input['option_password'],
             'option_expiration' => $input['option_expiration'],

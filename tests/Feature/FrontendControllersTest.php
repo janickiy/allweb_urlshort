@@ -96,11 +96,11 @@ class FrontendControllersTest extends TestCase
     public function test_authenticated_front_controller_methods(): void
     {
         $user = $this->user(['email' => 'front@example.test']);
-        $space = $this->space($user, ['name' => 'Primary space']);
+        $workspace = $this->workspace($user, ['name' => 'Primary workspace']);
         $domain = $this->domain($user, ['name' => 'http://front-domain.test']);
         $link = $this->link($user, [
             'alias' => 'front-link',
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => $domain->id,
             'clicks' => 5,
         ]);
@@ -127,19 +127,19 @@ class FrontendControllersTest extends TestCase
         $this->post(route('links.delete', $linkToDelete->id))->assertRedirect(route('links'));
         $this->assertDatabaseMissing('links', ['id' => $linkToDelete->id]);
 
-        $this->get(route('spaces'))->assertOk()->assertViewIs('spaces.content');
-        $this->get(route('spaces.new'))->assertOk()->assertViewIs('spaces.content');
-        $this->get(route('spaces.edit', $space->id))->assertOk()->assertViewIs('spaces.content');
-        $this->post(route('spaces.new'), ['name' => 'Created space', 'color' => 2])->assertRedirect(route('spaces'));
-        $this->assertDatabaseHas('spaces', ['name' => 'Created space', 'user_id' => $user->id]);
-        $this->from(route('spaces.edit', $space->id))->post(route('spaces.edit', $space->id), [
-            'name' => 'Updated space',
+        $this->get(route('workspaces'))->assertOk()->assertViewIs('workspaces.content');
+        $this->get(route('workspaces.new'))->assertOk()->assertViewIs('workspaces.content');
+        $this->get(route('workspaces.edit', $workspace->id))->assertOk()->assertViewIs('workspaces.content');
+        $this->post(route('workspaces.new'), ['name' => 'Created workspace', 'color' => 2])->assertRedirect(route('workspaces'));
+        $this->assertDatabaseHas('workspaces', ['name' => 'Created workspace', 'user_id' => $user->id]);
+        $this->from(route('workspaces.edit', $workspace->id))->post(route('workspaces.edit', $workspace->id), [
+            'name' => 'Updated workspace',
             'color' => 3,
-        ])->assertRedirect(route('spaces.edit', $space->id));
-        $this->assertDatabaseHas('spaces', ['id' => $space->id, 'name' => 'Updated space']);
-        $spaceToDelete = $this->space($user, ['name' => 'Delete space']);
-        $this->post(route('spaces.delete', $spaceToDelete->id))->assertRedirect(route('spaces'));
-        $this->assertDatabaseMissing('spaces', ['id' => $spaceToDelete->id]);
+        ])->assertRedirect(route('workspaces.edit', $workspace->id));
+        $this->assertDatabaseHas('workspaces', ['id' => $workspace->id, 'name' => 'Updated workspace']);
+        $workspaceToDelete = $this->workspace($user, ['name' => 'Delete workspace']);
+        $this->post(route('workspaces.delete', $workspaceToDelete->id))->assertRedirect(route('workspaces'));
+        $this->assertDatabaseMissing('workspaces', ['id' => $workspaceToDelete->id]);
 
         $this->get(route('domains'))->assertOk()->assertViewIs('domains.content');
         $this->get(route('domains.new'))->assertOk()->assertViewIs('domains.content');

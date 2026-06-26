@@ -124,7 +124,7 @@
             $menu = [
                 ['icon' => 'icons.subscription', 'route' => 'admin.subscriptions', 'title' => __('Subscriptions'), 'stats' => 'subscriptions'],
                 ['icon' => 'icons.link', 'route' => 'admin.links', 'title' => __('Links'), 'stats' => 'links'],
-                ['icon' => 'icons.space', 'route' => 'admin.spaces', 'title' => __('Spaces'), 'stats' => 'spaces'],
+                ['icon' => 'icons.workspace', 'route' => 'admin.workspaces', 'title' => __('Workspaces'), 'stats' => 'workspaces'],
                 ['icon' => 'icons.domain', 'route' => 'admin.domains', 'title' => __('Domains'), 'stats' => 'domains']
             ];
         @endphp

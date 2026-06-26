@@ -6,6 +6,12 @@
      */
     $menu = [
         'dashboard' => ['dashboard', 'Dashboard', 'admin.dashboard'],
+        'plans' => ['package', 'Plans', 'admin.plans'],
+        'subscriptions' => ['subscription', 'Subscriptions', 'admin.subscriptions'],
+        'links' => ['link', 'Links', 'admin.links'],
+        'workspaces' => ['workspace', 'Workspaces', 'admin.workspaces'],
+        'domains' => ['domain', 'Domains', 'admin.domains'],
+        'pages' => ['page', 'Pages', 'admin.pages'],
         'settings' => ['settings', 'Settings', null, [
             'general' => ['General', 'admin.settings.general'],
             'appearance' => ['Appearance', 'admin.settings.appearance'],
@@ -19,18 +25,9 @@
             'captcha' => ['Captcha', 'admin.settings.captcha'],
             'shortener' => ['Shortener', 'admin.settings.shortener']
         ]],
-        'languages' => ['language', 'Languages', 'admin.languages'],
-        'plans' => ['package', 'Plans', 'admin.plans'],
-        'subscriptions' => ['subscription', 'Subscriptions', 'admin.subscriptions'],
         'users' => ['users', 'Users', 'admin.users'],
-        'links' => ['link', 'Links', 'admin.links'],
-        'spaces' => ['space', 'Spaces', 'admin.spaces'],
-        'domains' => ['domain', 'Domains', 'admin.domains'],
-        'pages' => ['page', 'Pages', 'admin.pages'],
     ];
 @endphp
-
-<li class="nav-header">{{ __('MAIN') }}</li>
 
 @foreach ($menu as $key => $value)
     @php
@@ -38,10 +35,6 @@
         $isActive = request()->segment(2) == $key;
         $href = $hasChildren ? '#' : (Route::has($value[2]) ? route($value[2]) : $value[2]);
     @endphp
-
-    @if ($key === 'languages')
-        <li class="nav-header">{{ __('MANAGEMENT') }}</li>
-    @endif
 
     <li class="nav-item @if($hasChildren && $isActive) menu-open @endif">
         <a

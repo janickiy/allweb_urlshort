@@ -44,7 +44,7 @@ class LinkRepository extends BaseRepository
         return $this->query()
             ->where('user_id', $userId)
             ->when($filters['domain'] ?? null, fn (Builder $query, mixed $domain) => $query->searchDomain($domain))
-            ->when($filters['space'] ?? null, fn (Builder $query, mixed $space) => $query->searchSpace($space))
+            ->when($filters['workspace'] ?? null, fn (Builder $query, mixed $workspace) => $query->searchWorkspace($workspace))
             ->when($filters['type'] ?? null, function (Builder $query, mixed $type) {
                 return (int) $type === 1 ? $query->searchActive() : $query->searchExpired();
             })
@@ -60,7 +60,7 @@ class LinkRepository extends BaseRepository
             ->appends([
                 'search' => $filters['search'] ?? null,
                 'domain' => $filters['domain'] ?? null,
-                'space' => $filters['space'] ?? null,
+                'workspace' => $filters['workspace'] ?? null,
                 'by' => $filters['by'] ?? null,
                 'sort' => $filters['sort'] ?? null,
             ]);
@@ -133,7 +133,7 @@ class LinkRepository extends BaseRepository
     public function latest(int $limit): Collection
     {
         return $this->query()
-            ->with(['space', 'domain'])
+            ->with(['workspace', 'domain'])
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get();
@@ -145,7 +145,7 @@ class LinkRepository extends BaseRepository
     public function topByClicks(int $limit): Collection
     {
         return $this->query()
-            ->with(['space', 'domain'])
+            ->with(['workspace', 'domain'])
             ->orderBy('clicks', 'desc')
             ->orderBy('id', 'desc')
             ->limit($limit)
@@ -207,7 +207,7 @@ class LinkRepository extends BaseRepository
                 };
             })
             ->when($filters['user_id'] ?? null, fn (Builder $query, mixed $userId) => $query->userId($userId))
-            ->when($filters['space_id'] ?? null, fn (Builder $query, mixed $spaceId) => $query->spaceId($spaceId))
+            ->when($filters['workspace_id'] ?? null, fn (Builder $query, mixed $workspaceId) => $query->workspaceId($workspaceId))
             ->when($filters['domain_id'] ?? null, fn (Builder $query, mixed $domainId) => $query->domainId($domainId))
             ->orderBy($sortColumn, $sortDirection)
             ->paginate($perPage)
@@ -228,17 +228,17 @@ class LinkRepository extends BaseRepository
     }
 
     /**
-     * Count links that belong to a user space
+     * Count links that belong to a user workspace
      *
      * @param int $userId
-     * @param int $spaceId
+     * @param int $workspaceId
      * @return int
      */
-    public function countForSpace(int $userId, int $spaceId): int
+    public function countForWorkspace(int $userId, int $workspaceId): int
     {
         return $this->query()
             ->where('user_id', $userId)
-            ->where('space_id', $spaceId)
+            ->where('workspace_id', $workspaceId)
             ->count();
     }
 

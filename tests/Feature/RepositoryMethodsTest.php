@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\DTO\DomainData;
-use App\DTO\LanguageData;
 use App\DTO\LinkData;
 use App\DTO\PageData;
 use App\DTO\SettingData;
@@ -11,13 +10,12 @@ use App\DTO\SubscriptionData;
 use App\DTO\UserData;
 use App\Models\Page;
 use App\Repositories\DomainRepository;
-use App\Repositories\LanguageRepository;
 use App\Repositories\LinkRepository;
 use App\Repositories\PageRepository;
 use App\Repositories\PlanRepository;
 use App\Repositories\RepositoryInterface;
 use App\Repositories\SettingRepository;
-use App\Repositories\SpaceRepository;
+use App\Repositories\WorkspaceRepository;
 use App\Repositories\StatRepository;
 use App\Repositories\SubscriptionRepository;
 use App\Repositories\UserRepository;
@@ -68,7 +66,7 @@ class RepositoryMethodsTest extends TestCase
         $this->assertSame(0, Page::query()->count());
     }
 
-    public function test_domain_and_space_repository_methods(): void
+    public function test_domain_and_workspace_repository_methods(): void
     {
         $user = $this->user();
         $otherUser = $this->user();
@@ -92,46 +90,22 @@ class RepositoryMethodsTest extends TestCase
         $this->assertInstanceOf(LengthAwarePaginator::class, $domains->paginateForUser($user->id, 'repository', 'asc'));
         $this->assertInstanceOf(LengthAwarePaginator::class, $domains->paginateForAdmin($user->id, 'repository', 'desc'));
 
-        /** @var SpaceRepository $spaces */
-        $spaces = app(SpaceRepository::class);
-        $space = $this->space($user, ['name' => 'Repository Space']);
-        $this->space($otherUser, ['name' => 'Other Space']);
+        /** @var WorkspaceRepository $workspaces */
+        $workspaces = app(WorkspaceRepository::class);
+        $workspace = $this->workspace($user, ['name' => 'Repository Workspace']);
+        $this->workspace($otherUser, ['name' => 'Other Workspace']);
 
-        $this->assertInstanceOf(Builder::class, $spaces->query());
-        $this->assertSame(1, $spaces->forUser($user->id)->where('id', $space->id)->count());
-        $this->assertSame($space->id, $spaces->findForUserOrFail($space->id, $user->id)->id);
-        $this->assertGreaterThanOrEqual($space->id, $spaces->maxId());
-        $this->assertGreaterThanOrEqual(1, $spaces->countForUser($user->id));
-        $this->assertInstanceOf(LengthAwarePaginator::class, $spaces->paginateForUser($user->id, 'Repository', 'asc'));
-        $this->assertInstanceOf(LengthAwarePaginator::class, $spaces->paginateForAdmin($user->id, 'Repository', 'desc'));
+        $this->assertInstanceOf(Builder::class, $workspaces->query());
+        $this->assertSame(1, $workspaces->forUser($user->id)->where('id', $workspace->id)->count());
+        $this->assertSame($workspace->id, $workspaces->findForUserOrFail($workspace->id, $user->id)->id);
+        $this->assertGreaterThanOrEqual($workspace->id, $workspaces->maxId());
+        $this->assertGreaterThanOrEqual(1, $workspaces->countForUser($user->id));
+        $this->assertInstanceOf(LengthAwarePaginator::class, $workspaces->paginateForUser($user->id, 'Repository', 'asc'));
+        $this->assertInstanceOf(LengthAwarePaginator::class, $workspaces->paginateForAdmin($user->id, 'Repository', 'desc'));
     }
 
-    public function test_language_and_setting_repository_methods(): void
+    public function test_setting_repository_methods(): void
     {
-        /** @var LanguageRepository $languages */
-        $languages = app(LanguageRepository::class);
-
-        $this->assertInstanceOf(Builder::class, $languages->query());
-        $this->assertGreaterThanOrEqual(1, $languages->all()->count());
-        $this->assertGreaterThanOrEqual(1, $languages->count());
-        $this->assertSame('English', $languages->findByCodeOrFail('en')->name);
-        $this->assertInstanceOf(LengthAwarePaginator::class, $languages->paginateForAdmin('Eng', 'asc'));
-
-        $created = $languages->updateOrCreateByCode('fr', LanguageData::fromArray([
-            'code' => 'fr',
-            'name' => 'French',
-            'dir' => 'ltr',
-            'default' => 0,
-        ]));
-        $this->assertSame('French', $created->name);
-
-        $updated = $languages->updateOrCreateByCode('fr', LanguageData::fromArray(['name' => 'Francais']));
-        $this->assertSame('Francais', $updated->name);
-
-        $languages->makeDefault('fr');
-        $this->assertSame(1, (int) $languages->findByCodeOrFail('fr')->default);
-        $this->assertSame(0, (int) $languages->findByCodeOrFail('en')->default);
-
         /** @var SettingRepository $settings */
         $settings = app(SettingRepository::class);
         $this->assertTrue($settings->updateByName('title', SettingData::fromArray(['value' => 'Repository Title'])));
@@ -143,7 +117,7 @@ class RepositoryMethodsTest extends TestCase
     {
         $user = $this->user();
         $otherUser = $this->user();
-        $space = $this->space($user);
+        $workspace = $this->workspace($user);
         $domain = $this->domain($user, ['name' => 'http://repository-link-domain.test']);
 
         /** @var LinkRepository $links */
@@ -154,7 +128,7 @@ class RepositoryMethodsTest extends TestCase
             'url' => 'https://example.com/first',
             'title' => 'Repository First',
             'clicks' => 10,
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => $domain->id,
         ]);
         $second = $this->link($user, [
@@ -162,7 +136,7 @@ class RepositoryMethodsTest extends TestCase
             'url' => 'https://example.com/second',
             'title' => 'Repository Second',
             'clicks' => 2,
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => null,
             'ends_at' => Carbon::now()->subDay(),
         ]);
@@ -170,8 +144,8 @@ class RepositoryMethodsTest extends TestCase
 
         $this->assertInstanceOf(Builder::class, $links->query());
         $this->assertInstanceOf(LengthAwarePaginator::class, $links->paginateForUser($user->id, ['search' => 'Repository', 'by' => 'title', 'sort' => 'max']));
-        $this->assertInstanceOf(LengthAwarePaginator::class, $links->paginateForUser($user->id, ['domain' => $domain->id, 'space' => $space->id, 'type' => 1, 'sort' => 'min']));
-        $this->assertInstanceOf(LengthAwarePaginator::class, $links->paginateForAdmin(['search' => 'repo', 'by' => 'alias', 'user_id' => $user->id, 'space_id' => $space->id, 'domain_id' => $domain->id, 'type' => 1, 'sort' => 'asc']));
+        $this->assertInstanceOf(LengthAwarePaginator::class, $links->paginateForUser($user->id, ['domain' => $domain->id, 'workspace' => $workspace->id, 'type' => 1, 'sort' => 'min']));
+        $this->assertInstanceOf(LengthAwarePaginator::class, $links->paginateForAdmin(['search' => 'repo', 'by' => 'alias', 'user_id' => $user->id, 'workspace_id' => $workspace->id, 'domain_id' => $domain->id, 'type' => 1, 'sort' => 'asc']));
 
         $this->assertSame($first->id, $links->findForUser($first->id, $user->id)->id);
         $this->assertNull($links->findForUser($first->id, $otherUser->id));
@@ -182,7 +156,7 @@ class RepositoryMethodsTest extends TestCase
         $this->assertGreaterThanOrEqual($second->id, $links->maxId());
 
         $this->assertSame(2, $links->countForUser($user->id));
-        $this->assertSame(2, $links->countForSpace($user->id, $space->id));
+        $this->assertSame(2, $links->countForWorkspace($user->id, $workspace->id));
         $this->assertSame(1, $links->countForDomain($user->id, $domain->id));
         $this->assertSame($first->id, $links->findByAliasForDomain('repo-first', $domain->id)->id);
 

@@ -5,15 +5,12 @@ namespace Tests\Feature;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\VerifyPaymentEnabled;
 use App\Http\Requests\Admin\UpdateSettingsPaymentRequest;
-use App\Models\Language;
 use App\Models\Plan;
 use App\Services\AdminService;
 use App\Services\UrlMetadataService;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -40,11 +37,11 @@ class AdminControllerTest extends TestCase
     {
         $admin = $this->admin(['email' => 'admin-get@example.test']);
         $user = $this->user(['email' => 'admin-get-user@example.test']);
-        $space = $this->space($user, ['name' => 'Admin GET space']);
+        $workspace = $this->workspace($user, ['name' => 'Admin GET workspace']);
         $domain = $this->domain($user, ['name' => 'http://admin-get-domain.test']);
         $link = $this->link($user, [
             'alias' => 'admin-get-link',
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => $domain->id,
         ]);
         $page = $this->page(['slug' => 'admin-get-page']);
@@ -66,15 +63,12 @@ class AdminControllerTest extends TestCase
             route('admin.settings.legal'),
             route('admin.settings.captcha'),
             route('admin.settings.shortener'),
-            route('admin.languages'),
-            route('admin.languages.new'),
-            route('admin.languages.edit', 'en'),
             route('admin.users'),
             route('admin.users.edit', $user->id),
             route('admin.links'),
             route('admin.links.edit', $link->id),
-            route('admin.spaces'),
-            route('admin.spaces.edit', $space->id),
+            route('admin.workspaces'),
+            route('admin.workspaces.edit', $workspace->id),
             route('admin.domains'),
             route('admin.domains.edit', $domain->id),
             route('admin.pages'),
@@ -99,7 +93,7 @@ class AdminControllerTest extends TestCase
 
         $settingsPayloads = [
             'admin.settings.general.update' => [
-                'title' => 'AllWeb Tests',
+                'title' => 'ShortLink Pro Tests',
                 'tagline' => 'Feature test tagline',
                 'index' => 'https://example.com',
                 'timezone' => 'UTC',
@@ -124,7 +118,7 @@ class AdminControllerTest extends TestCase
                 'social_youtube' => 'https://youtube.com/allweb',
             ],
             'admin.settings.invoice.update' => [
-                'invoice_vendor' => 'AllWeb',
+                'invoice_vendor' => 'ShortLink Pro',
                 'invoice_address' => 'Main Street',
                 'invoice_city' => 'New York',
                 'invoice_state' => 'NY',
@@ -164,7 +158,7 @@ class AdminControllerTest extends TestCase
             $this->post(route($routeName), $payload)->assertRedirect();
         }
 
-        $this->assertDatabaseHas('settings', ['name' => 'title', 'value' => 'AllWeb Tests']);
+        $this->assertDatabaseHas('settings', ['name' => 'title', 'value' => 'ShortLink Pro Tests']);
         $this->assertDatabaseHas('settings', ['name' => 'theme', 'value' => '1']);
         $this->assertDatabaseHas('settings', ['name' => 'short_bad_words', 'value' => 'badword']);
 
@@ -183,43 +177,20 @@ class AdminControllerTest extends TestCase
         $this->assertDatabaseHas('settings', ['name' => 'stripe_secret', 'value' => 'sk_test']);
     }
 
-    public function test_admin_language_page_subscription_user_link_space_domain_and_plan_methods(): void
+    public function test_admin_page_subscription_user_link_workspace_domain_and_plan_methods(): void
     {
-        Storage::fake('languages');
-
         $admin = $this->admin(['email' => 'admin-resources@example.test']);
         $user = $this->user(['email' => 'resource-user@example.test']);
-        $space = $this->space($user, ['name' => 'Resource space']);
+        $workspace = $this->workspace($user, ['name' => 'Resource workspace']);
         $domain = $this->domain($user, ['name' => 'http://resource-domain.test']);
         $link = $this->link($user, [
             'alias' => 'resource-link',
-            'space_id' => $space->id,
+            'workspace_id' => $workspace->id,
             'domain_id' => $domain->id,
         ]);
         $plan = $this->paidPlan(['name' => 'Resource Plan', 'plan_month' => 'price_resource_month']);
 
         $this->actingAs($admin);
-
-        $languageFile = UploadedFile::fake()->createWithContent('fr.json', json_encode([
-            'lang_code' => 'fr',
-            'lang_name' => 'French',
-            'lang_dir' => 'ltr',
-        ]));
-
-        $this->post(route('admin.languages.create'), ['language' => $languageFile])
-            ->assertRedirect(route('admin.languages'));
-        $this->assertDatabaseHas('languages', ['code' => 'fr', 'name' => 'French']);
-        Storage::disk('languages')->assertExists('fr.json');
-
-        $this->post(route('admin.languages.update', 'fr'), ['default' => 1])
-            ->assertRedirect(route('admin.languages.edit', 'fr'));
-        $this->assertDatabaseHas('languages', ['code' => 'fr', 'default' => 1]);
-
-        Language::forceCreate(['code' => 'de', 'name' => 'German', 'dir' => 'ltr', 'default' => 0]);
-        Storage::disk('languages')->put('de.json', '{}');
-        $this->post(route('admin.languages.delete', 'de'))->assertRedirect(route('admin.languages'));
-        $this->assertDatabaseMissing('languages', ['code' => 'de']);
-        Storage::disk('languages')->assertMissing('de.json');
 
         $this->post(route('admin.pages.create'), [
             'title' => 'Admin Page',
@@ -287,17 +258,17 @@ class AdminControllerTest extends TestCase
         $this->post(route('admin.links.delete', $linkToDelete->id))->assertRedirect(route('admin.links'));
         $this->assertDatabaseMissing('links', ['id' => $linkToDelete->id]);
 
-        $this->from(route('admin.spaces.edit', $space->id))
-            ->post(route('admin.spaces.update', $space->id), [
-                'name' => 'Updated Resource Space',
+        $this->from(route('admin.workspaces.edit', $workspace->id))
+            ->post(route('admin.workspaces.update', $workspace->id), [
+                'name' => 'Updated Resource Workspace',
                 'color' => 3,
                 'user_id' => $user->id,
-            ])->assertRedirect(route('admin.spaces.edit', $space->id));
-        $this->assertDatabaseHas('spaces', ['id' => $space->id, 'name' => 'Updated Resource Space']);
+            ])->assertRedirect(route('admin.workspaces.edit', $workspace->id));
+        $this->assertDatabaseHas('workspaces', ['id' => $workspace->id, 'name' => 'Updated Resource Workspace']);
 
-        $spaceToDelete = $this->space($user, ['name' => 'Admin delete space']);
-        $this->post(route('admin.spaces.delete', $spaceToDelete->id))->assertRedirect(route('admin.spaces'));
-        $this->assertDatabaseMissing('spaces', ['id' => $spaceToDelete->id]);
+        $workspaceToDelete = $this->workspace($user, ['name' => 'Admin delete workspace']);
+        $this->post(route('admin.workspaces.delete', $workspaceToDelete->id))->assertRedirect(route('admin.workspaces'));
+        $this->assertDatabaseMissing('workspaces', ['id' => $workspaceToDelete->id]);
 
         $this->from(route('admin.domains.edit', $domain->id))
             ->post(route('admin.domains.update', $domain->id), [

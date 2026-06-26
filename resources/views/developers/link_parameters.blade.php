@@ -19,10 +19,10 @@
             'description' => __('The link password.')
         ],
         [
-            'name' => 'space',
+            'name' => 'workspace',
             'type' => 0,
             'format' => 'integer',
-            'description' => __('The space id the link to be saved under.')
+            'description' => __('The workspace id the link to be saved under.')
         ],
         [
             'name' => 'domain',

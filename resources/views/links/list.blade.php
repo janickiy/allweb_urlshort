@@ -22,13 +22,13 @@
                     <div class="input-group input-group-sm">
                         <input class="form-control" name="search" placeholder="{{ __('Search') }}" value="{{ app('request')->input('search') }}">
                         <div class="input-group-append">
-                            <button type="button" class="btn {{ request()->input('sort') || request()->input('space') || request()->input('domain') ? 'btn-primary' : 'btn-outline-primary' }} d-flex align-items-center dropdown-toggle dropdown-toggle-split reset-after" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@include('icons.filter', ['class' => 'fill-current icon-button-sm'])&#8203;</button>
+                            <button type="button" class="btn {{ request()->input('sort') || request()->input('workspace') || request()->input('domain') ? 'btn-primary' : 'btn-outline-primary' }} d-flex align-items-center dropdown-toggle dropdown-toggle-split reset-after" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@include('icons.filter', ['class' => 'fill-current icon-button-sm'])&#8203;</button>
                             <div class="dropdown-menu {{ (__('lang_dir') == 'rtl' ? 'dropdown-menu' : 'dropdown-menu-right') }} border-0 shadow" id="search-filters">
                                 <div class="dropdown-header py-1">
                                     <div class="row">
                                         <div class="col"><div class="font-weight-medium m-0 text-dark">{{ __('Filters') }}</div></div>
                                         <div class="col-auto">
-                                            @if(request()->input('sort') || request()->input('space') || request()->input('domain'))
+                                            @if(request()->input('sort') || request()->input('workspace') || request()->input('domain'))
                                                 <a href="{{ route('links') }}" class="text-secondary">{{ __('Reset') }}</a>
                                             @endif
                                         </div>
@@ -48,11 +48,11 @@
                                 </div>
 
                                 <div class="form-group px-4">
-                                    <label for="i_space" class="small">{{ __('Space') }}</label>
-                                    <select name="space" id="i_space" class="custom-select custom-select-sm">
+                                    <label for="i_space" class="small">{{ __('Workspace') }}</label>
+                                    <select name="workspace" id="i_space" class="custom-select custom-select-sm">
                                         <option value="">{{ __('All') }}</option>
-                                        @foreach($spaces as $space)
-                                            <option value="{{ $space->id }}" @if(request()->input('space') == $space->id && request()->input('space') !== null) selected @endif>{{ $space->name }}</option>
+                                        @foreach($workspaces as $workspace)
+                                            <option value="{{ $workspace->id }}" @if(request()->input('workspace') == $workspace->id && request()->input('workspace') !== null) selected @endif>{{ $workspace->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -110,7 +110,7 @@
                                 </div>
 
                                 <div class="d-none d-md-block col-md-4 col-lg-2">
-                                    {{ __('Space') }}
+                                    {{ __('Workspace') }}
                                 </div>
 
                                 <div class="d-none d-lg-block col-lg-2">
@@ -148,8 +148,8 @@
                                     </div>
 
                                     <div class="d-none d-md-block col-md-4 col-lg-2">
-                                        @if(isset($link->space->name))
-                                            <a href="{{ route('links', ['space' => $link->space->id]) }}" class="badge badge-{{ formatSpace()[$link->space->color] }} text-wrap">{{ $link->space->name }}</a>
+                                        @if(isset($link->workspace->name))
+                                            <a href="{{ route('links', ['workspace' => $link->workspace->id]) }}" class="badge badge-{{ formatWorkspace()[$link->workspace->color] }} text-wrap">{{ $link->workspace->name }}</a>
                                         @else
                                             <div class="badge badge-secondary">{{ __('None') }}</div>
                                         @endif

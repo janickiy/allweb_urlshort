@@ -2,7 +2,7 @@
     "$schema": "https://getcomposer.org/schema.json",
     "name": "allweb/urlshort",
     "type": "project",
-    "description": "AllWeb URL shortener application.",
+    "description": "ShortLink Pro URL shortener application.",
     "license": "proprietary",
     "require": {
         "php": "^8.4",

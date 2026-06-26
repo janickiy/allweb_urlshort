@@ -88,7 +88,7 @@ class LinkService
                 'url' => $url,
                 'alias' => $this->aliases->generate($input['domain'] ?? null),
                 'title' => isset($metadata['title']) ? trim($metadata['title']) : null,
-                'space_id' => $input['space'] ?? null,
+                'workspace_id' => $input['workspace'] ?? null,
                 'domain_id' => $input['domain'] ?? null,
             ]);
 
@@ -296,8 +296,8 @@ class LinkService
             $attributes['public'] = (int) (bool) $input['public'];
         }
 
-        if (array_key_exists('space', $input)) {
-            $attributes['space_id'] = $input['space'] ?: null;
+        if (array_key_exists('workspace', $input)) {
+            $attributes['workspace_id'] = $input['workspace'] ?: null;
         }
 
         if (!$link && array_key_exists('domain', $input)) {

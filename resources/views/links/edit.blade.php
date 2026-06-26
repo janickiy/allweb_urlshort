@@ -95,10 +95,10 @@
                     <div class="mb-3">
                         <div class="row g-2 align-items-center">
                             <div class="col">
-                                <label class="form-label" for="i_space_new">{{ __('Space') }}</label>
+                                <label class="form-label" for="i_space_new">{{ __('Workspace') }}</label>
                             </div>
                             <div class="col-auto">
-                                @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']])
+                                @cannot('workspaces', ['App\Models\Link', $userFeatures['option_workspaces']])
                                     @if(config('settings.stripe'))
                                         <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                     @endif
@@ -107,18 +107,18 @@
                         </div>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <div class="input-group-text">@include('icons.space', ['class' => 'icon-label fill-current text-muted'])</div>
+                                <div class="input-group-text">@include('icons.workspace', ['class' => 'icon-label fill-current text-muted'])</div>
                             </div>
-                            <select name="space" id="i_space" class="form-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']]) disabled @endcan>
+                            <select name="workspace" id="i_space" class="form-select{{ $errors->has('workspace') ? ' is-invalid' : '' }}" @cannot('workspaces', ['App\Models\Link', $userFeatures['option_workspaces']]) disabled @endcan>
                                 <option value="">{{ __('None') }}</option>
-                                @foreach($spaces as $space)
-                                    <option value="{{ $space->id }}" @if($link->space_id == $space->id || $space->id == old('space')) selected @endif>{{ $space->name }}</option>
+                                @foreach($workspaces as $workspace)
+                                    <option value="{{ $workspace->id }}" @if($link->workspace_id == $workspace->id || $workspace->id == old('workspace')) selected @endif>{{ $workspace->name }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        @if ($errors->has('space'))
+                        @if ($errors->has('workspace'))
                             <span class="invalid-feedback d-block" role="alert">
-                                <strong>{{ $errors->first('space') }}</strong>
+                                <strong>{{ $errors->first('workspace') }}</strong>
                             </span>
                         @endif
                     </div>

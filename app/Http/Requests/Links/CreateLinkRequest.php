@@ -10,14 +10,14 @@ use App\Rules\LinkGeoGateRule;
 use App\Rules\LinkPasswordGateRule;
 use App\Rules\LinkPlatformGateRule;
 use App\Rules\LinkPublicGateRule;
-use App\Rules\LinkSpaceGateRule;
+use App\Rules\LinkWorkspaceGateRule;
 use App\Rules\ValidateAliasRule;
 use App\Rules\ValidateBadWordsRule;
 use App\Rules\ValidateDomainOwnershipRule;
 use App\Rules\LinkLimitGateRule;
 use App\Rules\ValidateGeoKeyRule;
 use App\Rules\ValidatePlatformKeyRule;
-use App\Rules\ValidateSpaceOwnershipRule;
+use App\Rules\ValidateWorkspaceOwnershipRule;
 use App\Rules\ValidateUrlsCountRule;
 use App\Rules\ValidateUrlsRule;
 use App\Traits\UserFeaturesTrait;
@@ -65,7 +65,7 @@ class CreateLinkRequest extends FormRequest
             if ($request->input('multi_link')) {
                 $rules = [
                     'urls' => ['required', new ValidateBadWordsRule(), new LinkLimitGateRule(), new ValidateUrlsRule(), new ValidateUrlsCountRule()],
-                    'space' => ['nullable', 'integer', new ValidateSpaceOwnershipRule($this->userId), new LinkSpaceGateRule($userFeatures)],
+                    'workspace' => ['nullable', 'integer', new ValidateWorkspaceOwnershipRule($this->userId), new LinkWorkspaceGateRule($userFeatures)],
                     'domain' => ['nullable', 'integer', new ValidateDomainOwnershipRule($this->userId), new LinkDomainGateRule($userFeatures)]
                 ];
             } else {
@@ -73,7 +73,7 @@ class CreateLinkRequest extends FormRequest
                     'url' => ['required', 'url', 'max:2048', new ValidateBadWordsRule(), new LinkLimitGateRule()],
                     'alias' => ['nullable', 'alpha_dash', 'max:255', new ValidateAliasRule($this->userId)],
                     'password' => ['nullable', 'string', 'max:128', new LinkPasswordGateRule($userFeatures)],
-                    'space' => ['nullable', 'integer', new ValidateSpaceOwnershipRule($this->userId), new LinkSpaceGateRule($userFeatures)],
+                    'workspace' => ['nullable', 'integer', new ValidateWorkspaceOwnershipRule($this->userId), new LinkWorkspaceGateRule($userFeatures)],
                     'domain' => ['nullable', 'integer', new ValidateDomainOwnershipRule($this->userId), new LinkDomainGateRule($userFeatures)],
                     'disabled' => ['nullable', 'boolean', new LinkDisabledGateRule($userFeatures)],
                     'public' => ['nullable', 'boolean', new LinkPublicGateRule($userFeatures)],
@@ -93,7 +93,7 @@ class CreateLinkRequest extends FormRequest
                 'url' => ['required', 'url', 'max:2048', new ValidateBadWordsRule()],
                 'alias' => [new FieldNotPresentRule()],
                 'password' => [new FieldNotPresentRule()],
-                'space' => [new FieldNotPresentRule()],
+                'workspace' => [new FieldNotPresentRule()],
                 'domain' => [new FieldNotPresentRule()],
                 'disabled' => [new FieldNotPresentRule()],
                 'public' => [new FieldNotPresentRule()],
@@ -117,7 +117,7 @@ class CreateLinkRequest extends FormRequest
             'url' => __('Link'),
             'alias' => __('Alias'),
             'password' => __('Password'),
-            'space' => __('Space'),
+            'workspace' => __('Workspace'),
             'domain' => __('Domain'),
             'disabled' => __('Disabled'),
             'public' => __('Stats'),

@@ -14,7 +14,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\QRController;
 use App\Http\Controllers\RedirectController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\SpacesController;
+use App\Http\Controllers\WorkspacesController;
 use App\Http\Controllers\StatsController;
 use App\Http\Controllers\WebhookController;
 use Illuminate\Support\Facades\Auth;
@@ -70,15 +70,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('delete/{id}', 'deleteLink')->name('links.delete');
         });
 
-    Route::prefix('spaces')
-        ->controller(SpacesController::class)
+    Route::prefix('workspaces')
+        ->controller(WorkspacesController::class)
         ->group(function () {
-            Route::get('/', 'index')->name('spaces');
-            Route::get('new', 'spacesNew')->name('spaces.new');
-            Route::post('new', 'createSpace');
-            Route::get('edit/{id}', 'spacesEdit')->name('spaces.edit');
-            Route::post('edit/{id}', 'updateSpace');
-            Route::post('delete/{id}', 'deleteSpace')->name('spaces.delete');
+            Route::get('/', 'index')->name('workspaces');
+            Route::get('new', 'workspacesNew')->name('workspaces.new');
+            Route::post('new', 'createWorkspace');
+            Route::get('edit/{id}', 'workspacesEdit')->name('workspaces.edit');
+            Route::post('edit/{id}', 'updateWorkspace');
+            Route::post('delete/{id}', 'deleteWorkspace')->name('workspaces.delete');
         });
 
     Route::prefix('domains')
@@ -186,19 +186,6 @@ Route::prefix('admin')
                     }
                 });
 
-            Route::prefix('languages')
-                ->group(function () {
-                    Route::get('/', 'languages')->name('languages');
-
-                    Route::name('languages.')->group(function () {
-                        Route::get('new', 'languagesNew')->name('new');
-                        Route::post('new', 'createLanguage')->name('create');
-                        Route::get('edit/{id}', 'languagesEdit')->name('edit');
-                        Route::post('edit/{id}', 'updateLanguage')->name('update');
-                        Route::post('delete/{id}', 'deleteLanguage')->name('delete');
-                    });
-                });
-
             Route::prefix('users')
                 ->group(function () {
                     Route::get('/', 'users')->name('users');
@@ -224,14 +211,14 @@ Route::prefix('admin')
                     });
                 });
 
-            Route::prefix('spaces')
+            Route::prefix('workspaces')
                 ->group(function () {
-                    Route::get('/', 'spaces')->name('spaces');
+                    Route::get('/', 'workspaces')->name('workspaces');
 
-                    Route::name('spaces.')->group(function () {
-                        Route::get('edit/{id}', 'spacesEdit')->name('edit');
-                        Route::post('edit/{id}', 'updateSpace')->name('update');
-                        Route::post('delete/{id}', 'deleteSpace')->name('delete');
+                    Route::name('workspaces.')->group(function () {
+                        Route::get('edit/{id}', 'workspacesEdit')->name('edit');
+                        Route::post('edit/{id}', 'updateWorkspace')->name('update');
+                        Route::post('delete/{id}', 'deleteWorkspace')->name('delete');
                     });
                 });
 

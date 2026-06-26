@@ -21,11 +21,11 @@
                             'icon' => 'icons.background.link'
                         ],
                         [
-                            'title' => 'Spaces',
-                            'value' => $stats['spaces'],
-                            'description' => 'Manage spaces',
-                            'route' => 'spaces',
-                            'icon' => 'icons.background.space'
+                            'title' => 'Workspaces',
+                            'value' => $stats['workspaces'],
+                            'description' => 'Manage workspaces',
+                            'route' => 'workspaces',
+                            'icon' => 'icons.background.workspace'
                         ],
                         [
                             'title' => 'Domains',

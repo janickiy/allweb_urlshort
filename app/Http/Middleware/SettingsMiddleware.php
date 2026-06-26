@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Language;
 use Closure;
 use App\Models\Setting;
 use Illuminate\Http\Request;
@@ -21,16 +20,6 @@ class SettingsMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            // Set the app's default locale
-            $languages = Language::all();
-            foreach ($languages as $language) {
-                if ($language->default) {
-                    config(['app.locale' => $language->code]);
-                }
-
-                config(['app.locales.' . $language->code => $language->name]);
-            }
-
             $settings = Setting::all()->pluck('value', 'name');
 
             // Set the app's name

@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 collapse{{ ($errors->has('alias') || $errors->has('domain') || $errors->has('space') || $errors->has('expiration_url') || $errors->has('password') || $errors->has('expiration_date') || $errors->has('expiration_time') || $errors->has('public') || $errors->has('disabled') || $errors->has('geo.*.key') || $errors->has('geo.*.value') || $errors->has('platform.*.key') || $errors->has('platform.*.value')) || ($errors->has('urls') || $errors->has('domain') || $errors->has('space')) || count(session('toast')) > 1 ? ' show' : '' }}" id="advancedOptions">
+                <div class="col-12 collapse{{ ($errors->has('alias') || $errors->has('domain') || $errors->has('workspace') || $errors->has('expiration_url') || $errors->has('password') || $errors->has('expiration_date') || $errors->has('expiration_time') || $errors->has('public') || $errors->has('disabled') || $errors->has('geo.*.key') || $errors->has('geo.*.value') || $errors->has('platform.*.key') || $errors->has('platform.*.value')) || ($errors->has('urls') || $errors->has('domain') || $errors->has('workspace')) || count(session('toast')) > 1 ? ' show' : '' }}" id="advancedOptions">
                     <div class="row mt-3">
                         <div class="col-12 col-lg-6">
                             <div class="form-group">
@@ -102,10 +102,10 @@
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col">
-                                        <label for="i_space_new">{{ __('Space') }}</label>
+                                        <label for="i_space_new">{{ __('Workspace') }}</label>
                                     </div>
                                     <div class="col-auto">
-                                        @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']])
+                                        @cannot('workspaces', ['App\Models\Link', $userFeatures['option_workspaces']])
                                             @if(config('settings.stripe'))
                                                 <a href="{{ route('pricing') }}" data-toggle="tooltip" title="{{ __('Unlock feature') }}">@include('icons.unlock', ['class' => 'fill-current text-primary icon-text'])</a>
                                             @endif
@@ -114,18 +114,18 @@
                                 </div>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <div class="input-group-text">@include('icons.space', ['class' => 'icon-label fill-current text-muted'])</div>
+                                        <div class="input-group-text">@include('icons.workspace', ['class' => 'icon-label fill-current text-muted'])</div>
                                     </div>
-                                    <select name="space" id="i_space_new" class="custom-select{{ $errors->has('space') ? ' is-invalid' : '' }}" @cannot('spaces', ['App\Models\Link', $userFeatures['option_spaces']]) disabled @endcan>
+                                    <select name="workspace" id="i_space_new" class="custom-select{{ $errors->has('workspace') ? ' is-invalid' : '' }}" @cannot('workspaces', ['App\Models\Link', $userFeatures['option_workspaces']]) disabled @endcan>
                                         <option value="">{{ __('None') }}</option>
-                                        @foreach($spaces as $space)
-                                            <option value="{{ $space->id }}" @if(old('space') == $space->id) selected @endif>{{ $space->name }}</option>
+                                        @foreach($workspaces as $workspace)
+                                            <option value="{{ $workspace->id }}" @if(old('workspace') == $workspace->id) selected @endif>{{ $workspace->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                @if ($errors->has('space'))
+                                @if ($errors->has('workspace'))
                                     <span class="invalid-feedback d-block" role="alert">
-                                        <strong>{{ $errors->first('space') }}</strong>
+                                        <strong>{{ $errors->first('workspace') }}</strong>
                                     </span>
                                 @endif
                             </div>

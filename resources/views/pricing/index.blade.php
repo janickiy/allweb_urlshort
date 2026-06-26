@@ -93,14 +93,14 @@
                                     </div>
 
                                     <div class="row py-2">
-                                        <div class="col{{ ($plan->option_spaces == 0 ? ' text-black-50' : '') }}">
-                                            {{ __('Spaces') }}
+                                        <div class="col{{ ($plan->option_workspaces == 0 ? ' text-black-50' : '') }}">
+                                            {{ __('Workspaces') }}
                                         </div>
                                         <div class="col-auto d-flex align-items-center font-weight-medium">
-                                            @if($plan->option_spaces < 0)
+                                            @if($plan->option_workspaces < 0)
                                                 {{ __('Unlimited') }}
-                                            @elseif($plan->option_spaces > 0)
-                                                {{ number_format($plan->option_spaces, 0, __('.'), __(',')) }}
+                                            @elseif($plan->option_workspaces > 0)
+                                                {{ number_format($plan->option_workspaces, 0, __('.'), __(',')) }}
                                             @else
                                                 @include('icons/close', ['class' => 'text-black-50 pt-1'])
                                             @endif

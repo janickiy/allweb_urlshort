@@ -1,1 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 18 18"><path d="M2.75,0a1,1,0,0,0-.86.5L.14,3.5A1,1,0,0,0,0,4V16a2,2,0,0,0,2,2H16a2,2,0,0,0,2-2V4a1,1,0,0,0-.14-.5L16.11.5a1,1,0,0,0-.86-.5Zm.57,2H8V4H2.16ZM10,2h4.68l1.16,2H10ZM2,6H16V16H2ZM6,8v2h6V8Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 24 24" fill="none" style="fill:none!important" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4.5 5.5h8.2L20 12.8 12.8 20 4.5 11.7z"/>
+    <circle cx="8.2" cy="9.2" r="1"/>
+    <path d="M12.2 9.5h3.6"/>
+    <path d="M10.5 13h4.8"/>
+</svg>

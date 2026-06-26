@@ -16,7 +16,7 @@ class UserObserver
     {
         if ($user->isForceDeleting()) {
             $user->domains()->delete();
-            $user->spaces()->delete();
+            $user->workspaces()->delete();
             $user->links()->delete();
             $user->stats()->delete();
 

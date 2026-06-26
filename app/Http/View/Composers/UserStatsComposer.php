@@ -7,7 +7,7 @@ namespace App\Http\View\Composers;
 use App\Models\Domain;
 use App\Models\Link;
 use App\Models\Page;
-use App\Models\Space;
+use App\Models\Workspace;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +29,7 @@ class UserStatsComposer
 
             $stats = [
                 'links' => Link::where('user_id', $user->id)->count(),
-                'spaces' => Space::where('user_id', $user->id)->count(),
+                'workspaces' => Workspace::where('user_id', $user->id)->count(),
                 'domains' => Domain::where('user_id', $user->id)->count()
             ];
 

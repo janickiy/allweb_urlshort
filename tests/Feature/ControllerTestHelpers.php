@@ -6,7 +6,7 @@ use App\Models\Domain;
 use App\Models\Link;
 use App\Models\Page;
 use App\Models\Plan;
-use App\Models\Space;
+use App\Models\Workspace;
 use App\Models\Stat;
 use App\Models\Subscription;
 use App\Models\User;
@@ -35,11 +35,11 @@ trait ControllerTestHelpers
         return $this->user(array_merge(['role' => 1], $attributes));
     }
 
-    private function space(User $user, array $attributes = []): Space
+    private function workspace(User $user, array $attributes = []): Workspace
     {
-        return Space::forceCreate(array_merge([
+        return Workspace::forceCreate(array_merge([
             'user_id' => $user->id,
-            'name' => 'Space '.Str::random(6),
+            'name' => 'Workspace '.Str::random(6),
             'color' => 1,
             'created_at' => now(),
             'updated_at' => now(),
@@ -72,7 +72,7 @@ trait ControllerTestHelpers
             'public' => 0,
             'expiration_url' => null,
             'clicks' => 1,
-            'space_id' => null,
+            'workspace_id' => null,
             'domain_id' => null,
             'ends_at' => null,
             'created_at' => now(),
@@ -109,7 +109,7 @@ trait ControllerTestHelpers
             'color' => '#ef698b',
             'option_api' => 1,
             'option_links' => -1,
-            'option_spaces' => -1,
+            'option_workspaces' => -1,
             'option_domains' => -1,
             'option_stats' => 1,
             'option_geo' => 1,
@@ -165,7 +165,7 @@ trait ControllerTestHelpers
             'visibility' => 1,
             'color' => '#ef698b',
             'option_links' => -1,
-            'option_spaces' => -1,
+            'option_workspaces' => -1,
             'option_domains' => -1,
             'option_password' => 1,
             'option_expiration' => 1,

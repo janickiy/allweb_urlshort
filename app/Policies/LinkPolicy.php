@@ -124,7 +124,7 @@ class LinkPolicy
      * @param $limit
      * @return bool
      */
-    public function spaces(User $user, mixed $limit): bool
+    public function workspaces(User $user, mixed $limit): bool
     {
         if ($limit) {
             return true;

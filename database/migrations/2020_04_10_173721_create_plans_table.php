@@ -31,7 +31,7 @@ class CreatePlansTable extends Migration
 			$table->string('color', 32);
 			$table->tinyInteger('option_api')->nullable();
 			$table->integer('option_links')->nullable();
-			$table->integer('option_spaces')->nullable();
+			$table->integer('option_workspaces')->nullable();
 			$table->integer('option_domains')->nullable();
 			$table->tinyInteger('option_stats')->nullable();
 			$table->tinyInteger('option_geo')->nullable();
@@ -58,7 +58,7 @@ class CreatePlansTable extends Migration
             'color' => '#ef698b',
             'option_api' => 1,
             'option_links' => -1,
-            'option_spaces' => -1,
+            'option_workspaces' => -1,
             'option_domains' => -1,
             'option_stats' => 1,
             'option_geo' => 1,

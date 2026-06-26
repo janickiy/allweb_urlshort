@@ -6,7 +6,7 @@
         $menu = [
             'dashboard' => ['dashboard', 'Dashboard', 'dashboard'],
             'links' => ['link', 'Links', 'links'],
-            'spaces' => ['space', 'Spaces', 'spaces'],
+            'workspaces' => ['workspace', 'Workspaces', 'workspaces'],
             'domains' => ['domain', 'Domains', 'domains'],
         ];
     @endphp

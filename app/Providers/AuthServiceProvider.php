@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use App\Models\Domain;
 use App\Models\Link;
-use App\Models\Space;
+use App\Models\Workspace;
 use App\Policies\DomainPolicy;
 use App\Policies\LinkPolicy;
-use App\Policies\SpacePolicy;
+use App\Policies\WorkspacePolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         Domain::class => DomainPolicy::class,
         Link::class => LinkPolicy::class,
-        Space::class => SpacePolicy::class,
+        Workspace::class => WorkspacePolicy::class,
     ];
 
     /**

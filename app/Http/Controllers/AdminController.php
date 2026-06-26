@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Admin\{
-    CreateLanguageRequest,
     CreatePageRequest,
     CreatePlanRequest,
     CreateSubscriptionRequest,
@@ -23,7 +22,7 @@ use App\Http\Requests\Admin\{
 };
 use App\Http\Requests\Domains\UpdateDomainRequest;
 use App\Http\Requests\Links\UpdateLinkRequest;
-use App\Http\Requests\Spaces\UpdateSpaceRequest;
+use App\Http\Requests\Workspaces\UpdateWorkspaceRequest;
 use App\Http\Requests\Settings\{
     UpdateUserRequest
 };
@@ -31,7 +30,7 @@ use App\Services\AdminService;
 use App\Services\DomainService;
 use App\Services\LinkService;
 use App\Services\SettingsService;
-use App\Services\SpaceService;
+use App\Services\WorkspaceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -47,7 +46,7 @@ class AdminController extends Controller
         private readonly DomainService $domainService,
         private readonly LinkService $linkService,
         private readonly SettingsService $settingsService,
-        private readonly SpaceService $spaceService,
+        private readonly WorkspaceService $workspaceService,
     ) {
     }
 
@@ -172,38 +171,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Display the paginated language list in the admin panel.
-     *
-     * @param Request $request
-     * @return View
-     */
-    public function languages(Request $request): View
-    {
-        return view('admin.content', $this->adminService->languagesListData($request));
-    }
-
-    /**
-     * Display the form for uploading a new language file.
-     *
-     * @return View
-     */
-    public function languagesNew(): View
-    {
-        return view('admin.content', ['view' => 'admin.languages.new']);
-    }
-
-    /**
-     * Display the language edit form for the selected language.
-     *
-     * @param string $id
-     * @return View
-     */
-    public function languagesEdit(string $id): View
-    {
-        return view('admin.content', $this->adminService->languageEditData($id));
-    }
-
-    /**
      * Display the paginated user list in the admin panel.
      *
      * @param Request $request
@@ -248,25 +215,25 @@ class AdminController extends Controller
     }
 
     /**
-     * Display the paginated space list in the admin panel.
+     * Display the paginated workspace list in the admin panel.
      *
      * @param Request $request
      * @return View
      */
-    public function spaces(Request $request): View
+    public function workspaces(Request $request): View
     {
-        return view('admin.content', $this->adminService->spacesListData($request));
+        return view('admin.content', $this->adminService->workspacesListData($request));
     }
 
     /**
-     * Display the admin space edit form for the selected space.
+     * Display the admin workspace edit form for the selected workspace.
      *
      * @param $id
      * @return View
      */
-    public function spacesEdit(int|string $id): View
+    public function workspacesEdit(int|string $id): View
     {
-        return view('admin.content', $this->adminService->spaceEditData($id));
+        return view('admin.content', $this->adminService->workspaceEditData($id));
     }
 
     /**
@@ -565,50 +532,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Upload and register a new language file from admin input.
-     *
-     * @param CreateLanguageRequest $request
-     * @return RedirectResponse
-     */
-    public function createLanguage(CreateLanguageRequest $request): RedirectResponse
-    {
-        $name = $this->adminService->importLanguage($request->file('language'));
-
-        return redirect()->route('admin.languages')->with('success', __(':name language uploaded.', ['name' => $name]));
-    }
-
-    /**
-     * Update language metadata and default-language state.
-     *
-     * @param Request $request
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function updateLanguage(Request $request, int|string $id): RedirectResponse
-    {
-        $this->adminService->updateLanguageDefault($id, $request->has('default'));
-
-        return redirect()->route('admin.languages.edit', $id)->with('success', __('Settings saved.'));
-    }
-
-    /**
-     * Delete a language after validating default-language constraints.
-     *
-     * @param $id
-     * @return RedirectResponse
-     */
-    public function deleteLanguage(int|string $id): RedirectResponse
-    {
-        try {
-            $name = $this->adminService->deleteLanguage($id);
-        } catch (\Exception $e) {
-            return redirect()->route('admin.languages')->with('error', $e->getMessage());
-        }
-
-        return redirect()->route('admin.languages')->with('success', __(':name has been deleted.', ['name' => $name]));
-    }
-
-    /**
      * Create a static page from validated admin input.
      *
      * @param CreatePageRequest $request
@@ -810,31 +733,31 @@ class AdminController extends Controller
     }
 
     /**
-     * Update the selected space from validated admin input.
+     * Update the selected workspace from validated admin input.
      *
-     * @param UpdateSpaceRequest $request
+     * @param UpdateWorkspaceRequest $request
      * @param int|string $id
      * @return RedirectResponse
      */
-    public function updateSpace(UpdateSpaceRequest $request, int|string $id): RedirectResponse
+    public function updateWorkspace(UpdateWorkspaceRequest $request, int|string $id): RedirectResponse
     {
-        $this->spaceService->updateById($id, $request->validated());
+        $this->workspaceService->updateById($id, $request->validated());
 
         return back()->with('success', __('Settings saved.'));
     }
 
     /**
-     * Delete the selected space and redirect with feedback.
+     * Delete the selected workspace and redirect with feedback.
      *
      * @param int|string $id
      * @return RedirectResponse
      * @throws \Exception
      */
-    public function deleteSpace(int|string $id): RedirectResponse
+    public function deleteWorkspace(int|string $id): RedirectResponse
     {
-        $name = $this->spaceService->deleteById($id);
+        $name = $this->workspaceService->deleteById($id);
 
-        return redirect()->route('admin.spaces')->with('success', __(':name has been deleted.', ['name' => $name]));
+        return redirect()->route('admin.workspaces')->with('success', __(':name has been deleted.', ['name' => $name]));
     }
 
     /**

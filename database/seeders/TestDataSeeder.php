@@ -3,11 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\Domain;
-use App\Models\Language;
 use App\Models\Link;
 use App\Models\Page;
 use App\Models\Plan;
-use App\Models\Space;
+use App\Models\Workspace;
 use App\Models\Stat;
 use App\Models\Subscription;
 use App\Models\User;
@@ -28,13 +27,12 @@ class TestDataSeeder extends Seeder
     {
         Model::unguarded(function (): void {
             $this->seedSettings();
-            $this->seedLanguages();
             $users = $this->seedUsers();
             $plans = $this->seedPlans();
             $this->seedPages();
-            $spaces = $this->seedSpaces($users);
+            $workspaces = $this->seedWorkspaces($users);
             $domains = $this->seedDomains($users);
-            $links = $this->seedLinks($users, $spaces, $domains);
+            $links = $this->seedLinks($users, $workspaces, $domains);
             $this->seedStats($links);
             $this->seedSubscriptions($users, $plans);
         });
@@ -61,7 +59,7 @@ class TestDataSeeder extends Seeder
             'invoice_postal_code' => '10001',
             'invoice_state' => 'NY',
             'invoice_vat_number' => 'DEMO-VAT-001',
-            'invoice_vendor' => 'AllWeb Demo LLC',
+            'invoice_vendor' => 'ShortLink Pro Demo LLC',
             'legal_cookie_url' => '/page/cookie-policy',
             'legal_privacy_url' => '/page/privacy-policy',
             'legal_terms_url' => '/page/terms-of-service',
@@ -69,37 +67,21 @@ class TestDataSeeder extends Seeder
             'registration_verification' => '0',
             'short_bad_words' => 'admin,login,root',
             'short_guest' => '1',
-            'social_facebook' => 'https://facebook.com/allweb-demo',
-            'social_instagram' => 'https://instagram.com/allweb-demo',
-            'social_twitter' => 'https://x.com/allweb-demo',
-            'social_youtube' => 'https://youtube.com/@allweb-demo',
+            'social_facebook' => 'https://facebook.com/shortlink-pro-demo',
+            'social_instagram' => 'https://instagram.com/shortlink-pro-demo',
+            'social_twitter' => 'https://x.com/shortlink-pro-demo',
+            'social_youtube' => 'https://youtube.com/@shortlink-pro-demo',
             'stripe' => '0',
             'stripe_key' => 'pk_test_demo',
             'stripe_secret' => 'sk_test_demo',
             'stripe_wh_secret' => 'whsec_test_demo',
             'tagline' => 'Demo URL shortening workspace with seeded data.',
             'timezone' => 'UTC',
-            'title' => 'AllWeb UrlShort',
+            'title' => 'ShortLink Pro',
         ];
 
         foreach ($settings as $name => $value) {
             DB::table('settings')->updateOrInsert(['name' => $name], ['value' => $value]);
-        }
-    }
-
-    /**
-     * Seed extra locales available in the admin language section.
-     */
-    private function seedLanguages(): void
-    {
-        foreach ([
-            ['code' => 'en', 'name' => 'English', 'dir' => 'ltr', 'default' => 1],
-            ['code' => 'de', 'name' => 'German', 'dir' => 'ltr', 'default' => 0],
-            ['code' => 'es', 'name' => 'Spanish', 'dir' => 'ltr', 'default' => 0],
-            ['code' => 'fr', 'name' => 'French', 'dir' => 'ltr', 'default' => 0],
-            ['code' => 'ru', 'name' => 'Russian', 'dir' => 'ltr', 'default' => 0],
-        ] as $language) {
-            Language::query()->updateOrCreate(['code' => $language['code']], $language);
         }
     }
 
@@ -206,7 +188,7 @@ class TestDataSeeder extends Seeder
                 'color' => '#0d6efd',
                 'option_api' => 1,
                 'option_links' => -1,
-                'option_spaces' => -1,
+                'option_workspaces' => -1,
                 'option_domains' => -1,
                 'option_stats' => 1,
                 'option_geo' => 1,
@@ -232,7 +214,7 @@ class TestDataSeeder extends Seeder
                 'color' => '#20c997',
                 'option_api' => 1,
                 'option_links' => 100,
-                'option_spaces' => 10,
+                'option_workspaces' => 10,
                 'option_domains' => 3,
                 'option_stats' => 1,
                 'option_geo' => 1,
@@ -258,7 +240,7 @@ class TestDataSeeder extends Seeder
                 'color' => '#6f42c1',
                 'option_api' => 1,
                 'option_links' => 1000,
-                'option_spaces' => 50,
+                'option_workspaces' => 50,
                 'option_domains' => 20,
                 'option_stats' => 1,
                 'option_geo' => 1,
@@ -284,7 +266,7 @@ class TestDataSeeder extends Seeder
                 'color' => '#6c757d',
                 'option_api' => 0,
                 'option_links' => 25,
-                'option_spaces' => 2,
+                'option_workspaces' => 2,
                 'option_domains' => 1,
                 'option_stats' => 0,
                 'option_geo' => 0,
@@ -341,12 +323,12 @@ class TestDataSeeder extends Seeder
     }
 
     /**
-     * Create spaces for each active demo user.
+     * Create workspaces for each active demo user.
      *
      * @param array<string, User> $users
-     * @return array<string, Space>
+     * @return array<string, Workspace>
      */
-    private function seedSpaces(array $users): array
+    private function seedWorkspaces(array $users): array
     {
         $rows = [
             'owner-product' => ['user' => 'owner', 'name' => 'Product Campaigns', 'color' => 1],
@@ -355,15 +337,15 @@ class TestDataSeeder extends Seeder
             'manager-ops' => ['user' => 'manager', 'name' => 'Operations', 'color' => 5],
         ];
 
-        $spaces = [];
+        $workspaces = [];
         foreach ($rows as $key => $data) {
-            $spaces[$key] = Space::query()->updateOrCreate(
+            $workspaces[$key] = Workspace::query()->updateOrCreate(
                 ['user_id' => $users[$data['user']]->id, 'name' => $data['name']],
                 ['color' => $data['color']]
             );
         }
 
-        return $spaces;
+        return $workspaces;
     }
 
     /**
@@ -414,11 +396,11 @@ class TestDataSeeder extends Seeder
      * Create links with normal, protected, disabled, and expired states.
      *
      * @param array<string, User> $users
-     * @param array<string, Space> $spaces
+     * @param array<string, Workspace> $workspaces
      * @param array<string, Domain> $domains
      * @return array<string, Link>
      */
-    private function seedLinks(array $users, array $spaces, array $domains): array
+    private function seedLinks(array $users, array $workspaces, array $domains): array
     {
         $rows = [
             'launch' => [
@@ -426,7 +408,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-launch',
                 'url' => 'https://example.com/product-launch?utm_source=seed',
                 'title' => 'Product Launch',
-                'space' => 'owner-product',
+                'workspace' => 'owner-product',
                 'domain' => 'owner-main',
                 'public' => 1,
                 'disabled' => 0,
@@ -447,7 +429,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-pricing',
                 'url' => 'https://example.com/pricing',
                 'title' => 'Pricing Page',
-                'space' => 'owner-product',
+                'workspace' => 'owner-product',
                 'domain' => 'owner-main',
                 'public' => 1,
                 'disabled' => 0,
@@ -462,7 +444,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-webinar',
                 'url' => 'https://example.org/webinar',
                 'title' => 'Private Webinar',
-                'space' => 'owner-social',
+                'workspace' => 'owner-social',
                 'domain' => 'owner-events',
                 'public' => 0,
                 'disabled' => 0,
@@ -477,7 +459,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-expired',
                 'url' => 'https://example.net/old-offer',
                 'title' => 'Expired Offer',
-                'space' => 'marketer-sales',
+                'workspace' => 'marketer-sales',
                 'domain' => 'marketer-main',
                 'public' => 0,
                 'disabled' => 0,
@@ -492,7 +474,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-disabled',
                 'url' => 'https://example.com/internal',
                 'title' => 'Disabled Internal Link',
-                'space' => 'manager-ops',
+                'workspace' => 'manager-ops',
                 'domain' => null,
                 'public' => 0,
                 'disabled' => 1,
@@ -507,7 +489,7 @@ class TestDataSeeder extends Seeder
                 'alias' => 'demo-public',
                 'url' => 'https://example.com/public-report',
                 'title' => 'Public Report',
-                'space' => null,
+                'workspace' => null,
                 'domain' => null,
                 'public' => 1,
                 'disabled' => 0,
@@ -530,7 +512,7 @@ class TestDataSeeder extends Seeder
                     'user_id' => $users[$data['user']]->id,
                     'url' => $data['url'],
                     'title' => $data['title'],
-                    'space_id' => $data['space'] ? $spaces[$data['space']]->id : null,
+                    'workspace_id' => $data['workspace'] ? $workspaces[$data['workspace']]->id : null,
                     'password' => $data['password'],
                     'disabled' => $data['disabled'],
                     'public' => $data['public'],

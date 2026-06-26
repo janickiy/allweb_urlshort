@@ -1,6 +1,8 @@
-# AllWeb URL Shortener
+# ShortLink Pro
 
-A Laravel application for shortening links with user spaces, custom domains, statistics, an API, and an AdminLTE-based admin panel.
+A Laravel application for shortening links with user workspaces, custom domains, statistics, an API, and an AdminLTE-based admin panel.
+
+Author: [Alexander Yanitsky](https://janickiy.com/)
 
 ## Stack
 

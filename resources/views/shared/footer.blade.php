@@ -44,7 +44,10 @@
         @endif
         <div class="row">
             <div class="col-12 col-lg order-2 order-lg-1">
-                <div class="text-muted py-1">{{ __('© :year :name.', ['year' => now()->year, 'name' => config('settings.title')]) }} {{ __('All rights reserved.') }}</div>
+                <div class="text-muted py-1">
+                    {{ __('© :year :name.', ['year' => now()->year, 'name' => config('settings.title')]) }} {{ __('All rights reserved.') }}
+                    <a href="{{ config('info.software.url') }}" target="_blank" rel="noopener">{{ config('info.software.author') }}</a>
+                </div>
             </div>
             <div class="col-12 col-lg-auto order-1 order-lg-2">
 

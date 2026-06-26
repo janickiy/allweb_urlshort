@@ -53,11 +53,11 @@ function formatStripeStatus(): array
 }
 
 /**
- * Format the spaces codes
+ * Format the workspaces codes
  *
  * @return array
  */
-function formatSpace(): array
+function formatWorkspace(): array
 {
     return [
         1 => 'success',

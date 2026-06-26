@@ -33,7 +33,7 @@ class UpdatePlanRequest extends FormRequest
             'visibility' => ['sometimes', 'integer', 'between:0,1'],
             'color' => ['required', 'max:32'],
             'option_links' => ['required', 'integer'],
-            'option_spaces' => ['required', 'integer'],
+            'option_workspaces' => ['required', 'integer'],
             'option_domains' => ['required', 'integer'],
             'option_password' => ['required', 'integer', 'between:0,1'],
             'option_expiration' => ['required', 'integer', 'between:0,1'],

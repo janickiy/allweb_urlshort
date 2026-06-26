@@ -233,7 +233,7 @@ class ControllerMethodsCoverageTest extends TestCase
     private function environmentPayload(array $overrides = []): array
     {
         return array_merge([
-            'app_name' => 'AllWeb',
+            'app_name' => 'ShortLink Pro',
             'environment' => 'local',
             'environment_custom' => '',
             'app_debug' => 'true',
@@ -259,7 +259,7 @@ class ControllerMethodsCoverageTest extends TestCase
             'mail_password' => 'null',
             'mail_encryption' => 'null',
             'mail_from_address' => 'mail@example.test',
-            'mail_from_name' => 'AllWeb',
+            'mail_from_name' => 'ShortLink Pro',
             'pusher_app_id' => '',
             'pusher_app_key' => '',
             'pusher_app_secret' => '',

@@ -27,7 +27,7 @@ class CreateLinksTable extends Migration
 			$table->tinyInteger('public')->default(0);
 			$table->string('expiration_url', 2048)->nullable();
 			$table->integer('clicks')->nullable()->default(0)->index('links_clicks_index');
-			$table->integer('space_id')->nullable()->index('links_space_id_index');
+			$table->integer('workspace_id')->nullable()->index('links_workspace_id_index');
 			$table->integer('domain_id')->nullable()->index('links_domain_id_index');
 			$table->timestamp('ends_at')->nullable();
 			$table->timestamps();

@@ -200,7 +200,7 @@ class CreateSettingsTable extends Migration
                 ],
                 [
                     'name' => 'title',
-                    'value' => 'AllWeb UrlShort'
+                    'value' => 'ShortLink Pro'
                 ],
                 [
                     'name' => 'tracking_code',

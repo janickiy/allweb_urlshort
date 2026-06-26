@@ -9,12 +9,12 @@ use App\Rules\LinkGeoGateRule;
 use App\Rules\LinkPasswordGateRule;
 use App\Rules\LinkPlatformGateRule;
 use App\Rules\LinkPublicGateRule;
-use App\Rules\LinkSpaceGateRule;
+use App\Rules\LinkWorkspaceGateRule;
 use App\Rules\ValidateAliasRule;
 use App\Rules\ValidateBadWordsRule;
 use App\Rules\ValidateGeoKeyRule;
 use App\Rules\ValidatePlatformKeyRule;
-use App\Rules\ValidateSpaceOwnershipRule;
+use App\Rules\ValidateWorkspaceOwnershipRule;
 use App\Traits\UserFeaturesTrait;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
@@ -66,7 +66,7 @@ class UpdateLinkRequest extends FormRequest
             'url' => ['sometimes', 'required', 'url', 'max:2048', new ValidateBadWordsRule()],
             'alias' => ['sometimes', 'alpha_dash', 'max:255', new ValidateAliasRule($this->userId)],
             'password' => ['nullable', 'string', 'max:128', new LinkPasswordGateRule($userFeatures)],
-            'space' => ['nullable', 'integer', new ValidateSpaceOwnershipRule($this->userId), new LinkSpaceGateRule($userFeatures)],
+            'workspace' => ['nullable', 'integer', new ValidateWorkspaceOwnershipRule($this->userId), new LinkWorkspaceGateRule($userFeatures)],
             'disabled' => ['nullable', 'boolean', new LinkDisabledGateRule($userFeatures)],
             'public' => ['nullable', 'boolean', new LinkPublicGateRule($userFeatures)],
             'expiration_url' => ['nullable', 'url', 'max:2048', new LinkExpirationGateRule($userFeatures)],
@@ -85,7 +85,7 @@ class UpdateLinkRequest extends FormRequest
             'url' => __('Link'),
             'alias' => __('Alias'),
             'password' => __('Password'),
-            'space' => __('Space'),
+            'workspace' => __('Workspace'),
             'disabled' => __('Disabled'),
             'public' => __('Stats'),
             'expiration_url' => __('Expiration link'),

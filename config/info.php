@@ -3,9 +3,9 @@
 return [
 
     'software' => [
-        'name'      => 'AllWeb UrlShort',
+        'name'      => 'ShortLink Pro',
         'author'    => 'Alexander Yanitsky',
-        'url'       => 'https://phpshort.com',
+        'url'       => 'https://janickiy.com/',
         'version'   => '1.0.0'
     ]
 

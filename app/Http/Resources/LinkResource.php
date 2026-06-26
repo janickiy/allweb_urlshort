@@ -28,7 +28,7 @@ class LinkResource extends JsonResource
             'expiration_url' => $this->expiration_url,
             'clicks' => $this->clicks,
             'user_id' => $this->user_id,
-            'space' => $this->space,
+            'workspace' => $this->workspace,
             'domain' => $this->domain,
             'ends_at' => $this->ends_at,
             'created_at' => $this->created_at,

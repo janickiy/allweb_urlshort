@@ -13,11 +13,11 @@ class CreateSpacesTable extends Migration
 	 */
 	public function up(): void
 	{
-		Schema::create('spaces', function(Blueprint $table)
+		Schema::create('workspaces', function(Blueprint $table)
 		{
 			$table->integer('id', true);
-			$table->integer('user_id')->index('spaces_user_id_index');
-			$table->string('name', 255)->index('spaces_name_index');
+			$table->integer('user_id')->index('workspaces_user_id_index');
+			$table->string('name', 255)->index('workspaces_name_index');
 			$table->integer('color')->nullable();
 			$table->timestamps();
 		});
@@ -30,6 +30,6 @@ class CreateSpacesTable extends Migration
 	 */
 	public function down(): void
 	{
-		Schema::drop('spaces');
+		Schema::drop('workspaces');
 	}
 }
