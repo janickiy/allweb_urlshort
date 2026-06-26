@@ -7,11 +7,13 @@
                     {{ __('Pages') }}
                 </h3>
             </div>
-            <div class="col-12 col-md-auto d-flex flex-wrap gap-2">
+            <div class="col-12 col-md-auto d-flex justify-content-center">
                 <a href="{{ route('admin.pages.new') }}" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
                     @include('icons.add', ['class' => 'fill-current icon-button-sm'])
                     {{ __('New') }}
                 </a>
+            </div>
+            <div class="col-12 col-md d-flex justify-content-center justify-content-md-end">
                 <form method="GET" action="{{ route('admin.pages') }}" class="admin-filter-form">
                     <div class="input-group input-group-sm">
                         <input class="form-control" name="search" placeholder="{{ __('Search') }}" value="{{ app('request')->input('search') }}">
