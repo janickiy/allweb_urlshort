@@ -36,6 +36,7 @@
                 @php
                     $workspaceColors = formatWorkspace();
                     $selectedColor = (int) old('color', 1);
+                    $selectedColor = array_key_exists($selectedColor, $workspaceColors) ? $selectedColor : 1;
                     $selectedColorClass = $workspaceColors[$selectedColor] ?? 'primary';
                 @endphp
 
