@@ -19,6 +19,10 @@ class SettingsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (! file_exists(storage_path('installed')) && $request->is('install*')) {
+            return $next($request);
+        }
+
         try {
             $settings = Setting::all()->pluck('value', 'name');
 

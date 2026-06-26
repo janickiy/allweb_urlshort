@@ -223,16 +223,42 @@ a.badge-primary:focus {
 }
 
 @media (min-width: 992px) {
-  .auth-user-menu {
+  .auth-top-actions {
     position: fixed;
     top: 1.75rem;
     right: 2.25rem;
     z-index: 1030;
+    gap: .75rem;
   }
 
-  [dir=rtl] .auth-user-menu {
+  [dir=rtl] .auth-top-actions {
     right: auto;
     left: 2.25rem;
+  }
+
+  .auth-language-toggle {
+    min-width: 4.5rem;
+    height: 3rem;
+    padding: .25rem .75rem;
+    border: 1px solid rgba(14, 165, 233, .16);
+    border-radius: 999px;
+    color: #0284c7;
+    gap: .45rem;
+    transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+
+  .auth-language-toggle:hover,
+  .auth-language-toggle:focus {
+    color: #0369a1;
+    border-color: rgba(14, 165, 233, .5);
+    box-shadow: 0 .5rem 1.5rem rgba(14, 165, 233, .16) !important;
+    transform: translateY(-1px);
+  }
+
+  .auth-language-code {
+    font-size: .85rem;
+    font-weight: 800;
+    letter-spacing: .02em;
   }
 
   .auth-user-toggle {
@@ -257,18 +283,25 @@ a.badge-primary:focus {
     object-fit: cover;
   }
 
-  .auth-user-menu .dropdown-menu {
+  .auth-top-actions .dropdown-menu {
     min-width: 13rem;
     margin-top: .75rem;
   }
 
-  .auth-user-menu .dropdown-item {
+  .auth-top-actions .dropdown-item {
     color: #3b3b3b;
   }
 
-  .auth-user-menu .dropdown-item:hover,
-  .auth-user-menu .dropdown-item:focus {
+  .auth-top-actions .dropdown-item:hover,
+  .auth-top-actions .dropdown-item:focus {
     color: #0284c7;
     background: rgba(14, 165, 233, .08);
+  }
+
+  .auth-top-actions .dropdown-item.active,
+  .auth-top-actions .dropdown-item.active:hover,
+  .auth-top-actions .dropdown-item.active:focus {
+    color: #fff;
+    background: #0ea5e9;
   }
 }

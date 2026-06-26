@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DevelopersController;
 use App\Http\Controllers\DomainsController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\LinksController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PageController;
@@ -22,8 +23,20 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes(['verify' => true]);
 
-Route::get('/install', fn () => response('Run composer install, configure .env, and execute php artisan migrate --seed.', 200))
-    ->name('install');
+Route::prefix('install')
+    ->name('install.')
+    ->group(function (): void {
+        Route::get('/', [InstallController::class, 'index'])->name('start');
+        Route::get('requirements', [InstallController::class, 'requirements'])->name('requirements');
+        Route::get('permissions', [InstallController::class, 'permissions'])->name('permissions');
+        Route::get('database', [InstallController::class, 'database'])->name('database');
+        Route::post('installation', [InstallController::class, 'installation'])->name('installation');
+        Route::get('admin', [InstallController::class, 'admin'])->name('admin');
+        Route::post('install-app', [InstallController::class, 'install'])->name('install');
+        Route::get('complete', [InstallController::class, 'complete'])->name('complete');
+        Route::get('error', [InstallController::class, 'error'])->name('error');
+        Route::post('ajax', [InstallController::class, 'ajax'])->name('ajax');
+    });
 
 Route::post('/lang', [LocaleController::class, 'index'])->name('locale');
 

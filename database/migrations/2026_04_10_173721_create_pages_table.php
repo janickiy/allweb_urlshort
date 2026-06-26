@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Create the pages table.
+     */
+    public function up(): void
+    {
+        if (Schema::hasTable('pages')) {
+            return;
+        }
+
+        Schema::create('pages', function (Blueprint $table): void {
+            $table->integer('id', true);
+            $table->string('title', 255);
+            $table->string('slug', 255);
+            $table->tinyInteger('footer');
+            $table->text('content');
+            $table->timestamps();
+
+            $table->index('title', 'title');
+        });
+    }
+
+    /**
+     * Drop the pages table.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('pages');
+    }
+};

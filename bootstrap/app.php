@@ -4,6 +4,7 @@ use App\Http\Middleware\Admin;
 use App\Http\Middleware\APIGuardMiddleware;
 use App\Http\Middleware\InstalledMiddleware;
 use App\Http\Middleware\Locale;
+use App\Http\Middleware\PrepareInstallation;
 use App\Http\Middleware\SettingsMiddleware;
 use App\Http\Middleware\VerifyPaymentEnabled;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(PrepareInstallation::class);
         $middleware->append(SettingsMiddleware::class);
         $middleware->encryptCookies(except: [
             'dark_mode',

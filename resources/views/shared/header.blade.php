@@ -50,8 +50,30 @@
     </div>
 </div>
 
-<div class="auth-user-menu d-none d-lg-flex">
-    <div class="dropdown">
+<div class="auth-top-actions d-none d-lg-flex align-items-center">
+    @if(count(config('app.locales', [])) > 1)
+        <div class="dropdown">
+            <a href="#" class="auth-language-toggle d-flex align-items-center justify-content-center text-decoration-none bg-base-0 shadow-sm" id="auth-language-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __('ui.actions.change_language') }}">
+                @include('icons.language', ['class' => 'icon-text fill-current'])
+                <span class="auth-language-code">{{ strtoupper(app()->getLocale()) }}</span>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-right border-0 shadow" aria-labelledby="auth-language-menu">
+                @foreach(config('app.locales', []) as $code => $name)
+                    <form action="{{ route('locale') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="locale" value="{{ $code }}">
+                        <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between py-2 @if(app()->getLocale() === $code) active @endif">
+                            <span>{{ $name }}</span>
+                            <span class="small text-uppercase">{{ $code }}</span>
+                        </button>
+                    </form>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <div class="dropdown auth-user-menu">
         <a href="#" class="auth-user-toggle d-flex align-items-center justify-content-center text-decoration-none bg-base-0 shadow-sm" id="auth-user-menu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{ __('Account') }}">
             <img src="{{ gravatar(Auth::user()->email, 72) }}" class="auth-user-avatar rounded-circle" alt="{{ Auth::user()->name }}">
         </a>
