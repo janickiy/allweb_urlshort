@@ -222,6 +222,15 @@ a.badge-primary:focus {
   background: rgba(14, 165, 233, .18) !important;
 }
 
+.icon-twitter {
+  background: #000 !important;
+}
+
+.icon-twitter:hover,
+.icon-twitter:focus {
+  background: #1f2937 !important;
+}
+
 @media (min-width: 992px) {
   .auth-top-actions {
     position: fixed;

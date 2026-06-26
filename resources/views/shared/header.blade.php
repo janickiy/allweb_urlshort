@@ -2,10 +2,11 @@
 <div id="header" class="header sticky-top shadow bg-base-0 z-1025">
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light px-0 py-3">
-            <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0">
+            <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                 <div class="logo">
                     <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}">
                 </div>
+                <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
             </a>
             <button class="navbar-toggler border-0 p-0" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -18,6 +19,13 @@
                             <a class="nav-link" href="{{ route('pricing') }}" role="button">{{ __('Pricing') }}</a>
                         </li>
                     @endif
+
+                    <li class="nav-item d-flex align-items-center" style="{{ __('lang_dir') == 'rtl' ? 'margin-left: 20px;' : 'margin-right: 20px;' }}">
+                        @include('shared.language', [
+                            'languageWrapperClass' => 'd-inline-flex',
+                            'languageLinkClass' => 'text-secondary text-decoration-none d-flex align-items-center py-2'
+                        ])
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('login') }}" role="button">{{ __('Login') }}</a>

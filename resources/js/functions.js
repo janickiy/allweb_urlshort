@@ -138,7 +138,7 @@ document.querySelector('.link-share') && document.querySelector('.link-share').a
 document.querySelector('#share-twitter') && document.querySelector('#share-twitter').addEventListener('click', function (e) {
     e.preventDefault();
 
-    popupCenter("https://twitter.com/intent/tweet?text="+encodeURIComponent(this.dataset.title)+"&url="+encodeURIComponent(this.dataset.url), encodeURIComponent(this.dataset.title), 550, 250);
+    popupCenter("https://x.com/intent/tweet?text="+encodeURIComponent(this.dataset.title)+"&url="+encodeURIComponent(this.dataset.url), encodeURIComponent(this.dataset.title), 550, 250);
 });
 
 document.querySelector('#share-facebook') && document.querySelector('#share-facebook').addEventListener('click', function (e) {

@@ -8,8 +8,8 @@
                 </button>
             </div>
             <div class="modal-body d-flex flex-wrap pt-0">
-                <a href="#" id="share-twitter" class="d-flex align-items-center icon-twitter p-2 mt-3 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }} rounded">
-                    @include('icons.share.twitter',  ['class' => 'icon-social text-white-important fill-current'])
+                <a href="#" id="share-twitter" class="d-flex align-items-center icon-twitter p-2 mt-3 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }} rounded" aria-label="Share on X">
+                    @include('icons.share.x',  ['class' => 'icon-social text-white-important fill-current'])
                 </a>
 
                 <a href="#" id="share-facebook" class="d-flex align-items-center icon-facebook p-2 mt-3 {{ (__('lang_dir') == 'rtl' ? 'ml-3' : 'mr-3') }} rounded">

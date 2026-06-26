@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100"><rect width="100" height="100" rx="35" style="opacity:0.10"/><path d="M65.71,40.83H63.1V35.6a13.1,13.1,0,1,0-26.2,0v5.23H34.29a5.25,5.25,0,0,0-5.24,5.24V72.26a5.25,5.25,0,0,0,5.24,5.24H65.71A5.25,5.25,0,0,0,71,72.26V46.07A5.25,5.25,0,0,0,65.71,40.83ZM50,64.4a5.24,5.24,0,1,1,5.24-5.23A5.25,5.25,0,0,1,50,64.4Zm8.12-23.57H41.88V35.6a8.12,8.12,0,0,1,16.24,0Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100" aria-hidden="true">
+    <rect width="100" height="100" rx="35" style="opacity:0.10"/>
+    <path d="M50 22 73 31v17c0 15-9 25-23 30-14-5-23-15-23-30V31Z" fill="none" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/>
+    <rect x="37" y="47" width="26" height="20" rx="5"/>
+    <path d="M43 47v-6a7 7 0 0 1 14 0v6" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="50" cy="57" r="3" fill="#fff"/>
+</svg>

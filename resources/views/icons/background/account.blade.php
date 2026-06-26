@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100"><rect width="100" height="100" rx="35" style="opacity:0.10"/><path d="M22.5,28.61V71.39a6.11,6.11,0,0,0,6.11,6.11H71.39a6.13,6.13,0,0,0,6.11-6.11V28.61a6.13,6.13,0,0,0-6.11-6.11H28.61A6.11,6.11,0,0,0,22.5,28.61ZM59.17,40.83A9.17,9.17,0,1,1,50,31.67,9.16,9.16,0,0,1,59.17,40.83ZM31.67,65.28c0-6.11,12.22-9.47,18.33-9.47s18.33,3.36,18.33,9.47v3H31.67Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100" aria-hidden="true">
+    <rect width="100" height="100" rx="35" style="opacity:0.10"/>
+    <rect x="22" y="24" width="56" height="52" rx="10" fill="none" stroke="currentColor" stroke-width="5"/>
+    <circle cx="39" cy="42" r="8"/>
+    <path d="M28 63c2-9 20-9 22 0" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
+    <rect x="47" y="50" width="28" height="16" rx="8" fill="#fff"/>
+    <path d="M58 58h6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <path d="M57 58h-4a5 5 0 0 1 0-10h5M65 58h4a5 5 0 0 0 0-10h-5" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+    <path d="M66 26l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z"/>
+</svg>

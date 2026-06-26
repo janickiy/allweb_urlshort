@@ -38,11 +38,6 @@
                     <a href="{{ config('info.software.url') }}" target="_blank" rel="noopener">{{ config('info.software.author') }}</a>
                 </div>
             </div>
-            <div class="col-12 col-lg-auto order-1 order-lg-2">
-
-                @include('shared.language')
-
-            </div>
         </div>
     </div>
 

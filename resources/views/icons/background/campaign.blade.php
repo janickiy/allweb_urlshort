@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100"><rect width="100" height="100" rx="35" style="opacity:0.10"/><path d="M40.83,47.25H34.72v5.5h6.11Zm12.23,0H46.94v5.5h6.12Zm12.22,0H59.17v5.5h6.11ZM71.39,28H68.33V22.5H62.22V28H37.78V22.5H31.67V28H28.61a5.8,5.8,0,0,0-6.08,5.5l0,38.5c0,3,2.72,5.5,6.11,5.5H71.39c3.36,0,6.11-2.47,6.11-5.5V33.5C77.5,30.48,74.75,28,71.39,28Zm0,44H28.61V41.75H71.39Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="{{ isset($class) ? $class : '' }}" viewBox="0 0 100 100" aria-hidden="true">
+    <rect width="100" height="100" rx="35" style="opacity:0.10"/>
+    <rect x="23" y="28" width="54" height="45" rx="7" fill="none" stroke="currentColor" stroke-width="5"/>
+    <path d="M23 42h54M36 23v10M64 23v10" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+    <path d="M39 56h11l7-8v19l-7-7H39Z"/>
+    <path d="M62 57h7" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/>
+</svg>

@@ -2,10 +2,12 @@
     @php
         $currentLocale = app()->getLocale();
         $currentLocaleName = config('app.locales')[$currentLocale] ?? strtoupper($currentLocale);
+        $languageWrapperClass = $languageWrapperClass ?? 'd-block d-md-inline-flex ' . (__('lang_dir') == 'rtl' ? ' mr-lg-3' : ' ml-lg-3');
+        $languageLinkClass = $languageLinkClass ?? 'text-secondary text-decoration-none d-flex align-items-center py-1';
     @endphp
 
-    <div class="d-block d-md-inline-flex {{ (__('lang_dir') == 'rtl' ? ' mr-lg-3' : ' ml-lg-3') }}" data-toggle="tooltip" title="{{ __('ui.actions.change_language') }}">
-        <a href="#" class="text-secondary text-decoration-none d-flex align-items-center py-1" data-toggle="modal" data-target="#changeLanguage">
+    <div class="{{ $languageWrapperClass }}" data-toggle="tooltip" title="{{ __('ui.actions.change_language') }}">
+        <a href="#" class="{{ $languageLinkClass }}" data-toggle="modal" data-target="#changeLanguage">
             <span class="d-flex align-items-center {{ (__('lang_dir') == 'rtl' ? 'ml-2' : 'mr-2') }}">@include('icons/language', ['class' => 'icon-text fill-current'])</span>
             <span class="flex-grow-1"><span class="text-muted">{{ $currentLocaleName }}</span></span>
         </a>
