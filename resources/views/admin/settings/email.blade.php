@@ -25,8 +25,8 @@
                 <div class="col-md-6">
                     <label for="i_email_encryption" class="form-label">{{ __('Encryption') }}</label>
                     <select name="email_encryption" id="i_email_encryption" class="form-select">
-                        @foreach(['tls', 'ssl'] as $value)
-                            <option value="{{ $value }}" @if (old('email_encryption', config('settings.email_encryption')) == $value) selected @endif>{{ strtoupper($value) }}</option>
+                        @foreach(['' => __('None'), 'tls' => 'TLS', 'ssl' => 'SSL'] as $value => $label)
+                            <option value="{{ $value }}" @if (old('email_encryption', config('settings.email_encryption')) == $value) selected @endif>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>

@@ -44,14 +44,14 @@ class TestDataSeeder extends Seeder
     private function seedSettings(): void
     {
         $settings = [
-            'contact_email' => 'support@example.test',
-            'email_address' => 'noreply@example.test',
-            'email_driver' => 'log',
-            'email_encryption' => 'tls',
-            'email_host' => 'mailpit',
-            'email_port' => '1025',
-            'email_username' => 'test',
-            'email_password' => 'password',
+            'contact_email' => env('MAIL_FROM_ADDRESS', 'support@example.test'),
+            'email_address' => env('MAIL_FROM_ADDRESS', 'noreply@example.test'),
+            'email_driver' => env('MAIL_MAILER', env('MAIL_DRIVER', 'log')),
+            'email_encryption' => $this->mailEncryption(),
+            'email_host' => env('MAIL_HOST', 'mailpit'),
+            'email_port' => env('MAIL_PORT', '1025'),
+            'email_username' => env('MAIL_USERNAME', 'test'),
+            'email_password' => env('MAIL_PASSWORD', 'password'),
             'invoice_address' => '100 Demo Street',
             'invoice_city' => 'Testville',
             'invoice_country' => 'US',
@@ -83,6 +83,20 @@ class TestDataSeeder extends Seeder
         foreach ($settings as $name => $value) {
             DB::table('settings')->updateOrInsert(['name' => $name], ['value' => $value]);
         }
+    }
+
+    /**
+     * Resolve the legacy email encryption setting from current environment values.
+     */
+    private function mailEncryption(): string
+    {
+        $encryption = (string) env('MAIL_ENCRYPTION', '');
+
+        if ($encryption !== '') {
+            return $encryption;
+        }
+
+        return env('MAIL_SCHEME') === 'smtps' ? 'ssl' : '';
     }
 
     /**

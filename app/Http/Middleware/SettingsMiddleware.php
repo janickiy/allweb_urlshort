@@ -107,6 +107,6 @@ class SettingsMiddleware
      */
     private function mailScheme(string $encryption): ?string
     {
-        return strtolower((string) $encryption) === 'ssl' ? 'smtps' : null;
+        return in_array(strtolower($encryption), ['ssl', 'smtps'], true) ? 'smtps' : null;
     }
 }

@@ -21,12 +21,12 @@
                                     <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
                                 </a>
 
-                                <form method="POST" action="{{ route('register') }}" id="registration-form">
+                                <form method="POST" action="{{ route('register') }}" id="registration-form" autocomplete="off">
                                     @csrf
 
                                     <div class="form-group">
                                         <label for="i_name">{{ __('Name') }}</label>
-                                        <input id="i_name" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" autofocus>
+                                        <input id="i_name" type="text" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" autocomplete="new-name" autofocus>
                                         @if ($errors->has('name'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $errors->first('name') }}</strong>
@@ -36,7 +36,7 @@
 
                                     <div class="form-group">
                                         <label for="i_email">{{ __('Email address') }}</label>
-                                        <input id="i_email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}">
+                                        <input id="i_email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" autocomplete="new-email">
                                         @if ($errors->has('email'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $errors->first('email') }}</strong>
@@ -46,7 +46,7 @@
 
                                     <div class="form-group">
                                         <label for="i_password">{{ __('Password') }}</label>
-                                        <input id="i_password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password">
+                                        <input id="i_password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" autocomplete="new-password">
                                         @if ($errors->has('password'))
                                             <span class="invalid-feedback" role="alert">
                                                 <strong>{{ $errors->first('password') }}</strong>
@@ -56,7 +56,7 @@
 
                                     <div class="form-group">
                                         <label for="i_password_confirmation">{{ __('Confirm password') }}</label>
-                                        <input id="i_password_confirmation" type="password" class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" name="password_confirmation">
+                                        <input id="i_password_confirmation" type="password" class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}" name="password_confirmation" autocomplete="new-password">
                                     </div>
 
                                     <div class="form-group">
