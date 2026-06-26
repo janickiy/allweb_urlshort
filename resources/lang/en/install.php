@@ -39,7 +39,7 @@ return [
         'install' => 'Install',
         'install_notice' => 'The installer will run migrations and seed default settings. Existing records with the same keys may be updated.',
         'installation' => 'Installation wizard',
-        'license_agreement' => 'License agreement',
+        'license_agreement' => 'Start',
         'log_in' => 'Log in to admin panel',
         'name' => 'Name',
         'password' => 'Password',

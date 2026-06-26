@@ -17,9 +17,8 @@ class InstalledMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if the app has been installed
-        // This prevents doing any SQL queries to the database, before the app has been setup
-        if (file_exists(storage_path('installed'))) {
+        // Check if the app has been installed. This prevents SQL queries before setup.
+        if (file_exists(base_path('.env')) && file_exists(storage_path('installed'))) {
             return $next($request);
         }
 

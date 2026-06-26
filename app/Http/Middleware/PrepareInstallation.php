@@ -21,9 +21,13 @@ class PrepareInstallation
             return $next($request);
         }
 
-        if ($request->is('install*')) {
-            $this->ensureTemporaryApplicationKey();
+        $this->ensureTemporaryApplicationKey();
 
+        if ($request->is('install/complete')) {
+            return redirect()->route('install.start');
+        }
+
+        if ($request->is('install*')) {
             return $next($request);
         }
 
@@ -35,7 +39,7 @@ class PrepareInstallation
      */
     private function isInstalled(): bool
     {
-        return file_exists(storage_path('installed'));
+        return file_exists(base_path('.env')) && file_exists(storage_path('installed'));
     }
 
     /**

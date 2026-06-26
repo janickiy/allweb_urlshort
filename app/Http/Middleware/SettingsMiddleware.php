@@ -19,7 +19,7 @@ class SettingsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (! file_exists(storage_path('installed')) && $request->is('install*')) {
+        if ((! file_exists(base_path('.env')) || ! file_exists(storage_path('installed'))) && $request->is('install*')) {
             return $next($request);
         }
 

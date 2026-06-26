@@ -62,7 +62,7 @@ body {
     display: block;
     height: auto;
     max-width: 100%;
-    width: 16rem;
+    width: 9rem;
 }
 
 .install-sidebar__intro {
@@ -380,7 +380,7 @@ body {
     }
 
     .install-logo img {
-        width: 13rem;
+        width: 7.5rem;
     }
 }
 
