@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamp('ends_at')->nullable();
             $table->timestamps();
 
-            $table->index('name', 'name');
+            $table->index('name', 'subscriptions_name_index');
         });
     }
 

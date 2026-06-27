@@ -26,7 +26,7 @@ final readonly class StatData implements DataTransferObject
     {
         return new self(
             linkId: array_key_exists('link_id', $data) ? (int) $data['link_id'] : null,
-            userId: array_key_exists('user_id', $data) ? (int) $data['user_id'] : null,
+            userId: self::nullableId($data['user_id'] ?? null),
             referrer: self::nullableString($data['referrer'] ?? null),
             platform: self::nullableString($data['platform'] ?? null),
             browser: self::nullableString($data['browser'] ?? null),
@@ -92,5 +92,12 @@ final readonly class StatData implements DataTransferObject
         $value = trim((string) $value);
 
         return $value !== '' ? $value : null;
+    }
+
+    private static function nullableId(mixed $value): ?int
+    {
+        $value = (int) $value;
+
+        return $value > 0 ? $value : null;
     }
 }

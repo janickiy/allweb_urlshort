@@ -31,7 +31,7 @@ final readonly class LinkData implements DataTransferObject
     public static function fromArray(array $data): self
     {
         return new self(
-            userId: array_key_exists('user_id', $data) ? (int) $data['user_id'] : null,
+            userId: self::nullableId($data['user_id'] ?? null),
             alias: self::nullableString($data['alias'] ?? null),
             url: self::nullableString($data['url'] ?? null),
             title: self::nullableString($data['title'] ?? null),
@@ -116,5 +116,12 @@ final readonly class LinkData implements DataTransferObject
         $value = trim((string) $value);
 
         return $value !== '' ? $value : null;
+    }
+
+    private static function nullableId(mixed $value): ?int
+    {
+        $value = (int) $value;
+
+        return $value > 0 ? $value : null;
     }
 }

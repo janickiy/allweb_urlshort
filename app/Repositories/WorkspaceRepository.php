@@ -28,8 +28,12 @@ class WorkspaceRepository extends BaseRepository
     /**
      * Return all workspaces that belong to a user.
      */
-    public function forUser(int $userId): Collection
+    public function forUser(?int $userId): Collection
     {
+        if ($userId === null) {
+            return $this->model->newCollection();
+        }
+
         return $this->query()
             ->where('user_id', $userId)
             ->get();

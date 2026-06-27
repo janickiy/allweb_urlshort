@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Observers;
+namespace App\Services;
 
 use App\Models\User;
 
@@ -15,11 +15,6 @@ class UserObserver
     public function deleting(User $user): void
     {
         if ($user->isForceDeleting()) {
-            $user->domains()->delete();
-            $user->workspaces()->delete();
-            $user->links()->delete();
-            $user->stats()->delete();
-
             foreach ($user->subscriptions as $subscription) {
                 $subscription->cancelNow();
             }

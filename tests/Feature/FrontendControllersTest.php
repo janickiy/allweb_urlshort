@@ -59,7 +59,7 @@ class FrontendControllersTest extends TestCase
         $this->from(route('home'))
             ->post(route('guest'), ['url' => 'https://example.com/guest'])
             ->assertRedirect(route('home'));
-        $this->assertDatabaseHas('links', ['url' => 'https://example.com/guest', 'user_id' => 0]);
+        $this->assertDatabaseHas('links', ['url' => 'https://example.com/guest', 'user_id' => null]);
 
         $this->get(route('contact'))->assertOk()->assertViewIs('contact.index');
         $this->from(route('contact'))->post('/contact', [

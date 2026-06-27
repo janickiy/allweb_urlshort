@@ -22,8 +22,8 @@ return new class extends Migration
             $table->integer('color')->nullable();
             $table->timestamps();
 
-            $table->index('user_id', 'user_id');
-            $table->index('name', 'name');
+            $table->index('user_id', 'spaces_user_id_index');
+            $table->index('name', 'spaces_name_index');
         });
     }
 

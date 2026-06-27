@@ -27,10 +27,10 @@ return new class extends Migration
             $table->char('language', 2)->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->index('link_id', 'link_id');
-            $table->index('user_id', 'user_id');
-            $table->index('referrer', 'referrer');
-            $table->index('created_at', 'created_at');
+            $table->index('link_id', 'stats_link_id_index');
+            $table->index('user_id', 'stats_user_id_index');
+            $table->index('referrer', 'stats_referrer_index');
+            $table->index('created_at', 'stats_created_at_index');
         });
     }
 

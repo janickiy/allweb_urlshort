@@ -23,8 +23,8 @@ return new class extends Migration
             $table->integer('user_id');
             $table->timestamps();
 
-            $table->index('name', 'name');
-            $table->index('user_id', 'user_id');
+            $table->index('name', 'domains_name_index');
+            $table->index('user_id', 'domains_user_id_index');
         });
     }
 

@@ -28,11 +28,15 @@ class DomainRepository extends BaseRepository
     /**
      * Return all domains that belong to a user.
      *
-     * @param int $userId
+     * @param int|null $userId
      * @return Collection
      */
-    public function forUser(int $userId): Collection
+    public function forUser(?int $userId): Collection
     {
+        if ($userId === null) {
+            return $this->model->newCollection();
+        }
+
         return $this->query()
             ->where('user_id', $userId)
             ->get();

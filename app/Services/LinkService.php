@@ -29,7 +29,7 @@ class LinkService
     public function create(array $input, ?User $user = null)
     {
         return $this->links->createFromDto(LinkData::fromArray(
-            $this->attributesForCreate($input, $user?->id ?? 0)
+            $this->attributesForCreate($input, $user?->id)
         ));
     }
 
@@ -64,7 +64,7 @@ class LinkService
 
         $this->create($input);
 
-        return $this->latestForUser(0, 1);
+        return $this->latestForUser(null, 1);
     }
 
     /**
@@ -191,11 +191,11 @@ class LinkService
     /**
      * Return the latest links for a user.
      *
-     * @param int $userId
+     * @param int|null $userId
      * @param int $limit
      * @return Collection
      */
-    public function latestForUser(int $userId, int $limit): Collection
+    public function latestForUser(?int $userId, int $limit): Collection
     {
         return $this->links->latestForUser($userId, $limit);
     }
@@ -241,10 +241,10 @@ class LinkService
      * Map create input into link repository attribute
      *
      * @param array $input
-     * @param int $userId
+     * @param int|null $userId
      * @return array
      */
-    private function attributesForCreate(array $input, int $userId): array
+    private function attributesForCreate(array $input, ?int $userId): array
     {
         $attributes = [
             'user_id' => $userId,

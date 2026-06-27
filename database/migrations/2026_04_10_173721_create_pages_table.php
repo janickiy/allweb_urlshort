@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('content');
             $table->timestamps();
 
-            $table->index('title', 'title');
+            $table->index('title', 'pages_title_index');
         });
     }
 

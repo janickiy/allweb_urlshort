@@ -99,14 +99,14 @@ class LinkRepository extends BaseRepository
     /**
      * Return the latest links for a user.
      *
-     * @param int $userId
+     * @param int|null $userId
      * @param int $limit
      * @return Collection
      */
-    public function latestForUser(int $userId, int $limit): Collection
+    public function latestForUser(?int $userId, int $limit): Collection
     {
         return $this->query()
-            ->where('user_id', $userId)
+            ->when($userId === null, fn (Builder $query) => $query->whereNull('user_id'), fn (Builder $query) => $query->where('user_id', $userId))
             ->orderBy('id', 'desc')
             ->limit($limit)
             ->get();

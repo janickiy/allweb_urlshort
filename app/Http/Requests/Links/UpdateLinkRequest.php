@@ -41,8 +41,12 @@ class UpdateLinkRequest extends FormRequest
         }
 
         if ($request->has('user_id')) {
-            $this->userId = $request->input('user_id');
-            Link::where([['id', '=', $request->route('id')], ['user_id', '=', $request->input('user_id')]])->firstOrFail();
+            $this->userId = $request->filled('user_id') ? (int) $request->input('user_id') : null;
+
+            Link::query()
+                ->where('id', $request->route('id'))
+                ->when($this->userId === null, fn ($query) => $query->whereNull('user_id'), fn ($query) => $query->where('user_id', $this->userId))
+                ->firstOrFail();
         } else {
             $this->userId = $request->user()->id;
         }

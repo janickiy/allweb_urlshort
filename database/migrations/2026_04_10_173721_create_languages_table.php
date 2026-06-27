@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('dir', 32);
             $table->tinyInteger('default')->nullable()->default(0);
 
-            $table->unique('code', 'code');
+            $table->unique('code', 'languages_code_unique');
         });
     }
 

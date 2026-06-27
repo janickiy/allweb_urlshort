@@ -61,7 +61,7 @@ trait ControllerTestHelpers
     private function link(?User $user = null, array $attributes = []): Link
     {
         return Link::forceCreate(array_merge([
-            'user_id' => $user?->id ?? 0,
+            'user_id' => $user?->id,
             'alias' => 'alias-'.Str::random(8),
             'url' => 'https://example.com',
             'title' => 'Example',

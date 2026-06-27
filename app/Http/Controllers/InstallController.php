@@ -269,14 +269,20 @@ class InstallController extends Controller
      */
     private function databaseCredentialsAreValid(array $credentials): bool
     {
-        $this->setDatabaseCredentials($credentials);
+        $previousDefaultConnection = Config::get('database.default');
+        $previousMysqlConnection = Config::get('database.connections.mysql');
 
         try {
+            $this->setDatabaseCredentials($credentials);
             DB::connection('mysql')->getPdo();
         } catch (Throwable $exception) {
             Log::info($exception->getMessage());
 
             return false;
+        } finally {
+            Config::set('database.default', $previousDefaultConnection);
+            Config::set('database.connections.mysql', $previousMysqlConnection);
+            DB::purge('mysql');
         }
 
         return true;

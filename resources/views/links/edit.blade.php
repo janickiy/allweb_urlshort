@@ -45,7 +45,7 @@
             @csrf
 
             @if(isset($admin))
-                <input type="hidden" name="user_id" value="{{ isset($link->user) ? $link->user->id : '0' }}">
+                <input type="hidden" name="user_id" value="{{ $link->user?->id }}">
             @endif
 
             <div class="row g-3 align-items-start">

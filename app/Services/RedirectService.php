@@ -45,7 +45,7 @@ class RedirectService
             return new RedirectResult(RedirectDecision::Preview, $link);
         }
 
-        if ((int) $link->user_id === 0) {
+        if ($link->user_id === null) {
             return new RedirectResult(RedirectDecision::Redirect, $link, $link->url);
         }
 

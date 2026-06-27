@@ -2,23 +2,19 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\Installer\DatabaseController;
-use App\Http\Controllers\Installer\EnvironmentController;
+use App\Http\Controllers\InstallController;
 use App\Http\Controllers\WebhookController;
+use App\Http\Requests\Install\AdminRequest;
+use App\Http\Requests\Install\DatabaseRequest;
 use App\Models\Link;
 use App\Models\Setting;
 use App\Models\User;
-use App\Services\UserRegistrationService;
 use App\Services\UrlMetadataService;
-use Illuminate\Contracts\Console\Kernel as ConsoleKernel;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Illuminate\Testing\TestResponse;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
@@ -146,127 +142,52 @@ class ControllerMethodsCoverageTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function test_installer_database_controller_runs_migrations_and_creates_admin(): void
+    public function test_install_controller_redirects_to_database_without_saved_credentials(): void
     {
-        $this->registerInstallerRoute('LaravelInstaller::final', '/installer/final-test');
-
-        request()->replace([
+        $request = AdminRequest::create('/install/install-app', 'POST', [
             'name' => 'Installer Admin',
             'email' => 'installer-admin@example.test',
             'password' => 'secret123',
+            'password_confirmation' => 'secret123',
         ]);
 
-        $console = Mockery::mock(ConsoleKernel::class);
-        $console->shouldReceive('call')
-            ->once()
-            ->with('migrate', ['--seed' => true, '--force' => true])
-            ->andReturn(0);
-        $console->shouldReceive('output')
-            ->once()
-            ->andReturn("Migrated\nSeeded\n");
-
-        $registrations = Mockery::mock(UserRegistrationService::class);
-        $registrations->shouldReceive('createInstallerAdmin')
-            ->once()
-            ->with([
-                'name' => 'Installer Admin',
-                'email' => 'installer-admin@example.test',
-                'password' => 'secret123',
-            ])
-            ->andReturn(new User());
-
-        $response = (new DatabaseController($console, $registrations))->database();
+        $response = $this->app->make(InstallController::class)->install($request);
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertSame(route('LaravelInstaller::final'), $response->getTargetUrl());
-        $this->assertSame("Migrated\nSeeded", session('message'));
+        $this->assertSame(route('install.database'), $response->getTargetUrl());
     }
 
-    public function test_installer_environment_controller_returns_validation_errors(): void
+    public function test_installer_database_request_returns_validation_errors(): void
     {
-        $this->registerInstallerRoute('LaravelInstaller::environmentWizard', '/installer/environment-test');
+        $validator = Validator::make([], (new DatabaseRequest())->rules());
 
-        $response = $this->app->make(EnvironmentController::class)->saveWizard(
-            Request::create('/install/environment/wizard', 'POST', []),
-            $this->app->make(Redirector::class),
-        );
-
-        TestResponse::fromBaseResponse($response)
-            ->assertRedirect(route('LaravelInstaller::environmentWizard'))
-            ->assertSessionHasErrors(['app_name']);
+        $this->assertTrue($validator->fails());
+        $this->assertArrayHasKey('db_host', $validator->errors()->messages());
+        $this->assertArrayHasKey('db_port', $validator->errors()->messages());
+        $this->assertArrayHasKey('db_database', $validator->errors()->messages());
+        $this->assertArrayHasKey('db_username', $validator->errors()->messages());
     }
 
-    public function test_installer_environment_controller_returns_database_connection_errors(): void
+    public function test_install_controller_installation_returns_database_connection_errors(): void
     {
-        $this->registerInstallerRoute('LaravelInstaller::environmentWizard', '/installer/environment-test');
+        $request = DatabaseRequest::create('/install/installation', 'POST', [
+            'db_host' => '127.0.0.1',
+            'db_port' => 1,
+            'db_database' => 'missing_database',
+            'db_username' => 'missing_user',
+            'db_password' => 'missing_password',
+        ]);
+        $request->setLaravelSession($this->app['session.store']);
 
-        $response = $this->app->make(EnvironmentController::class)->saveWizard(
-            Request::create('/install/environment/wizard', 'POST', $this->environmentPayload([
-                'database_connection' => 'sqlite',
-                'database_name' => '/missing-dir/test.sqlite',
-            ])),
-            $this->app->make(Redirector::class),
-        );
+        $response = $this->app->make(InstallController::class)->installation($request);
 
-        TestResponse::fromBaseResponse($response)
-            ->assertRedirect(route('LaravelInstaller::environmentWizard'))
-            ->assertSessionHasErrors(['database_connection']);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(route('install.database'), $response->getTargetUrl());
+        $this->assertTrue(session()->has('errors'));
     }
 
     private function api(User $user): self
     {
         return $this->withHeader('Authorization', 'Bearer '.$user->api_token);
-    }
-
-    private function registerInstallerRoute(string $name, string $uri): void
-    {
-        Route::get($uri, fn () => response('installer'))->name($name);
-        Route::getRoutes()->refreshNameLookups();
-    }
-
-    /**
-     * Return a valid installer environment payload that can be adjusted per test.
-     *
-     * @param array<string, mixed> $overrides
-     * @return array<string, mixed>
-     */
-    private function environmentPayload(array $overrides = []): array
-    {
-        return array_merge([
-            'app_name' => 'ShortLink Pro',
-            'environment' => 'local',
-            'environment_custom' => '',
-            'app_debug' => 'true',
-            'app_log_level' => 'debug',
-            'app_url' => 'https://example.test',
-            'database_connection' => 'sqlite',
-            'database_hostname' => 'localhost',
-            'database_port' => 3306,
-            'database_name' => ':memory:',
-            'database_username' => 'root',
-            'database_password' => '',
-            'broadcast_driver' => 'log',
-            'cache_driver' => 'array',
-            'session_driver' => 'array',
-            'queue_driver' => 'sync',
-            'redis_hostname' => '127.0.0.1',
-            'redis_password' => 'null',
-            'redis_port' => 6379,
-            'mail_driver' => 'array',
-            'mail_host' => 'localhost',
-            'mail_port' => '1025',
-            'mail_username' => 'null',
-            'mail_password' => 'null',
-            'mail_encryption' => 'null',
-            'mail_from_address' => 'mail@example.test',
-            'mail_from_name' => 'ShortLink Pro',
-            'pusher_app_id' => '',
-            'pusher_app_key' => '',
-            'pusher_app_secret' => '',
-            'name' => 'Installer Admin',
-            'email' => 'installer-admin@example.test',
-            'password' => 'secret123',
-            'password_confirmation' => 'secret123',
-        ], $overrides);
     }
 }

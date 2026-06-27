@@ -33,11 +33,11 @@ return new class extends Migration
             $table->timestamp('ends_at')->nullable();
             $table->timestamps();
 
-            $table->index('user_id', 'user_id');
-            $table->index('alias', 'alias');
-            $table->index('clicks', 'clicks');
-            $table->index('workspace_id', 'space_id');
-            $table->index('domain_id', 'domain_id');
+            $table->index('user_id', 'links_user_id_index');
+            $table->index('alias', 'links_alias_index');
+            $table->index('clicks', 'links_clicks_index');
+            $table->index('workspace_id', 'links_workspace_id_index');
+            $table->index('domain_id', 'links_domain_id_index');
         });
     }
 
