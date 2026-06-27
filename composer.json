@@ -4,6 +4,12 @@
     "type": "project",
     "description": "ShortLink Pro URL shortener application.",
     "license": "proprietary",
+    "authors": [
+        {
+            "name": "Alexander Yanitsky",
+            "email": "janickiy@icloud.com"
+        }
+    ],
     "require": {
         "php": "^8.4",
         "ext-gd": "*",
