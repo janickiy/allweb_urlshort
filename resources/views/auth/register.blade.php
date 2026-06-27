@@ -16,7 +16,7 @@
                             <div class="card-body p-lg-5">
                                 <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 mb-4 d-none d-lg-flex align-items-center text-dark text-decoration-none">
                                     <div class="logo">
-                                        <img src="{{ url('/') }}/uploads/brand/{{ config('settings.logo') }}">
+                                        <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}">
                                     </div>
                                     <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
                                 </a>

@@ -10,7 +10,6 @@ use App\Http\Requests\Admin\{
     UpdateSettingsContactRequest,
     UpdateSettingsEmailRequest,
     UpdateSettingsGeneralRequest,
-    UpdateSettingsAppearanceRequest,
     UpdateSettingsInvoiceRequest,
     UpdateSettingsLegalRequest,
     UpdatePageRequest,
@@ -68,16 +67,6 @@ class AdminController extends Controller
     public function settingsGeneral(): View
     {
         return view('admin.content', ['view' => 'admin.settings.general']);
-    }
-
-    /**
-     * Display the appearance settings screen in the admin panel.
-     *
-     * @return View
-     */
-    public function settingsAppearance(): View
-    {
-        return view('admin.content', ['view' => 'admin.settings.appearance']);
     }
 
     /**
@@ -428,23 +417,6 @@ class AdminController extends Controller
     public function updateSettingsLegal(UpdateSettingsLegalRequest $request): RedirectResponse
     {
         $this->settingsService->updateLegal($request->all());
-
-        return back()->with('success', __('ui.messages.settings_saved'));
-    }
-
-    /**
-     * Persist appearance settings and uploaded branding assets.
-     *
-     * @param UpdateSettingsAppearanceRequest $request
-     * @return RedirectResponse
-     */
-    public function updateSettingsAppearance(UpdateSettingsAppearanceRequest $request): RedirectResponse
-    {
-        $this->settingsService->updateAppearance(
-            $request->all(),
-            $request->file('logo'),
-            $request->file('favicon')
-        );
 
         return back()->with('success', __('ui.messages.settings_saved'));
     }

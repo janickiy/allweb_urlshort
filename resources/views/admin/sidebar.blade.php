@@ -14,7 +14,6 @@
         'pages' => ['page', 'ui.nav.pages', 'admin.pages'],
         'settings' => ['settings', 'ui.nav.settings', null, [
             'general' => ['ui.nav.general', 'admin.settings.general'],
-            'appearance' => ['ui.nav.appearance', 'admin.settings.appearance'],
             'email' => ['ui.nav.email', 'admin.settings.email'],
             'social' => ['ui.nav.social', 'admin.settings.social'],
             'payment' => ['ui.nav.payment', 'admin.settings.payment'],

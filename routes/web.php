@@ -181,7 +181,6 @@ Route::prefix('admin')
                 ->group(function () {
                     $settings = [
                         'general' => ['settingsGeneral', 'updateSettingsGeneral'],
-                        'appearance' => ['settingsAppearance', 'updateSettingsAppearance'],
                         'email' => ['settingsEmail', 'updateSettingsEmail'],
                         'social' => ['settingsSocial', 'updateSettingsSocial'],
                         'payment' => ['settingsPayment', 'updateSettingsPayment'],

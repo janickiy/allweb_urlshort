@@ -53,7 +53,6 @@ class AdminControllerTest extends TestCase
         $routes = [
             route('admin.dashboard'),
             route('admin.settings.general'),
-            route('admin.settings.appearance'),
             route('admin.settings.email'),
             route('admin.settings.social'),
             route('admin.settings.payment'),
@@ -98,9 +97,6 @@ class AdminControllerTest extends TestCase
                 'index' => 'https://example.com',
                 'timezone' => 'UTC',
                 'tracking_code' => '',
-            ],
-            'admin.settings.appearance.update' => [
-                'theme' => 1,
             ],
             'admin.settings.email.update' => [
                 'email_driver' => 'smtp',
@@ -159,7 +155,6 @@ class AdminControllerTest extends TestCase
         }
 
         $this->assertDatabaseHas('settings', ['name' => 'title', 'value' => 'ShortLink Pro Tests']);
-        $this->assertDatabaseHas('settings', ['name' => 'theme', 'value' => '1']);
         $this->assertDatabaseHas('settings', ['name' => 'short_bad_words', 'value' => 'badword']);
 
         request()->headers->set('referer', route('admin.settings.payment'));

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\DTO\SettingData;
 use App\Repositories\SettingRepository;
-use Illuminate\Http\UploadedFile;
 
 class SettingsService
 {
@@ -90,25 +89,6 @@ class SettingsService
     }
 
     /**
-     * Persist appearance settings and replace uploaded brand assets.
-     *
-     * @param array $input
-     * @param UploadedFile|null $logo
-     * @param UploadedFile|null $favicon
-     * @return void
-     */
-    public function updateAppearance(array $input, ?UploadedFile $logo = null, ?UploadedFile $favicon = null): void
-    {
-        foreach (['logo' => $logo, 'favicon' => $favicon] as $key => $file) {
-            if ($file instanceof UploadedFile) {
-                $this->updateKeys([$key], [$key => $this->replaceBrandAsset($key, $file)]);
-            }
-        }
-
-        $this->updateKeys(['theme'], $input);
-    }
-
-    /**
      * Persist outgoing email settings.
      *
      * @param array<string, mixed> $input
@@ -148,28 +128,4 @@ class SettingsService
         $this->updateKeys(['invoice_vendor', 'invoice_address', 'invoice_city', 'invoice_state', 'invoice_postal_code', 'invoice_country', 'invoice_phone', 'invoice_vat_number'], $input);
     }
 
-    /**
-     * Replace one brand asset on disk and return the stored file name.
-     *
-     * @param string $key
-     * @param UploadedFile $file
-     * @return string
-     */
-    private function replaceBrandAsset(string $key, UploadedFile $file): string
-    {
-        $fileName = $file->hashName();
-        $currentFile = config('settings.' . $key);
-
-        if (is_string($currentFile) && $currentFile !== '') {
-            $currentPath = public_path('uploads/brand/' . $currentFile);
-
-            if (file_exists($currentPath)) {
-                unlink($currentPath);
-            }
-        }
-
-        $file->move(public_path('uploads/brand'), $fileName);
-
-        return $fileName;
-    }
 }

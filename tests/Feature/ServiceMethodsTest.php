@@ -221,7 +221,6 @@ class ServiceMethodsTest extends TestCase
         $settings->updateCaptcha(['captcha_site_key' => 'site', 'captcha_secret_key' => 'secret', 'captcha_registration' => 0, 'captcha_contact' => 0, 'captcha_shorten' => 0]);
         $settings->updateShortener(['short_guest' => 1, 'short_bad_words' => 'badword']);
         $settings->updateLegal(['legal_terms_url' => '/terms', 'legal_privacy_url' => '/privacy', 'legal_cookie_url' => '/cookies']);
-        $settings->updateAppearance(['theme' => 1]);
         $settings->updateEmail(['email_driver' => 'log', 'email_host' => 'smtp.test', 'email_port' => 587, 'email_encryption' => 'tls', 'email_address' => 'mail@example.test', 'email_username' => 'user', 'email_password' => 'pass']);
         $settings->updateSocial(['social_facebook' => 'fb', 'social_twitter' => 'tw', 'social_instagram' => 'ig', 'social_youtube' => 'yt']);
         $settings->updatePayment(['stripe' => 0, 'stripe_key' => 'pk', 'stripe_secret' => 'sk', 'stripe_wh_secret' => 'wh']);
