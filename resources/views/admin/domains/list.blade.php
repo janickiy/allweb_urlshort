@@ -1,3 +1,9 @@
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to manage all branded domains connected by users across the application. Review domain ownership, linked records, assigned links, and user accounts, filter the list, open related links, and edit or moderate domains when administrative changes are required.') }}</p>
+    </div>
+</div>
+
 <div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
     <div class="card-header">
         <div class="row g-2 align-items-center">
