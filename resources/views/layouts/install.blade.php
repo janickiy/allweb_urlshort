@@ -7,14 +7,14 @@
 
     <title>{{ __('install.str.installation') }} - {{ config('info.software.name') }}</title>
 
-    <link href="{{ asset('uploads/brand/favicon.png') }}" rel="icon">
+    <link href="{{ asset('images/favicon.png') }}" rel="icon">
     <link rel="stylesheet" href="{{ asset('css/install.css') }}?v={{ filemtime(public_path('css/install.css')) }}">
 </head>
 <body>
     <div class="install-shell">
         <aside class="install-sidebar">
             <a class="install-logo" href="{{ route('install.start') }}" aria-label="{{ config('info.software.name') }}">
-                <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}" alt="{{ config('info.software.name') }}">
+                <img src="{{ asset('images/shortlink-pro-logo.png') }}" alt="{{ config('info.software.name') }}">
                 <span>{{ config('info.software.name') }}</span>
             </a>
 

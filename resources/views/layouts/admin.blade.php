@@ -110,7 +110,7 @@
             <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
                 <div class="sidebar-brand admin-sidebar-brand">
                     <a href="{{ route('admin.dashboard') }}" class="brand-link">
-                        <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}" class="brand-image admin-brand-image shadow-sm" alt="{{ config('settings.title') }}">
+                        <img src="{{ asset('images/shortlink-pro-logo.png') }}" class="brand-image admin-brand-image shadow-sm" alt="{{ config('settings.title') }}">
                         <span class="brand-text admin-brand-text">
                             <span class="admin-brand-title">{{ config('settings.title') ?: config('info.software.name') }}</span>
                             <span class="admin-brand-subtitle">{{ __('ui.admin.panel') }}</span>

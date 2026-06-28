@@ -10,7 +10,7 @@
 
     <title>@yield('site_title')</title>
 
-    <link href="{{ asset('uploads/brand/favicon.png') }}" rel="icon">
+    <link href="{{ asset('images/favicon.png') }}" rel="icon">
 
 
     <!-- Styles -->

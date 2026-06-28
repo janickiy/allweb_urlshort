@@ -4,7 +4,7 @@
         <nav class="navbar navbar-expand-lg navbar-light px-0 py-3">
             <a href="{{ route('home') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                 <div class="logo">
-                    <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}">
+                    <img src="{{ asset('images/shortlink-pro-logo.png') }}">
                 </div>
                 <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
             </a>
@@ -47,7 +47,7 @@
         <nav class="navbar navbar-light px-0 py-3">
             <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                 <div class="logo">
-                    <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}">
+                    <img src="{{ asset('images/shortlink-pro-logo.png') }}">
                 </div>
                 <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
             </a>
@@ -127,7 +127,7 @@
             <div class="{{ (__('lang_dir') == 'rtl' ? 'pr-4' : 'pl-4') }} py-3 d-flex align-items-center">
                 <a href="{{ route('dashboard') }}" aria-label="{{ config('settings.title') }}" class="navbar-brand p-0 d-flex align-items-center text-decoration-none text-dark overflow-hidden">
                     <div class="logo">
-                        <img src="{{ asset('uploads/brand/shortlink-pro-logo.svg') }}">
+                        <img src="{{ asset('images/shortlink-pro-logo.png') }}">
                     </div>
                     <span class="font-weight-bold text-truncate {{ (__('lang_dir') == 'rtl' ? 'mr-3' : 'ml-3') }}">{{ config('settings.title') ?: config('info.software.name') }}</span>
                 </a>
