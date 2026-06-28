@@ -296,6 +296,12 @@ Route::prefix('pricing')
 Route::post('stripe/webhook', [WebhookController::class, 'handleWebhook'])->name('stripe.webhook');
 
 Route::controller(RedirectController::class)->group(function () {
+    Route::get('/{domain}/{id}/+', 'domain')
+        ->where('domain', '[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+        ->name('link.domain.preview');
+    Route::get('/{domain}/{id}', 'domain')
+        ->where('domain', '[A-Za-z0-9.-]+\.[A-Za-z]{2,}')
+        ->name('link.domain.redirect');
     Route::get('/{id}/+', 'index')->name('link.preview');
     Route::get('/{id}', 'index')->name('link.redirect');
     Route::post('/{id}', 'validatePassword')->name('link.password');

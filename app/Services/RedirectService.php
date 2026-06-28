@@ -31,17 +31,19 @@ class RedirectService
      *
      * @param Request $request
      * @param string $alias
+     * @param string|null $domainHost
+     * @param bool $preview
      * @return RedirectResult
      */
-    public function resolve(Request $request, string $alias): RedirectResult
+    public function resolve(Request $request, string $alias, ?string $domainHost = null, bool $preview = false): RedirectResult
     {
-        $link = $this->findLink($request, $alias);
+        $link = $this->findLink($request, $alias, $domainHost);
 
         if (!$link) {
-            return new RedirectResult(RedirectDecision::NotFound, target: $this->notFoundRedirect($request));
+            return new RedirectResult(RedirectDecision::NotFound, target: $this->notFoundRedirect($request, $domainHost));
         }
 
-        if ($request->segments()[1] ?? null) {
+        if ($preview) {
             return new RedirectResult(RedirectDecision::Preview, $link);
         }
 
@@ -96,10 +98,17 @@ class RedirectService
      *
      * @param Request $request
      * @param string $alias
+     * @param string|null $domainHost
      * @return Link|null
      */
-    private function findLink(Request $request, string $alias): ?Link
+    private function findLink(Request $request, string $alias, ?string $domainHost = null): ?Link
     {
+        if ($domainHost !== null) {
+            $domain = $this->domains->findByHost($domainHost);
+
+            return $domain ? $this->links->findByAliasForDomain($alias, $domain->id) : null;
+        }
+
         $localHost = parse_url(config('app.url'), PHP_URL_HOST);
         $remoteHost = $request->getHost();
 
@@ -115,8 +124,12 @@ class RedirectService
     /**
      * Return the custom not-found redirect target for a host.
      */
-    private function notFoundRedirect(Request $request): ?string
+    private function notFoundRedirect(Request $request, ?string $domainHost = null): ?string
     {
+        if ($domainHost !== null) {
+            return $this->domains->findByHost($domainHost)?->not_found_page;
+        }
+
         $localHost = parse_url(config('app.url'), PHP_URL_HOST);
         $remoteHost = $request->getHost();
 

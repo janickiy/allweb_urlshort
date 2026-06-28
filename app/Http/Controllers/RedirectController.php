@@ -28,7 +28,40 @@ class RedirectController extends Controller
      */
     public function index(Request $request, int|string $id): View|RedirectResponse
     {
-        $result = $this->redirectService->resolve($request, (string) $id);
+        $result = $this->redirectService->resolve(
+            $request,
+            (string) $id,
+            preview: $request->routeIs('link.preview')
+        );
+
+        return match ($result->decision) {
+            RedirectDecision::Preview => view('redirect.preview', ['link' => $result->link]),
+            RedirectDecision::Expired => view('redirect.expired', ['link' => $result->link]),
+            RedirectDecision::Password => view('redirect.password', ['link' => $result->link]),
+            RedirectDecision::Disabled => view('redirect.disabled', ['link' => $result->link]),
+            RedirectDecision::Banned => view('redirect.banned', ['link' => $result->link]),
+            RedirectDecision::NotFound => $result->target ? $this->redirectNoCache($result->target) : abort(404),
+            RedirectDecision::Redirect => $this->redirectNoCache($result->target),
+        };
+    }
+
+    /**
+     * Resolve a local custom-domain short-link URL and return the redirect response.
+     *
+     * @param Request $request
+     * @param string $domain
+     * @param int|string $id
+     * @return RedirectResponse|View
+     * @throws \MaxMind\Db\Reader\InvalidDatabaseException
+     */
+    public function domain(Request $request, string $domain, int|string $id): View|RedirectResponse
+    {
+        $result = $this->redirectService->resolve(
+            $request,
+            (string) $id,
+            $domain,
+            $request->routeIs('link.domain.preview')
+        );
 
         return match ($result->decision) {
             RedirectDecision::Preview => view('redirect.preview', ['link' => $result->link]),
