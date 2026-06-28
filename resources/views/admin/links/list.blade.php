@@ -1,3 +1,9 @@
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to oversee every short link created in the application. Review user and guest links, filter records by type or performance, open statistics, check ownership, and edit or moderate links when administrative action is required.') }}</p>
+    </div>
+</div>
+
 <div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
     <div class="card-header">
         <div class="row g-2 align-items-center">

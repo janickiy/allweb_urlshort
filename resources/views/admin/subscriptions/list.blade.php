@@ -1,3 +1,9 @@
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to manage user subscriptions across your application. Review active, trialing, canceled, or past-due subscriptions, filter records by plan or status, open subscription details, and manually assign new subscriptions when needed.') }}</p>
+    </div>
+</div>
+
 <div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
     <div class="card-header">
         <div class="row g-2 align-items-center">

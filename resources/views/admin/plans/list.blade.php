@@ -1,3 +1,9 @@
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to manage subscription plans for your users. Create and edit pricing options, configure plan visibility and availability, define feature limits, and control which plans are offered publicly or kept private for manual assignment.') }}</p>
+    </div>
+</div>
+
 <div class="card card-primary card-outline shadow-sm mb-0 admin-list-card">
     <div class="card-header">
         <div class="row g-2 align-items-center">
