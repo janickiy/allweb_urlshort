@@ -13,11 +13,11 @@
         </a>
     </div>
 
-    <div class="modal fade" id="changeLanguage" tabindex="-1" role="dialog" aria-labelledby="{{ __('ui.actions.change_language') }}" aria-hidden="true">
+    <div class="modal fade" id="changeLanguage" tabindex="-1" role="dialog" aria-labelledby="changeLanguageLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header">
-                    <h6 class="modal-title" id="exampleModalLabel">{{ __('ui.actions.change_language') }}</h6>
+                    <h6 class="modal-title" id="changeLanguageLabel">{{ __('ui.actions.change_language') }}</h6>
                     <button type="button" class="close d-flex align-items-center justify-content-center" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true" class="d-flex align-items-center">@include('icons.close')</span>
                     </button>
@@ -44,4 +44,16 @@
             </div>
         </div>
     </div>
+
+    @once
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var languageModal = document.getElementById('changeLanguage');
+
+                if (languageModal && languageModal.parentElement !== document.body) {
+                    document.body.appendChild(languageModal);
+                }
+            });
+        </script>
+    @endonce
 @endif
