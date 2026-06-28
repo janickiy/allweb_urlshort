@@ -14,6 +14,12 @@
     </div>
 </div>
 
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to manage branded domains for your short links. Add your own domains to create recognizable URLs, improve trust, connect links to the right brand, and quickly review how many links are assigned to each domain.') }}</p>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm">
     <div class="card-header align-items-center">
         <div class="row">

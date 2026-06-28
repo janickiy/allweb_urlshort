@@ -11,6 +11,12 @@
     </div>
 </div>
 
+<div class="card border-0 shadow-sm mt-3 mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to create, organize, and manage your short links. Here you can shorten URLs, assign workspaces or branded domains, add custom aliases, copy and share links, review click counts, and filter saved links for faster daily work.') }}</p>
+    </div>
+</div>
+
 @include('links.new')
 
 <div class="card border-0 shadow-sm mt-3">
@@ -174,13 +180,12 @@
                     </div>
                 @endforeach
 
-                <div class="mt-3 align-items-center">
-                    <div class="row">
-                        <div class="col">
-                            <div class="mt-2 mb-3">{{ __('Showing :from-:to of :total', ['from' => $links->firstItem(), 'to' => $links->lastItem(), 'total' => $links->total()]) }}
-                            </div>
+                <div class="mt-3">
+                    <div class="row align-items-center">
+                        <div class="col-12 col-md">
+                            <div class="text-muted py-2">{{ __('Showing :from-:to of :total', ['from' => $links->firstItem(), 'to' => $links->lastItem(), 'total' => $links->total()]) }}</div>
                         </div>
-                        <div class="col-auto">
+                        <div class="col-12 col-md-auto">
                             {{ $links->onEachSide(1)->links() }}
                         </div>
                     </div>

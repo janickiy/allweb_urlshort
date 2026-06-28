@@ -114,5 +114,8 @@
   "Latest clicks": "Последние клики",
   "No data.": "Нет данных.",
   "New link": "Новая ссылка",
+  "This section is used to create, organize, and manage your short links. Here you can shorten URLs, assign workspaces or branded domains, add custom aliases, copy and share links, review click counts, and filter saved links for faster daily work.": "Этот раздел используется для создания, организации и управления короткими ссылками. Здесь можно сокращать URL, назначать рабочие пространства или брендированные домены, добавлять пользовательские алиасы, копировать и делиться ссылками, просматривать количество кликов и фильтровать сохраненные ссылки для быстрой ежедневной работы.",
+  "This section is used to organize your short links into workspaces. Workspaces help you group campaigns, projects, clients, or teams, assign colors for quick recognition, and open the related links with one click for easier management.": "Этот раздел используется для организации коротких ссылок по рабочим пространствам. Рабочие пространства помогают группировать кампании, проекты, клиентов или команды, назначать цвета для быстрого распознавания и открывать связанные ссылки в один клик для удобного управления.",
+  "This section is used to manage branded domains for your short links. Add your own domains to create recognizable URLs, improve trust, connect links to the right brand, and quickly review how many links are assigned to each domain.": "Этот раздел используется для управления брендированными доменами коротких ссылок. Добавляйте собственные домены, чтобы создавать узнаваемые URL, повышать доверие, связывать ссылки с нужным брендом и быстро видеть, сколько ссылок назначено каждому домену.",
   "Menu": "Меню"
 }

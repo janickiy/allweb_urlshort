@@ -114,5 +114,8 @@
   "Latest clicks": "Derniers clics",
   "No data.": "Aucune donnée.",
   "New link": "Nouveau lien",
+  "This section is used to create, organize, and manage your short links. Here you can shorten URLs, assign workspaces or branded domains, add custom aliases, copy and share links, review click counts, and filter saved links for faster daily work.": "Cette section sert à créer, organiser et gérer vos liens courts. Vous pouvez y raccourcir des URL, attribuer des espaces de travail ou des domaines de marque, ajouter des alias personnalisés, copier et partager des liens, consulter le nombre de clics et filtrer les liens enregistrés pour travailler plus rapidement.",
+  "This section is used to organize your short links into workspaces. Workspaces help you group campaigns, projects, clients, or teams, assign colors for quick recognition, and open the related links with one click for easier management.": "Cette section sert à organiser vos liens courts dans des espaces de travail. Les espaces de travail vous aident à regrouper campagnes, projets, clients ou équipes, à attribuer des couleurs pour les reconnaître rapidement et à ouvrir les liens associés en un clic pour une gestion plus simple.",
+  "This section is used to manage branded domains for your short links. Add your own domains to create recognizable URLs, improve trust, connect links to the right brand, and quickly review how many links are assigned to each domain.": "Cette section sert à gérer les domaines de marque de vos liens courts. Ajoutez vos propres domaines pour créer des URL reconnaissables, renforcer la confiance, associer les liens à la bonne marque et voir rapidement combien de liens sont rattachés à chaque domaine.",
   "Menu": "Menu"
 }

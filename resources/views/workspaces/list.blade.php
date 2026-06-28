@@ -14,6 +14,12 @@
     </div>
 </div>
 
+<div class="card border-0 shadow-sm mb-3" style="{{ __('lang_dir') == 'rtl' ? 'border-right' : 'border-left' }}: .25rem solid #0ea5e9 !important;">
+    <div class="card-body py-3 px-4">
+        <p class="mb-0 text-dark">{{ __('This section is used to organize your short links into workspaces. Workspaces help you group campaigns, projects, clients, or teams, assign colors for quick recognition, and open the related links with one click for easier management.') }}</p>
+    </div>
+</div>
+
 <div class="card border-0 shadow-sm">
     <div class="card-header align-items-center">
         <div class="row">

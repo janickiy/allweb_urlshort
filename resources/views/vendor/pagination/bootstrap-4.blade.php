@@ -1,6 +1,6 @@
 @if ($paginator->hasPages())
-    <nav class="d-block d-md-none">
-        <ul class="pagination">
+    <nav class="d-block d-md-none" aria-label="Pagination">
+        <ul class="pagination mb-0 justify-content-end">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <li class="page-item disabled" aria-disabled="true">
@@ -25,8 +25,8 @@
         </ul>
     </nav>
 
-    <nav class="d-none d-md-block">
-        <ul class="pagination">
+    <nav class="d-none d-md-block" aria-label="Pagination">
+        <ul class="pagination mb-0 justify-content-end">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
                 <li class="page-item disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">

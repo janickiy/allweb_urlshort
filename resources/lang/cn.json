@@ -114,5 +114,8 @@
   "Latest clicks": "最新点击",
   "No data.": "暂无数据。",
   "New link": "新链接",
+  "This section is used to create, organize, and manage your short links. Here you can shorten URLs, assign workspaces or branded domains, add custom aliases, copy and share links, review click counts, and filter saved links for faster daily work.": "此部分用于创建、整理和管理短链接。你可以在这里缩短 URL，分配工作区或品牌域名，添加自定义别名，复制和分享链接，查看点击次数，并筛选已保存的链接以提升日常工作效率。",
+  "This section is used to organize your short links into workspaces. Workspaces help you group campaigns, projects, clients, or teams, assign colors for quick recognition, and open the related links with one click for easier management.": "此部分用于将短链接整理到工作区中。工作区可帮助你按活动、项目、客户或团队分组，设置颜色以便快速识别，并一键打开相关链接，让管理更加轻松。",
+  "This section is used to manage branded domains for your short links. Add your own domains to create recognizable URLs, improve trust, connect links to the right brand, and quickly review how many links are assigned to each domain.": "此部分用于管理短链接的品牌域名。添加你自己的域名，创建更易识别的 URL，提升信任度，将链接关联到正确品牌，并快速查看每个域名下分配了多少链接。",
   "Menu": "菜单"
 }
